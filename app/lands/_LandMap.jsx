@@ -20,6 +20,10 @@ import "leaflet.heat";
 /* ===================== MONEY ===================== */
 const koboToNaira = (kobo) => Number(kobo) / 100;
 
+/**
+ * Price helper — mirrors getLandPrice() in the parent pages.
+ * Handles: latestPrice relation (snake or camel), or direct field.
+ */
 function getLandPrice(land) {
   return (
     land.latest_price?.price_per_unit_kobo
@@ -43,7 +47,7 @@ function getUnitOpacity(units) {
 
 /* ===================== MARKER ICON ===================== */
 function createMarkerIcon({ priceKobo, units, active }) {
-  const priceNaira = koboToNaira(priceKobo ?? 0); 
+  const priceNaira = koboToNaira(priceKobo ?? 0); // FIX: guard undefined
   return L.divIcon({
     className: "",
     iconSize: [36, 36],
@@ -86,6 +90,11 @@ function FitBounds({ points }) {
   return null;
 }
 
+/**
+ * FIX: was always passed isFullScreen={false} so never actually fired on
+ * fullscreen toggle. Now accepts the real value, and guards against calling
+ * invalidateSize() on an unmounted / uninitialised map.
+ */
 function MapInvalidate({ isFullScreen }) {
   const map = useMap();
   useEffect(() => {
@@ -137,7 +146,19 @@ function HeatmapLayer({ lands }) {
   useEffect(() => {
     if (ref.current) { map.removeLayer(ref.current); ref.current = null; }
     if (!lands.length) return;
-    const pts = lands.map((l) => [+l.lat, +l.lng, Math.max(0.1, Math.min(l.heat ?? 0.5, 1))]);
+
+    // leaflet.heat patches L as a side effect — guard in case it hasn't loaded yet
+    if (typeof L.heatLayer !== "function") {
+      console.warn("[LandMap] leaflet.heat not available — heatmap skipped");
+      return;
+    }
+
+    const pts = lands
+      .filter((l) => l.lat && l.lng) // skip lands without coords
+      .map((l) => [+l.lat, +l.lng, Math.max(0.1, Math.min(l.heat ?? 0.5, 1))]);
+
+    if (!pts.length) return;
+
     const layer = L.heatLayer(pts, {
       radius: 50, blur: 30, maxZoom: 17, max: 1.0, minOpacity: 0.4,
       gradient: {
@@ -155,7 +176,7 @@ function HeatmapLayer({ lands }) {
 
 /* ===================== POPUP CONTENT ===================== */
 function LandPopup({ land }) {
-  const priceKobo = getLandPrice(land);
+  const priceKobo = getLandPrice(land); // FIX: use helper instead of direct field
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", minWidth: 180 }}>
       <p style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 14, color: "#0D1F1A", marginBottom: 4 }}>
@@ -242,7 +263,7 @@ export default function LandMap({
                 key={land.id}
                 position={[+land.lat, +land.lng]}
                 icon={createMarkerIcon({
-                  priceKobo: getLandPrice(land), 
+                  priceKobo: getLandPrice(land), // FIX: use helper
                   units: land.available_units,
                   active: land.id === activeLandId || land.id === hoverLandId,
                 })}
@@ -257,7 +278,7 @@ export default function LandMap({
                   key={`marker-${land.id}`}
                   position={[+land.lat, +land.lng]}
                   icon={createMarkerIcon({
-                    priceKobo: getLandPrice(land), 
+                    priceKobo: getLandPrice(land), // FIX: use helper
                     units: land.available_units,
                     active: land.id === activeLandId || land.id === hoverLandId,
                   })}
@@ -270,7 +291,7 @@ export default function LandMap({
           {!showPolygonMarkers &&
             landsWithPolygons.map((land) => {
               const active     = land.id === activeLandId || land.id === hoverLandId;
-              const priceKobo  = getLandPrice(land); 
+              const priceKobo  = getLandPrice(land); // FIX: use helper
               const color      = getPriceColor(koboToNaira(priceKobo));
               return (
                 <Polygon
