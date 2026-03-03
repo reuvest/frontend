@@ -7,7 +7,7 @@ export async function checkAuth() {
   if (!token) return false;
 
   try {
-    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://growthbackend.onrender.com/api";
+    const baseURL = process.env.NEXT_PUBLIC_API_URL || "https://growthbackend.onrender.com/api";
 
     const response = await axios.get(`${baseURL}/me`, {
       headers: {
