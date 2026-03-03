@@ -7,26 +7,88 @@ import api from "../../utils/api";
 import { getLandImage } from "../../utils/images";
 import { koboToNaira } from "../../utils/currency";
 import { useDebounce } from "../../utils/useDebounce";
-import { MapPin, Maximize2, Flame, X } from "lucide-react";
+import { MapPin, Maximize2, Flame, X, Lock, ShieldCheck } from "lucide-react";
 
 const MapWithNoSSR = dynamic(() => import("./_LandMap"), { ssr: false });
 
-/* ── Price helper — latestPrice relation or direct field ── */
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
 function getLandPrice(land) {
   return (
-    land.latest_price?.price_per_unit_kobo   
-    ?? land.latestPrice?.price_per_unit_kobo 
-    ?? land.price_per_unit_kobo              
-    ?? 0
+    land.latest_price?.price_per_unit_kobo ??
+    land.latestPrice?.price_per_unit_kobo ??
+    land.current_price_per_unit_kobo ??
+    land.price_per_unit_kobo ??
+    0
   );
+}
+
+// API returns `coordinates` (WKB hex), not a boolean `has_polygon`
+function hasPolygon(land) {
+  return !!(land.has_polygon || land.coordinates || land.polygon);
 }
 
 function getPriceTag(priceKobo) {
   const n = koboToNaira(priceKobo);
-  if (n < 2000) return { label: "Budget",    color: "#22c55e" };
-  if (n < 5000) return { label: "Mid-Range", color: "#f59e0b" };
-  return            { label: "Premium",    color: "#ef4444" };
+  if (n < 200000) return { label: "Budget",    color: "#22c55e" };
+  if (n < 500000) return { label: "Mid-Range", color: "#f59e0b" };
+  return                  { label: "Premium",  color: "#ef4444" };
 }
+
+// ── PIN / KYC banners ─────────────────────────────────────────────────────────
+
+function AccountBanner({ pinIsSet, kycStatus }) {
+  const needsPin = !pinIsSet;
+  const needsKyc = kycStatus !== "approved";
+  if (!needsPin && !needsKyc) return null;
+
+  const kycMessage = {
+    none:     "KYC not submitted. Verify your identity before you can transact.",
+    pending:  "KYC is under review. You'll be able to transact once approved.",
+    rejected: "KYC was rejected. Please resubmit your documents.",
+    resubmit: "KYC resubmission required before you can transact.",
+  }[kycStatus] ?? "Identity verification required.";
+
+  return (
+    <div className="mb-8 space-y-3">
+      {needsPin && (
+        <div className="flex items-center gap-4 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
+          <div className="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
+            <Lock size={16} className="text-amber-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-amber-400">Transaction PIN not set</p>
+            <p className="text-xs text-white/40 mt-0.5">Set a PIN in settings before purchasing units.</p>
+          </div>
+          <Link href="/settings?tab=pin"
+            className="shrink-0 text-xs font-bold text-[#0D1F1A] px-3 py-2 rounded-lg hover:scale-105 transition-transform"
+            style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)" }}>
+            Set PIN
+          </Link>
+        </div>
+      )}
+      {needsKyc && (
+        <div className="flex items-center gap-4 rounded-2xl border border-purple-500/30 bg-purple-500/5 p-4">
+          <div className="w-9 h-9 rounded-xl bg-purple-500/20 flex items-center justify-center shrink-0">
+            <ShieldCheck size={16} className="text-purple-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-purple-400">Identity Verification Required</p>
+            <p className="text-xs text-white/40 mt-0.5">{kycMessage}</p>
+          </div>
+          {["none", "rejected", "resubmit"].includes(kycStatus) && (
+            <Link href="/settings?tab=kyc"
+              className="shrink-0 text-xs font-bold text-white px-3 py-2 rounded-lg border border-purple-500/40 hover:bg-purple-500/20 transition-all">
+              {kycStatus === "none" ? "Submit KYC" : "Resubmit"}
+            </Link>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
 
 export default function LandList() {
   const [lands, setLands]               = useState([]);
@@ -39,38 +101,61 @@ export default function LandList() {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showHeatmap, setShowHeatmap]   = useState(false);
   const [currentZoom, setCurrentZoom]   = useState(8);
-  const [mapRef, setMapRef]             = useState(null);
+
+  const [pinIsSet, setPinIsSet]         = useState(true);
+  const [kycStatus, setKycStatus]       = useState("approved");
+  const [statusLoaded, setStatusLoaded] = useState(false);
 
   const mapSectionRef = useRef(null);
 
+  // Fetch lands
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await api.get("/lands");
+    api.get("/lands")
+      .then((res) => {
         const list = res.data?.data ?? [];
         setLands(list);
         setVisibleLands(list);
-      } catch {
-        setError("Failed to load lands");
-      } finally {
-        setLoading(false);
-      }
-    })();
+      })
+      .catch(() => setError("Failed to load lands"))
+      .finally(() => setLoading(false));
   }, []);
 
-  const landsWithPoints   = useMemo(() => lands.filter((l) => l.lat && l.lng && !l.has_polygon), [lands]);
-  const landsWithPolygons = useMemo(() => lands.filter((l) => l.has_polygon && l.polygon), [lands]);
+  // Fetch account status (PIN + KYC)
+  useEffect(() => {
+    api.get("/user/account-status")
+      .then((res) => {
+        const d = res.data?.data ?? {};
+        setPinIsSet(!!d.pin_is_set);
+        setKycStatus(d.kyc_status ?? "none");
+      })
+      .catch(() => {
+        // Graceful fallback: try /me
+        api.get("/me")
+          .then((res) => {
+            const u = res.data?.data ?? {};
+            setPinIsSet(u.pin_is_set ?? !!u.transaction_pin);
+            setKycStatus(u.kyc_status ?? "none");
+          })
+          .catch(() => {});
+      })
+      .finally(() => setStatusLoaded(true));
+  }, []);
+
+  const landsWithPoints    = useMemo(() => lands.filter((l) => l.lat && l.lng && !hasPolygon(l)), [lands]);
+  const landsWithPolygons  = useMemo(() => lands.filter((l) => hasPolygon(l) && l.polygon), [lands]);
   const allLandsWithCoords = useMemo(() => [...landsWithPoints, ...landsWithPolygons], [landsWithPoints, landsWithPolygons]);
 
   const filterByBounds = useCallback((bounds) => {
     setVisibleLands(
       lands.filter((l) => {
-        if (l.lat && l.lng && !l.has_polygon) return bounds.contains([+l.lat, +l.lng]);
-        if (l.has_polygon && l.polygon) return l.polygon.some((p) => bounds.contains([p.lat, p.lng]));
+        if (l.lat && l.lng && !hasPolygon(l)) return bounds.contains([+l.lat, +l.lng]);
+        if (hasPolygon(l) && l.polygon)       return l.polygon.some((p) => bounds.contains([p.lat, p.lng]));
+        if (l.lat && l.lng)                   return bounds.contains([+l.lat, +l.lng]); // WKB-only lands
         return false;
       })
     );
   }, [lands]);
+
   const handleMapMoveEnd = useDebounce(filterByBounds, 300);
 
   useEffect(() => {
@@ -115,14 +200,16 @@ export default function LandList() {
     showHeatmap, currentZoom,
     onZoomChange: setCurrentZoom,
     onMoveEnd: handleMapMoveEnd,
-    onMapReady: setMapRef,
   };
+
+  const canTransact = pinIsSet && kycStatus === "approved";
 
   return (
     <div className="min-h-screen bg-[#0D1F1A]" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
       <div className="fixed inset-0 opacity-[0.03] pointer-events-none z-0"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
 
+      {/* Fullscreen map overlay */}
       {isFullScreen && (
         <div className="fixed inset-0 z-99999 bg-[#0D1F1A]">
           <div className="absolute top-4 left-1/2 -translate-x-1/2 z-100000 flex items-center gap-2 px-3 py-2 rounded-2xl"
@@ -132,13 +219,10 @@ export default function LandList() {
               <span className="text-white/60 text-xs font-semibold tabular-nums">{visibleLands.length} visible</span>
             </div>
             <div className="w-px h-5 bg-white/10" />
-            <button
-              onClick={() => setShowHeatmap((v) => !v)}
-              className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${showHeatmap ? "text-white shadow-lg shadow-red-500/30" : "text-white/70 hover:text-white hover:bg-white/10"}`}
-              style={showHeatmap ? { background: "linear-gradient(135deg, #f97316, #ef4444)" } : {}}
-            >
-              <Flame size={13} />
-              {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
+            <button onClick={() => setShowHeatmap((v) => !v)}
+              className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${showHeatmap ? "text-white" : "text-white/70 hover:text-white hover:bg-white/10"}`}
+              style={showHeatmap ? { background: "linear-gradient(135deg, #f97316, #ef4444)" } : {}}>
+              <Flame size={13} />{showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
             </button>
             <div className="w-px h-5 bg-white/10" />
             <button onClick={() => setIsFullScreen(false)}
@@ -151,22 +235,26 @@ export default function LandList() {
       )}
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-10">
-        <div className="mb-10">
+
+        <div className="mb-8">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">Property Marketplace</p>
-          <h1 className="text-5xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Available Lands</h1>
+          <h1 className="text-5xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            Available Lands
+          </h1>
           <p className="text-white/40 mt-2 text-sm">{visibleLands.length} properties in current view</p>
         </div>
 
+        {/* Banners only shown after status resolves — no flash */}
+        {statusLoaded && <AccountBanner pinIsSet={pinIsSet} kycStatus={kycStatus} />}
+
+        {/* Map */}
         {!isFullScreen && (
           <div ref={mapSectionRef} className="relative rounded-2xl overflow-hidden border border-white/10 mb-10 shadow-2xl shadow-black/50">
             <div className="absolute top-3 right-3 z-2000 flex gap-2">
-              <button
-                onClick={() => setShowHeatmap((v) => !v)}
-                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${showHeatmap ? "text-white shadow-lg shadow-red-500/30" : "bg-black/60 backdrop-blur text-white/70 hover:bg-black/80 border border-white/10"}`}
-                style={showHeatmap ? { background: "linear-gradient(to right, #f97316, #ef4444)" } : {}}
-              >
-                <Flame size={13} />
-                {showHeatmap ? "Hide" : "Heatmap"}
+              <button onClick={() => setShowHeatmap((v) => !v)}
+                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${showHeatmap ? "text-white" : "bg-black/60 backdrop-blur text-white/70 hover:bg-black/80 border border-white/10"}`}
+                style={showHeatmap ? { background: "linear-gradient(to right, #f97316, #ef4444)" } : {}}>
+                <Flame size={13} />{showHeatmap ? "Hide" : "Heatmap"}
               </button>
               <button onClick={() => setIsFullScreen(true)}
                 className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-black/60 backdrop-blur text-white/70 hover:bg-black/80 text-xs font-bold border border-white/10 transition-all">
@@ -177,11 +265,14 @@ export default function LandList() {
           </div>
         )}
 
+        {/* Cards grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {visibleLands.map((land) => {
             const priceKobo = getLandPrice(land);
             const priceTag  = getPriceTag(priceKobo);
             const isHovered = hoverLandId === land.id;
+
+            const imageUrl = getLandImage(land);
 
             return (
               <div key={land.id}
@@ -193,25 +284,48 @@ export default function LandList() {
                     : "border-white/10 bg-white/5 hover:border-white/20"
                 }`}
               >
-                <div className="relative h-48 overflow-hidden">
-                  <img src={getLandImage(land)} alt={land.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                {/* Image */}
+                <div className="relative h-48 overflow-hidden bg-white/5">
+                  <img
+                    src={imageUrl}
+                    alt={land.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    onError={(e) => {
+                      if (!e.target.dataset.errored) {
+                        e.target.dataset.errored = "1";
+                        e.target.src = "/no-image.jpeg";
+                      }
+                    }}
+                  />
                   <div className="absolute inset-0"
                     style={{ background: "linear-gradient(to top, rgba(13,31,26,0.8), transparent)" }} />
+
                   <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-xs font-bold backdrop-blur-sm"
                     style={{ background: `${priceTag.color}33`, border: `1px solid ${priceTag.color}55`, color: priceTag.color }}>
                     {priceTag.label}
                   </div>
+
                   {land.is_available && (
                     <div className="absolute top-3 right-3 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 backdrop-blur-sm">
                       Available
                     </div>
                   )}
+
+                  {/* Lock icon when user hasn't met requirements */}
+                  {statusLoaded && !canTransact && (
+                    <div className="absolute bottom-3 right-3 w-7 h-7 rounded-lg bg-black/60 backdrop-blur flex items-center justify-center border border-white/10"
+                      title={!pinIsSet ? "Set transaction PIN to invest" : "Complete KYC to invest"}>
+                      <Lock size={12} className="text-amber-400" />
+                    </div>
+                  )}
                 </div>
 
+                {/* Card body */}
                 <div className="p-5">
                   <h3 className="font-bold text-white text-lg leading-snug mb-1"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{land.title}</h3>
+                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                    {land.title}
+                  </h3>
                   <div className="flex items-center gap-1.5 text-white/40 text-xs mb-4">
                     <MapPin size={11} /> {land.location}
                   </div>
@@ -220,7 +334,9 @@ export default function LandList() {
                     <div>
                       <p className="text-xs text-white/30 uppercase tracking-wider mb-0.5">Per Unit</p>
                       <p className="text-xl font-bold text-amber-400">
-                        {priceKobo > 0 ? `₦${koboToNaira(priceKobo).toLocaleString()}` : <span className="text-white/20 text-sm font-normal">—</span>}
+                        {priceKobo > 0
+                          ? `₦${koboToNaira(priceKobo).toLocaleString()}`
+                          : <span className="text-white/20 text-sm font-normal">—</span>}
                       </p>
                     </div>
                     <div className="text-right">
@@ -246,14 +362,13 @@ export default function LandList() {
                           mapSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                           setTimeout(() => {
                             setActiveLandId(land.id);
-                            setFlyTarget({ lat: +land.lat, lng: +land.lng });
+                            if (land.lat && land.lng) setFlyTarget({ lat: +land.lat, lng: +land.lng });
                             setTimeout(() => setActiveLandId(null), 3000);
                           }, 400);
                         }, 100);
                       }}
                       className="px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all"
-                      title="View on map"
-                    >
+                      title="View on map">
                       <MapPin size={15} className="text-white/50" />
                     </button>
                   </div>

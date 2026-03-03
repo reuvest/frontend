@@ -1,11 +1,20 @@
-const API_BASE = (
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://growthbackend.onrender.com/api"
-).replace(/\/api$/, "");
+const FALLBACK = "/no-image.jpeg";
 
-export const getLandImage = (land) => {
-  if (land?.images?.length > 0 && land.images[0].url) {
-    return land.images[0].url;
+export function getLandImage(land) {
+  const first = land?.images?.[0];
+  if (!first) return FALLBACK;
+  return first.image_url || first.image_path || first.url || FALLBACK;
+}
+
+/**
+ * Returns all images from a land as lightbox-ready slide objects: [{ src }]
+ * Falls back to a single getLandImage slide if images array is empty.
+ */
+export function getLandSlides(land) {
+  if (land?.images?.length) {
+    return land.images.map((img) => ({
+      src: img.image_url || img.image_path || img.url || FALLBACK,
+    }));
   }
-
-return `${API_BASE}/images/placeholder.jpg`;
-};
+  return [{ src: getLandImage(land) }];
+}

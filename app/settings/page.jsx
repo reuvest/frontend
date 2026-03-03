@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   KeyRound, RotateCcw, UserCircle, Landmark, ShieldCheck,
@@ -11,6 +11,7 @@ import TransactionPin from "./TransactionPin";
 import ResetPin from "./ResetPin";
 import BankDetails from "./BankDetails";
 import KycPanel from "./KycPanel";
+import api from "../../utils/api";
 
 const NAV = [
   { id: "profile", label: "Profile",         icon: UserCircle,  desc: "Name, email & password"  },
@@ -21,15 +22,18 @@ const NAV = [
 ];
 
 function KycBadge({ status }) {
-  if (!status || status === "not_submitted") return null;
+  if (!status || status === "none") return null;
+
   const map = {
-    pending:  { label: "Pending",  cls: "bg-amber-500/20 text-amber-400 border-amber-500/30" },
+    pending:  { label: "Pending",  cls: "bg-amber-500/20 text-amber-400 border-amber-500/30"   },
     approved: { label: "Verified", cls: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
-    rejected: { label: "Rejected", cls: "bg-red-500/20 text-red-400 border-red-500/30" },
+    rejected: { label: "Rejected", cls: "bg-red-500/20 text-red-400 border-red-500/30"         },
     resubmit: { label: "Action",   cls: "bg-orange-500/20 text-orange-400 border-orange-500/30" },
   };
+
   const m = map[status];
   if (!m) return null;
+
   return (
     <span className={`text-[10px] font-bold uppercase tracking-wider border px-2 py-0.5 rounded-full leading-none shrink-0 ${m.cls}`}>
       {m.label}
@@ -37,8 +41,12 @@ function KycBadge({ status }) {
   );
 }
 
-function NavItem({ item, active, kycStatus, onClick }) {
+function NavItem({ item, active, kycStatus, pinIsSet, onClick }) {
   const Icon = item.icon;
+
+  // Show a dot on the PIN nav item if PIN is not set
+  const showPinDot = item.id === "pin" && pinIsSet === false;
+
   return (
     <button
       onClick={onClick}
@@ -48,14 +56,16 @@ function NavItem({ item, active, kycStatus, onClick }) {
           : "hover:bg-white/5 border border-transparent"
       }`}
     >
-      <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-        active
-          ? "text-[#0D1F1A]"
-          : "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white/60"
-      }`}
+      <div
+        className={`relative w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+          active ? "text-[#0D1F1A]" : "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white/60"
+        }`}
         style={active ? { background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" } : {}}
       >
         <Icon size={16} />
+        {showPinDot && (
+          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-500 border-2 border-[#0D1F1A]" />
+        )}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
@@ -100,18 +110,51 @@ function HelpCard() {
 }
 
 export default function Settings() {
-  const [activeTab, setActiveTab] = useState("profile");
-  const [kycStatus, setKycStatus] = useState(null);
+  const [activeTab, setActiveTab]   = useState("profile");
   const [mobilePanel, setMobilePanel] = useState(false);
 
+  const [kycStatus, setKycStatus]   = useState(null);  
+  const [pinIsSet, setPinIsSet]     = useState(null);  
   const activeNav = NAV.find((n) => n.id === activeTab);
+
+  // Load KYC + PIN status on mount
+  useEffect(() => {
+    api.get("/user/account-status")
+      .then((res) => {
+        const d = res.data?.data ?? {};
+        setKycStatus(d.kyc_status ?? "none");
+        setPinIsSet(!!d.pin_is_set);
+      })
+      .catch(() => {
+        // Fallback to /me
+        api.get("/me")
+          .then((res) => {
+            const u = res.data?.data ?? {};
+            setKycStatus(u.kyc_status ?? "none");
+            setPinIsSet(u.pin_is_set ?? !!u.transaction_pin);
+          })
+          .catch(() => {
+            setKycStatus("none");
+            setPinIsSet(false);
+          });
+      });
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    if (tab && NAV.find((n) => n.id === tab)) {
+      setActiveTab(tab);
+      setMobilePanel(true);
+    }
+  }, []);
 
   const selectTab = (id) => { setActiveTab(id); setMobilePanel(true); };
 
   const renderPanel = () => {
     switch (activeTab) {
       case "profile": return <ProfileSettings />;
-      case "pin":     return <TransactionPin />;
+      case "pin":     return <TransactionPin onPinSet={() => setPinIsSet(true)} />;
       case "reset":   return <ResetPin />;
       case "bank":    return <BankDetails />;
       case "kyc":     return <KycPanel kycStatus={kycStatus} setKycStatus={setKycStatus} />;
@@ -120,10 +163,8 @@ export default function Settings() {
   };
 
   return (
-    <div
-      className="min-h-screen bg-[#0D1F1A] text-white"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
-    >
+    <div className="min-h-screen bg-[#0D1F1A] text-white" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+
       {/* dot grid */}
       <div className="fixed inset-0 pointer-events-none opacity-[0.03]"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
@@ -138,7 +179,7 @@ export default function Settings() {
         <motion.div
           animate={{ opacity: mobilePanel ? 0 : 1, height: mobilePanel ? 0 : "auto" }}
           transition={{ duration: 0.15 }}
-          className="overflow-hidden sm:!opacity-100 sm:!h-auto mb-6 sm:mb-8"
+          className="overflow-hidden sm:opacity-100! sm:h-auto! mb-6 sm:mb-8"
         >
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">Account</p>
           <h1 className="text-3xl sm:text-4xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
@@ -160,7 +201,8 @@ export default function Settings() {
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-2 space-y-0.5">
                   {NAV.map((item) => (
                     <NavItem key={item.id} item={item} active={activeTab === item.id}
-                      kycStatus={kycStatus} onClick={() => selectTab(item.id)} />
+                      kycStatus={kycStatus} pinIsSet={pinIsSet}
+                      onClick={() => selectTab(item.id)} />
                   ))}
                 </div>
                 <HelpCard />
@@ -212,7 +254,8 @@ export default function Settings() {
             <div className="rounded-2xl border border-white/10 bg-white/5 p-2 space-y-0.5">
               {NAV.map((item) => (
                 <NavItem key={item.id} item={item} active={activeTab === item.id}
-                  kycStatus={kycStatus} onClick={() => setActiveTab(item.id)} />
+                  kycStatus={kycStatus} pinIsSet={pinIsSet}
+                  onClick={() => setActiveTab(item.id)} />
               ))}
             </div>
             <HelpCard />

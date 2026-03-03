@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import api from "../../../utils/api";
 import { purchaseLand, sellLand, getUserUnitsForLand } from "../../../services/landService";
-import { getLandImage } from "../../../utils/images";
+import { getLandImage, getLandSlides } from "../../../utils/images";
 import { koboToNaira, formatNaira } from "../../../utils/currency";
 import toast, { Toaster } from "react-hot-toast";
 import { ArrowLeft, MapPin, Layers, TrendingUp, ShieldCheck, Lock, X, AlertCircle, Info } from "lucide-react";
@@ -15,13 +15,13 @@ import "yet-another-react-lightbox/styles.css";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 
-/* ── Price helper — latestPrice relation or direct field ── */
 function getLandPrice(land) {
   return (
-    land.latest_price?.price_per_unit_kobo
-    ?? land.latestPrice?.price_per_unit_kobo
-    ?? land.price_per_unit_kobo
-    ?? 0
+    land.latest_price?.price_per_unit_kobo ??
+    land.latestPrice?.price_per_unit_kobo ??
+    land.current_price_per_unit_kobo ??
+    land.price_per_unit_kobo ??
+    0
   );
 }
 
@@ -34,23 +34,67 @@ function StatCard({ label, value, accent }) {
   );
 }
 
+// KYC status banner shown at top of page
+function KycBanner({ kycStatus }) {
+  if (kycStatus === "approved" || !kycStatus) return null;
+
+  const config = {
+    none:     { color: "purple", msg: "Identity verification is required before you can invest." },
+    pending:  { color: "amber",  msg: "Your KYC is under review. Investing will be enabled once approved." },
+    rejected: { color: "red",    msg: "Your KYC was rejected. Please resubmit your documents." },
+    resubmit: { color: "orange", msg: "KYC resubmission required before you can invest." },
+  }[kycStatus] ?? { color: "purple", msg: "Identity verification required." };
+
+  const colors = {
+    purple: { border: "border-purple-500/30", bg: "bg-purple-500/5", text: "text-purple-400", icon: "bg-purple-500/20" },
+    amber:  { border: "border-amber-500/30",  bg: "bg-amber-500/5",  text: "text-amber-400",  icon: "bg-amber-500/20"  },
+    red:    { border: "border-red-500/30",    bg: "bg-red-500/5",    text: "text-red-400",    icon: "bg-red-500/20"    },
+    orange: { border: "border-orange-500/30", bg: "bg-orange-500/5", text: "text-orange-400", icon: "bg-orange-500/20" },
+  }[config.color];
+
+  return (
+    <div className={`mb-8 flex items-center gap-4 rounded-2xl border ${colors.border} ${colors.bg} p-4`}>
+      <div className={`w-9 h-9 rounded-xl ${colors.icon} flex items-center justify-center shrink-0`}>
+        <ShieldCheck size={16} className={colors.text} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className={`text-sm font-bold ${colors.text}`}>Identity Verification Required</p>
+        <p className="text-xs text-white/40 mt-0.5">{config.msg}</p>
+      </div>
+      {["none", "rejected", "resubmit"].includes(kycStatus) && (
+        <Link href="/settings?tab=kyc"
+          className="shrink-0 text-xs font-bold text-white px-3 py-2 rounded-lg border border-white/20 hover:bg-white/10 transition-all">
+          {kycStatus === "none" ? "Submit KYC" : "Resubmit"}
+        </Link>
+      )}
+    </div>
+  );
+}
+
 export default function LandDetails() {
   const params = useParams();
-  const router = useRouter();
   const id = params?.id;
 
   const [land, setLand]           = useState(null);
   const [userUnits, setUserUnits] = useState(0);
-  const [user, setUser]           = useState(null);
   const [loading, setLoading]     = useState(true);
   const [error, setError]         = useState("");
+
+  // Account status
+  const [pinIsSet, setPinIsSet]   = useState(true);
+  const [kycStatus, setKycStatus] = useState("approved");
+  const [statusLoaded, setStatusLoaded] = useState(false);
 
   const [modalType, setModalType]           = useState(null);
   const [unitsInput, setUnitsInput]         = useState("");
   const [transactionPin, setTransactionPin] = useState("");
   const [modalError, setModalError]         = useState(null);
   const [modalLoading, setModalLoading]     = useState(false);
-  const [pinNotSet, setPinNotSet]           = useState(false);
+
+  // PIN-not-set modal
+  const [showPinModal, setShowPinModal]   = useState(false);
+  // KYC blocker modal
+  const [showKycModal, setShowKycModal]   = useState(false);
 
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [photoIndex, setPhotoIndex]     = useState(0);
@@ -73,25 +117,56 @@ export default function LandDetails() {
     } catch {}
   }, [id]);
 
-  const fetchUser = useCallback(async () => {
+  // Fetch account status (PIN + KYC) in one call
+  const fetchAccountStatus = useCallback(async () => {
     try {
-      const res = await api.get("/me");
-      const userData = res.data?.user ?? res.data?.data ?? null;
-      setUser(userData);
-      if (userData && !userData.transaction_pin) setPinNotSet(true);
-    } catch {}
+      const res = await api.get("/user/account-status");
+      const d = res.data?.data ?? {};
+      setPinIsSet(!!d.pin_is_set);
+      setKycStatus(d.kyc_status ?? "none");
+    } catch {
+      // Fallback to /me
+      try {
+        const res = await api.get("/me");
+        const u = res.data?.data ?? {};
+        setPinIsSet(u.pin_is_set ?? !!u.transaction_pin);
+        setKycStatus(u.kyc_status ?? "none");
+      } catch {}
+    } finally {
+      setStatusLoaded(true);
+    }
   }, []);
 
   useEffect(() => {
     fetchLand();
     fetchUserUnits();
-    fetchUser();
-  }, [fetchLand, fetchUserUnits, fetchUser]);
+    fetchAccountStatus();
+  }, [fetchLand, fetchUserUnits, fetchAccountStatus]);
+
+  const openModal = (type) => {
+    if (kycStatus !== "approved") {
+      setShowKycModal(true);
+      return;
+    }
+    // Check PIN
+    if (!pinIsSet) {
+      setShowPinModal(true);
+      return;
+    }
+    setModalType(type);
+  };
+
+  const closeModal = () => {
+    setModalType(null);
+    setUnitsInput("");
+    setTransactionPin("");
+    setModalError(null);
+  };
 
   const handleAction = async () => {
     const units = Number(unitsInput);
     if (!units || units <= 0) { setModalError("Please enter a valid number of units."); return; }
-    if (!/^\d{4}$/.test(transactionPin)) { setModalError("Transaction PIN must be a 4-digit number."); return; }
+    if (!/^\d{4}$/.test(transactionPin)) { setModalError("Transaction PIN must be 4 digits."); return; }
 
     setModalLoading(true);
     setModalError(null);
@@ -109,28 +184,16 @@ export default function LandDetails() {
       await fetchUserUnits();
       closeModal();
     } catch (err) {
-      const apiMessage = err.response?.data?.message || err.response?.data?.error || err.message;
-      if (apiMessage?.toLowerCase().includes("pin not set")) {
-        setPinNotSet(true);
+      const msg = err.response?.data?.message || err.response?.data?.error || err.message;
+      if (msg?.toLowerCase().includes("pin not set")) {
         closeModal();
+        setShowPinModal(true);
         return;
       }
-      setModalError(apiMessage || "Transaction failed. Try again.");
+      setModalError(msg || "Transaction failed. Please try again.");
     } finally {
       setModalLoading(false);
     }
-  };
-
-  const closeModal = () => {
-    setModalType(null);
-    setUnitsInput("");
-    setTransactionPin("");
-    setModalError(null);
-  };
-
-  const openModal = (type) => {
-    if (!user?.transaction_pin) { setPinNotSet(true); return; }
-    setModalType(type);
   };
 
   if (loading) {
@@ -156,10 +219,11 @@ export default function LandDetails() {
   }
 
   const priceKobo = getLandPrice(land);
-  const images = land.images?.length
-    ? land.images.map((img) => ({ src: img.url }))
-    : [{ src: getLandImage(land) }];
   const totalKobo = unitsInput ? Number(unitsInput) * priceKobo : 0;
+
+  const slides = getLandSlides(land);
+
+  const canTransact = statusLoaded && pinIsSet && kycStatus === "approved";
 
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
@@ -172,21 +236,30 @@ export default function LandDetails() {
       }} />
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 py-10">
-
         <Link href="/lands" className="inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors mb-8">
           <ArrowLeft size={13} /> Back to Lands
         </Link>
 
-        {images.length > 0 && (
-          <div className={`grid gap-3 mb-10 rounded-2xl overflow-hidden border border-white/10 ${images.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
-            {images.map((img, i) => (
+        {/* Image gallery — reads image_url from API */}
+        {slides.length > 0 && (
+          <div className={`grid gap-3 mb-10 rounded-2xl overflow-hidden border border-white/10 ${slides.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
+            {slides.map((slide, i) => (
               <div key={i}
-                className={`relative overflow-hidden group cursor-pointer ${i === 0 && images.length > 1 ? "row-span-2" : ""}`}
+                className={`relative overflow-hidden group cursor-pointer ${i === 0 && slides.length > 1 ? "row-span-2" : ""}`}
                 style={{ height: i === 0 ? "420px" : "205px" }}
                 onClick={() => { setPhotoIndex(i); setLightboxOpen(true); }}
               >
-                <img src={img.src} alt={`${land.title} ${i + 1}`}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <img
+                  src={slide.src}
+                  alt={`${land.title} ${i + 1}`}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  onError={(e) => {
+                    if (!e.target.dataset.errored) {
+                      e.target.dataset.errored = "1";
+                      e.target.src = "/no-image.jpeg";
+                    }
+                  }}
+                />
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4"
                   style={{ background: "linear-gradient(to top, rgba(13,31,26,0.6), transparent)" }}>
                   <span className="text-white/80 text-xs font-bold uppercase tracking-widest">View</span>
@@ -207,13 +280,17 @@ export default function LandDetails() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <StatCard label="Size"        value={`${land.size} sqm`} />
+          <StatCard label="Size"         value={`${land.size} sqm`} />
           <StatCard label="Price / Unit" value={priceKobo > 0 ? formatNaira(priceKobo) : "—"} accent />
-          <StatCard label="Available"   value={`${land.available_units?.toLocaleString() ?? "—"} units`} />
+          <StatCard label="Available"    value={`${land.available_units?.toLocaleString() ?? "—"} units`} />
           <StatCard label="Total Units"  value={land.total_units?.toLocaleString() ?? "—"} />
         </div>
 
-        {pinNotSet && !modalType && (
+        {/* KYC banner */}
+        {statusLoaded && <KycBanner kycStatus={kycStatus} />}
+
+        {/* PIN banner */}
+        {statusLoaded && !pinIsSet && kycStatus === "approved" && (
           <div className="mb-8 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5 flex items-start gap-4">
             <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
               <Info size={18} className="text-amber-400" />
@@ -221,10 +298,10 @@ export default function LandDetails() {
             <div className="flex-1">
               <p className="text-sm font-bold text-amber-400 mb-1">Transaction PIN Required</p>
               <p className="text-xs text-white/40 leading-relaxed">
-                You need to set a 4-digit transaction PIN before you can buy or sell land units.
+                Set a 4-digit transaction PIN before buying or selling land units.
               </p>
             </div>
-            <Link href="/settings"
+            <Link href="/settings?tab=pin"
               className="shrink-0 flex items-center gap-1.5 text-xs font-bold text-[#0D1F1A] px-3 py-2 rounded-lg transition-all hover:scale-105"
               style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)" }}>
               <ShieldCheck size={13} /> Set PIN
@@ -232,6 +309,7 @@ export default function LandDetails() {
           </div>
         )}
 
+        {/* Holdings */}
         {userUnits > 0 && (
           <div className="mb-8 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
@@ -260,6 +338,7 @@ export default function LandDetails() {
           </div>
         )}
 
+        {/* CTA buttons */}
         <div className="flex flex-wrap gap-3">
           <button onClick={() => openModal("purchase")}
             className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-[#0D1F1A] transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -275,12 +354,14 @@ export default function LandDetails() {
         </div>
       </div>
 
+      {/* Lightbox */}
       {lightboxOpen && (
         <Lightbox open={lightboxOpen} close={() => setLightboxOpen(false)}
-          index={photoIndex} slides={images}
-          plugins={images.length > 1 ? [Thumbnails] : []} />
+          index={photoIndex} slides={slides}
+          plugins={slides.length > 1 ? [Thumbnails] : []} />
       )}
 
+      {/* Transaction modal */}
       {modalType && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="relative w-full max-w-md rounded-2xl border border-white/10 overflow-hidden"
@@ -294,11 +375,11 @@ export default function LandDetails() {
                   {land.title}
                 </h2>
               </div>
-              <button onClick={closeModal} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all">
+              <button onClick={closeModal}
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all">
                 <X size={14} />
               </button>
             </div>
-
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">Number of Units</label>
@@ -310,7 +391,6 @@ export default function LandDetails() {
                   placeholder={`Max: ${modalType === "sell" ? userUnits : land.available_units}`}
                 />
               </div>
-
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">Transaction PIN</label>
                 <input type="password" inputMode="numeric" maxLength={4}
@@ -320,7 +400,6 @@ export default function LandDetails() {
                   placeholder="••••"
                 />
               </div>
-
               {unitsInput > 0 && (
                 <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
                   <p className="text-xs text-amber-500/70 uppercase tracking-widest mb-1">
@@ -331,14 +410,11 @@ export default function LandDetails() {
                   </p>
                 </div>
               )}
-
               {modalError && (
                 <div className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-red-400 text-sm">
-                  <AlertCircle size={15} className="shrink-0 mt-0.5" />
-                  {modalError}
+                  <AlertCircle size={15} className="shrink-0 mt-0.5" /> {modalError}
                 </div>
               )}
-
               <div className="flex gap-3 pt-1">
                 <button onClick={closeModal}
                   className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 text-sm font-semibold transition-all">
@@ -348,12 +424,9 @@ export default function LandDetails() {
                   disabled={modalLoading || !unitsInput || !transactionPin}
                   className="flex-1 py-3 rounded-xl font-bold text-[#0D1F1A] transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
                   style={{ background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" }}>
-                  {modalLoading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <div className="w-4 h-4 border-2 border-[#0D1F1A]/40 border-t-[#0D1F1A] rounded-full animate-spin" />
-                      Processing...
-                    </span>
-                  ) : "Confirm"}
+                  {modalLoading
+                    ? <span className="flex items-center justify-center gap-2"><div className="w-4 h-4 border-2 border-[#0D1F1A]/40 border-t-[#0D1F1A] rounded-full animate-spin" />Processing...</span>
+                    : "Confirm"}
                 </button>
               </div>
             </div>
@@ -361,7 +434,8 @@ export default function LandDetails() {
         </div>
       )}
 
-      {pinNotSet && !modalType && (
+      {/* PIN not set modal */}
+      {showPinModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="relative w-full max-w-sm rounded-2xl border border-white/10 overflow-hidden"
             style={{ background: "#0D1F1A", boxShadow: "0 25px 80px rgba(0,0,0,0.6)" }}>
@@ -377,12 +451,50 @@ export default function LandDetails() {
                 You need a 4-digit transaction PIN before buying or selling land units.
               </p>
               <div className="space-y-3">
-                <Link href="/settings"
+                <Link href="/settings?tab=pin"
                   className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-[#0D1F1A] transition-all hover:scale-[1.02] active:scale-[0.98]"
                   style={{ background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" }}>
                   <ShieldCheck size={15} /> Go to Settings
                 </Link>
-                <button onClick={() => setPinNotSet(false)}
+                <button onClick={() => setShowPinModal(false)}
+                  className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/50 hover:bg-white/10 text-sm font-semibold transition-all">
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* KYC blocker modal */}
+      {showKycModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="relative w-full max-w-sm rounded-2xl border border-white/10 overflow-hidden"
+            style={{ background: "#0D1F1A", boxShadow: "0 25px 80px rgba(0,0,0,0.6)" }}>
+            <div className="p-6 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto mb-5">
+                <ShieldCheck size={22} className="text-purple-400" />
+              </div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-purple-500 mb-2">Verification Required</p>
+              <h2 className="text-2xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                Complete KYC First
+              </h2>
+              <p className="text-white/40 text-sm mb-6 leading-relaxed">
+                {{
+                  none:     "Identity verification is required before you can invest.",
+                  pending:  "Your KYC is under review. Please wait for approval.",
+                  rejected: "Your KYC was rejected. Please resubmit your documents.",
+                  resubmit: "KYC resubmission is required before investing.",
+                }[kycStatus] ?? "Identity verification is required."}
+              </p>
+              <div className="space-y-3">
+                {["none", "rejected", "resubmit"].includes(kycStatus) && (
+                  <Link href="/settings?tab=kyc"
+                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-white border border-purple-500/40 hover:bg-purple-500/20 transition-all">
+                    <ShieldCheck size={15} /> {kycStatus === "none" ? "Submit KYC" : "Resubmit KYC"}
+                  </Link>
+                )}
+                <button onClick={() => setShowKycModal(false)}
                   className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/50 hover:bg-white/10 text-sm font-semibold transition-all">
                   Dismiss
                 </button>
