@@ -18,10 +18,17 @@ export default function TransactionPin() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await api.get("/me");
-        const u = res.data?.user ?? res.data?.data ?? {};
-        setHasPin(!!u.transaction_pin);
-      } catch {}
+        // /account-status is the lightest call — use it first
+        const res = await api.get("/user/account-status");
+        setHasPin(!!res.data?.data?.pin_is_set);
+      } catch {
+        // Fallback to /me if account-status isn't available
+        try {
+          const res = await api.get("/me");
+          const u = res.data?.data ?? res.data?.user ?? {};
+          setHasPin(!!u.pin_is_set);
+        } catch {}
+      }
     })();
   }, []);
 
@@ -35,12 +42,16 @@ export default function TransactionPin() {
     const confirmPinStr = pinToString(confirmPin);
     const currentPinStr = pinToString(currentPin);
 
-    if (newPinStr.length !== 4 || confirmPinStr.length !== 4) {
-      const msg = "PIN must contain exactly 4 digits.";
+    if (newPinStr.length !== 4) {
+      const msg = "New PIN must contain exactly 4 digits.";
+      setError(msg); toast.error(msg); return;
+    }
+    if (confirmPinStr.length !== 4) {
+      const msg = "Please confirm your new PIN.";
       setError(msg); toast.error(msg); return;
     }
     if (newPinStr !== confirmPinStr) {
-      const msg = "New PIN and confirmation PIN do not match.";
+      const msg = "New PIN and confirmation do not match.";
       setError(msg); toast.error(msg); return;
     }
     if (hasPin && currentPinStr.length !== 4) {
@@ -51,13 +62,22 @@ export default function TransactionPin() {
     setLoading(true);
     try {
       if (hasPin) {
-        await api.post("/user/pin/update", { old_pin: currentPinStr, new_pin: newPinStr });
+        await api.post("/pin/update", {
+          current_pin:      currentPinStr,
+          new_pin:          newPinStr,
+          pin_confirmation: confirmPinStr,
+        });
         toast.success("Transaction PIN updated successfully");
       } else {
-        await api.post("/user/pin/set", { pin: newPinStr });
+        await api.post("/pin/set", {
+          pin:              newPinStr,
+          pin_confirmation: confirmPinStr,
+        });
         toast.success("Transaction PIN set successfully");
         setHasPin(true);
       }
+
+      // Reset all fields
       setCurrentPin(["", "", "", ""]);
       setNewPin(["", "", "", ""]);
       setConfirmPin(["", "", "", ""]);
@@ -65,7 +85,7 @@ export default function TransactionPin() {
     } catch (err) {
       const msg =
         err.response?.data?.message ||
-        err.response?.data?.error ||
+        err.response?.data?.error   ||
         "Failed to update PIN. Please try again.";
       setError(msg);
       toast.error(msg);
@@ -145,7 +165,9 @@ export default function TransactionPin() {
 function PinField({ label, children }) {
   return (
     <div>
-      <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-3">{label}</label>
+      <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-3">
+        {label}
+      </label>
       {children}
     </div>
   );
