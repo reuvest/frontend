@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import api from "../../utils/api";
 
-/* ── Constants ── */
 const STEPS = ["Personal", "Address", "Identity", "Docs", "Liveness", "Review"];
 
 const ID_TYPES = [
@@ -37,15 +36,14 @@ const LIVENESS_PROMPTS = [
   { text: "Nod your head gently", icon: "nod",   duration: 5 },
 ];
 
-const MOTION_THRESHOLDS  = { eye: 0.022, smile: 0.018, left: 0.040, right: 0.040, nod: 0.034 };
-const SAMPLE_W           = 80;
-const SAMPLE_H           = 60;
-const EMA_ALPHA          = 0.25;
-const BLIND_FRAMES       = 40;
-const STILLNESS_THRESHOLD  = 0.004;
+const MOTION_THRESHOLDS   = { eye: 0.022, smile: 0.018, left: 0.040, right: 0.040, nod: 0.034 };
+const SAMPLE_W            = 80;
+const SAMPLE_H            = 60;
+const EMA_ALPHA           = 0.25;
+const BLIND_FRAMES        = 40;
+const STILLNESS_THRESHOLD = 0.004;
 const STILL_CONFIRM_FRAMES = 20;
 
-/* ── Dark-themed shared input classes ── */
 const inputCls =
   "w-full bg-white/5 border border-white/10 hover:border-white/20 text-white placeholder-white/20 " +
   "rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-amber-500/50 focus:ring-2 " +
@@ -61,7 +59,6 @@ function shuffle(arr) {
   return a;
 }
 
-/* ── Prompt icon ── */
 function PromptIcon({ icon, size = 18 }) {
   const cls = "text-amber-500";
   if (icon === "eye")   return <Eye size={size} className={cls} />;
@@ -73,25 +70,91 @@ function PromptIcon({ icon, size = 18 }) {
 }
 
 /* ── Date of Birth ── */
+/* ── Desktop-friendly DOB Input ── */
 function DobInput({ value, onChange }) {
-  const today   = new Date().toISOString().split("T")[0];
-  const minDate = "1900-01-01";
-  const displayLabel = value
-    ? (() => { const [y, m, d] = value.split("-"); return `${d}/${m}/${y}`; })()
-    : "";
+  const currentYear = new Date().getFullYear();
+  const years  = Array.from({ length: 100 }, (_, i) => currentYear - 18 - i);
+  const months = [
+    { value: "01", label: "January" }, { value: "02", label: "February" },
+    { value: "03", label: "March" },   { value: "04", label: "April" },
+    { value: "05", label: "May" },     { value: "06", label: "June" },
+    { value: "07", label: "July" },    { value: "08", label: "August" },
+    { value: "09", label: "September"},{ value: "10", label: "October" },
+    { value: "11", label: "November" },{ value: "12", label: "December" },
+  ];
+
+  const [year,  setYear]  = useState(value ? value.split("-")[0] : "");
+  const [month, setMonth] = useState(value ? value.split("-")[1] : "");
+  const [day,   setDay]   = useState(value ? value.split("-")[2] : "");
+
+  const daysInMonth = useMemo(() => {
+    if (!year || !month) return 31;
+    return new Date(Number(year), Number(month), 0).getDate();
+  }, [year, month]);
+
+  const days = Array.from({ length: daysInMonth }, (_, i) =>
+    String(i + 1).padStart(2, "0")
+  );
+
+  // Clamp day if month/year changes and day is now out of range
+  useEffect(() => {
+    if (day && Number(day) > daysInMonth) {
+      const clamped = String(daysInMonth).padStart(2, "0");
+      setDay(clamped);
+    }
+  }, [daysInMonth, day]);
+
+  useEffect(() => {
+    if (year && month && day) {
+      onChange(`${year}-${month}-${day}`);
+    } else {
+      onChange("");
+    }
+  }, [year, month, day]);
+
+  const sel = selectCls + " text-sm";
+
   return (
-    <div className="relative">
-      <div className={`flex items-center justify-between rounded-xl border px-4 py-3.5 pointer-events-none select-none ${value ? "text-white border-white/10 bg-white/5" : "text-white/20 border-white/10 bg-white/5"}`}>
-        <span className="text-sm">{displayLabel || "DD / MM / YYYY"}</span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-amber-500 shrink-0">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-          <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-          <line x1="3" y1="10" x2="21" y2="10"/>
-        </svg>
+    <div className="grid grid-cols-3 gap-2">
+      {/* Day */}
+      <div className="relative">
+        <select
+          value={day}
+          onChange={e => setDay(e.target.value)}
+          className={sel}
+        >
+          <option value="" className="bg-[#0D1F1A]">Day</option>
+          {days.map(d => (
+            <option key={d} value={d} className="bg-[#0D1F1A]">{Number(d)}</option>
+          ))}
+        </select>
       </div>
-      <input type="date" value={value || ""} min={minDate} max={today}
-        onChange={e => onChange(e.target.value || "")}
-        className="absolute inset-0 w-full h-full opacity-[0.01] cursor-pointer" style={{ fontSize: 16 }} />
+      {/* Month */}
+      <div className="relative">
+        <select
+          value={month}
+          onChange={e => setMonth(e.target.value)}
+          className={sel}
+        >
+          <option value="" className="bg-[#0D1F1A]">Month</option>
+          {months.map(m => (
+            <option key={m.value} value={m.value} className="bg-[#0D1F1A]">{m.label}</option>
+          ))}
+        </select>
+      </div>
+      {/* Year */}
+      <div className="relative">
+        <select
+          value={year}
+          onChange={e => setYear(e.target.value)}
+          className={sel}
+        >
+          <option value="" className="bg-[#0D1F1A]">Year</option>
+          {years.map(y => (
+            <option key={y} value={String(y)} className="bg-[#0D1F1A]">{y}</option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 }
@@ -129,7 +192,8 @@ function FileDropZone({ label, sublabel, name, required = false, value, onChange
         <div className="relative rounded-xl overflow-hidden border border-white/10 group">
           <img src={preview} alt="preview" className="w-full object-cover" style={{ height: "clamp(140px, 35vw, 180px)" }} />
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <button type="button" onClick={() => onChange(name, null)} className="bg-red-500 hover:bg-red-600 text-white rounded-full p-2.5 touch-manipulation">
+            <button type="button" onClick={() => onChange(name, null)}
+              className="bg-red-500 hover:bg-red-600 text-white rounded-full p-2.5 touch-manipulation">
               <X size={14} />
             </button>
           </div>
@@ -167,14 +231,15 @@ function FileDropZone({ label, sublabel, name, required = false, value, onChange
 
 /* ── Liveness Check ── */
 function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
-  const videoRef       = useRef(null);
-  const canvasRef      = useRef(null);
-  const sampleRef      = useRef(null);
-  const streamRef      = useRef(null);
-  const rafRef         = useRef(null);
-  const prevDataRef    = useRef(null);
-  const emaRef         = useRef(0);
-  const detectionOnRef = useRef(false);
+  const videoRef        = useRef(null);
+  const canvasRef       = useRef(null);
+  const sampleRef       = useRef(null);
+  const streamRef       = useRef(null);
+  const rafRef          = useRef(null);
+  const prevDataRef     = useRef(null);
+  const emaRef          = useRef(0);
+  const detectionOnRef  = useRef(false);
+  const tabHiddenRef    = useRef(false);
 
   const [phase, setPhase]             = useState("idle");
   const [prompts, setPrompts]         = useState([]);
@@ -189,20 +254,50 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
   const promptsRef   = useRef([]);
   const promptIdxRef = useRef(0);
 
-  useEffect(() => { promptsRef.current = prompts; }, [prompts]);
+  useEffect(() => { promptsRef.current  = prompts;   }, [prompts]);
   useEffect(() => { promptIdxRef.current = promptIdx; }, [promptIdx]);
 
   const stopStream = useCallback(() => {
     cancelAnimationFrame(rafRef.current);
     clearInterval(timerRef.current);
     streamRef.current?.getTracks().forEach(t => t.stop());
-    streamRef.current = null;
+    streamRef.current    = null;
     detectionOnRef.current = false;
-    prevDataRef.current = null;
-    emaRef.current = 0;
+    prevDataRef.current  = null;
+    emaRef.current       = 0;
   }, []);
 
   useEffect(() => () => stopStream(), [stopStream]);
+
+  /* ── Tab visibility guard: abort if user switches away ── */
+  useEffect(() => {
+    const onVisChange = () => {
+      if (document.hidden && streamRef.current) {
+        tabHiddenRef.current = true;
+        stopStream();
+        setErrorMsg("Tab switch detected. Please keep this tab active during the check.");
+        setPhase("error");
+      }
+    };
+    document.addEventListener("visibilitychange", onVisChange);
+    return () => document.removeEventListener("visibilitychange", onVisChange);
+  }, [stopStream]);
+
+  /* ── Screenshot / PrintScreen prevention ── */
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "PrintScreen" || (e.metaKey && e.shiftKey && ["3","4","5"].includes(e.key))) {
+        e.preventDefault();
+        if (streamRef.current) {
+          stopStream();
+          setErrorMsg("Screenshot detected. Please complete liveness without capturing the screen.");
+          setPhase("error");
+        }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [stopStream]);
 
   const measureMotion = useCallback(() => {
     const video  = videoRef.current;
@@ -223,6 +318,26 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
     return diff / (grey.length * 255);
   }, []);
 
+  /* ── Replay / static video detection via frame variance ── */
+  const checkFrameEntropy = useCallback(() => {
+    const canvas = sampleRef.current;
+    const video  = videoRef.current;
+    if (!canvas || !video || video.readyState < 2) return true;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    ctx.drawImage(video, 0, 0, SAMPLE_W, SAMPLE_H);
+    const { data } = ctx.getImageData(0, 0, SAMPLE_W, SAMPLE_H);
+    let sum = 0, sumSq = 0;
+    const n = SAMPLE_W * SAMPLE_H;
+    for (let i = 0; i < n; i++) {
+      const p = i * 4;
+      const g = (data[p] * 77 + data[p + 1] * 150 + data[p + 2] * 29) >> 8;
+      sum += g; sumSq += g * g;
+    }
+    const mean     = sum / n;
+    const variance = sumSq / n - mean * mean;
+    return variance > 60;
+  }, []);
+
   const captureSelfie = useCallback(() => {
     const video  = videoRef.current;
     const canvas = canvasRef.current;
@@ -230,7 +345,8 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
     canvas.width  = video.videoWidth  || 640;
     canvas.height = video.videoHeight || 480;
     const ctx = canvas.getContext("2d");
-    ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     canvas.toBlob(blob => {
       if (!blob) return;
@@ -244,22 +360,36 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
 
   const startDetectionLoop = useCallback((promptIndex, threshold) => {
     detectionOnRef.current = true;
-    prevDataRef.current = null;
-    emaRef.current = 0;
-    let detectedThisRound = false;
-    let motionFrames = 0;
-    let frameCount = 0;
-    let stillFrames = 0; 
+    prevDataRef.current    = null;
+    emaRef.current         = 0;
+    let detectedThisRound  = false;
+    let motionFrames       = 0;
+    let frameCount         = 0;
+    let stillFrames        = 0;   // replay / static detection counter
+    let entropyOkFrames    = 0;
 
     const loop = () => {
       if (!detectionOnRef.current) return;
+
+      /* ── Virtual / replay camera: check frame entropy every 30 frames ── */
+      if (frameCount % 30 === 0) {
+        if (checkFrameEntropy()) {
+          entropyOkFrames++;
+        } else if (entropyOkFrames === 0 && frameCount > 60) {
+          setErrorMsg("Static or virtual camera detected. Please use your real device camera.");
+          setPhase("error");
+          stopStream();
+          return;
+        }
+      }
+
       const raw = measureMotion();
 
-      // Detect static replayed video
+      /* ── Low motion over many frames → possible replay ── */
       if (raw < 0.0002) {
         stillFrames++;
-        if (stillFrames > 80) {
-          setErrorMsg("Possible replay detected. Please use a live camera.");
+        if (stillFrames > 100) {
+          setErrorMsg("No live movement detected. Please ensure you are in front of your camera.");
           setPhase("error");
           stopStream();
           return;
@@ -274,14 +404,12 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
       if (frameCount > BLIND_FRAMES) {
         const pct = Math.min(100, Math.round((emaRef.current / 0.055) * 100));
         setMotionPct(pct);
-        if (emaRef.current >= threshold) {
-          motionFrames++;
-        } else {
-          motionFrames = 0;
-        }
+
+        if (emaRef.current >= threshold) motionFrames++;
+        else motionFrames = 0;
 
         if (!detectedThisRound && motionFrames > 6) {
-          detectedThisRound = true;
+          detectedThisRound      = true;
           detectionOnRef.current = false;
           clearInterval(timerRef.current);
           setTimeout(() => advancePromptRef.current?.(promptIndex), 200);
@@ -291,7 +419,7 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
       rafRef.current = requestAnimationFrame(loop);
     };
     rafRef.current = requestAnimationFrame(loop);
-  }, [measureMotion, stopStream]);
+  }, [measureMotion, checkFrameEntropy, stopStream]);
 
   const startDetectionCountdown = useCallback((thresh, idx) => {
     const MAX_SECS = 8;
@@ -314,17 +442,21 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
 
   const startStillnessCapture = useCallback(() => {
     setPhase("stillness");
-    prevDataRef.current = null;
-    emaRef.current = 0;
+    prevDataRef.current    = null;
+    emaRef.current         = 0;
     detectionOnRef.current = true;
-    let stillFrames = 0;
+    let stillFrames        = 0;
     const loop = () => {
       if (!detectionOnRef.current) return;
       const raw = measureMotion();
       emaRef.current = EMA_ALPHA * raw + (1 - EMA_ALPHA) * emaRef.current;
       if (emaRef.current < STILLNESS_THRESHOLD) {
         stillFrames++;
-        if (stillFrames >= STILL_CONFIRM_FRAMES) { detectionOnRef.current = false; captureSelfie(); return; }
+        if (stillFrames >= STILL_CONFIRM_FRAMES) {
+          detectionOnRef.current = false;
+          captureSelfie();
+          return;
+        }
       } else { stillFrames = 0; }
       rafRef.current = requestAnimationFrame(loop);
     };
@@ -347,7 +479,9 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
           setPhase("detecting");
           startDetectionCountdownRef.current?.(nextThresh, nextIdx);
         }, 1200);
-      } else { startStillnessCapture(); }
+      } else {
+        startStillnessCapture();
+      }
     }, 900);
   }, [startStillnessCapture]);
 
@@ -356,12 +490,33 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
   const lastUsedIconsRef = useRef(new Set());
 
   const startCamera = useCallback(async () => {
-    setPhase("requesting"); setErrorMsg(""); setCompleted([]); setMotionPct(0);
+    tabHiddenRef.current = false;
+    setPhase("requesting");
+    setErrorMsg("");
+    setCompleted([]);
+    setMotionPct(0);
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 }, frameRate: { ideal: 24, max: 30 } },
+        video: {
+          facingMode: "user",
+          width:  { ideal: 640 },
+          height: { ideal: 480 },
+          frameRate: { ideal: 24, max: 30 },
+        },
         audio: false,
       });
+
+      /* ── Virtual camera detection: check track label for known virtual cams ── */
+      const track = stream.getVideoTracks()[0];
+      const label = (track?.label || "").toLowerCase();
+      const virtualKeywords = ["obs", "virtual", "snap camera", "manycam", "droidcam", "iriun", "xsplit", "mmhmm", "camo"];
+      if (virtualKeywords.some(k => label.includes(k))) {
+        stream.getTracks().forEach(t => t.stop());
+        setErrorMsg("Virtual camera software detected. Please use your built-in device camera.");
+        setPhase("error");
+        return;
+      }
 
       streamRef.current = stream;
       if (videoRef.current) {
@@ -369,23 +524,31 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
         await videoRef.current.play();
       }
 
+      /* ── Choose 2 random prompts, avoiding recently used icons ── */
       const excluded  = lastUsedIconsRef.current;
       const preferred = shuffle(LIVENESS_PROMPTS.filter(p => !excluded.has(p.icon)));
       const fallback  = shuffle(LIVENESS_PROMPTS.filter(p =>  excluded.has(p.icon)));
       const chosen    = [...preferred, ...fallback].slice(0, 2);
       lastUsedIconsRef.current = new Set(chosen.map(p => p.icon));
+
       promptsRef.current = chosen;
-      setPrompts(chosen); setPromptIdx(0); promptIdxRef.current = 0;
+      setPrompts(chosen);
+      setPromptIdx(0);
+      promptIdxRef.current = 0;
       setPhase("warmup");
+
       setTimeout(() => {
         if (!streamRef.current) return;
         setPhase("detecting");
         startDetectionCountdownRef.current?.(MOTION_THRESHOLDS[chosen[0]?.icon] ?? 0.034, 0);
       }, 2500);
+
     } catch (err) {
-      setErrorMsg(err.name === "NotAllowedError"
-        ? "Camera permission denied. Please allow camera access and try again."
-        : "Could not access camera. Please ensure it is connected and try again.");
+      setErrorMsg(
+        err.name === "NotAllowedError"
+          ? "Camera permission denied. Please allow camera access and try again."
+          : "Could not access camera. Please ensure it is connected and try again."
+      );
       setPhase("error");
     }
   }, []);
@@ -394,6 +557,7 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
   const threshold     = currentPrompt ? MOTION_THRESHOLDS[currentPrompt.icon] ?? 0.034 : 0.034;
   const thresholdPct  = Math.min(100, (threshold / 0.055) * 100);
 
+  /* ── Stable URL for captured selfie ── */
   const capturedUrl = useMemo(() => captured ? URL.createObjectURL(captured) : null, [captured]);
   useEffect(() => () => { if (capturedUrl) URL.revokeObjectURL(capturedUrl); }, [capturedUrl]);
 
@@ -401,12 +565,18 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
     return (
       <div className="space-y-3">
         <div className="relative rounded-2xl overflow-hidden border-2 border-emerald-500/40">
-          <img src={capturedUrl} alt="liveness" className="w-full object-cover" style={{ transform: "scaleX(-1)", height: fullHeight ? "clamp(280px, 60vw, 440px)" : "clamp(160px, 40vw, 220px)" }} />
+          <img
+            src={capturedUrl}
+            alt="liveness"
+            className="w-full object-cover"
+            style={{ transform: "scaleX(-1)", height: fullHeight ? "clamp(280px, 60vw, 440px)" : "clamp(160px, 40vw, 220px)" }}
+          />
           <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow">
             <CheckCircle size={11} /> Liveness verified
           </div>
         </div>
-        <button type="button" onClick={onRetake} className="flex items-center gap-2 text-sm text-white/30 hover:text-amber-500 font-semibold transition-colors py-1">
+        <button type="button" onClick={onRetake}
+          className="flex items-center gap-2 text-sm text-white/30 hover:text-amber-500 font-semibold transition-colors py-1">
           <RotateCcw size={13} /> Retake
         </button>
       </div>
@@ -416,17 +586,29 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
   const isLive      = ["warmup", "detecting", "success_flash", "stillness"].includes(phase);
   const isDetecting = phase === "detecting";
   const isStillness = phase === "stillness";
-  const ovalStroke  = phase === "success_flash" ? "#10b981" : isStillness ? "#818cf8" : isDetecting ? "#f59e0b" : "rgba(255,255,255,0.4)";
-  const viewportH   = fullHeight ? "clamp(300px, 65vw, 480px)" : "clamp(220px, 48vw, 340px)";
+  const ovalStroke  = phase === "success_flash" ? "#10b981"
+    : isStillness  ? "#818cf8"
+    : isDetecting  ? "#f59e0b"
+    : "rgba(255,255,255,0.4)";
+  const viewportH = fullHeight ? "clamp(300px, 65vw, 480px)" : "clamp(220px, 48vw, 340px)";
 
   return (
     <div className="space-y-3">
-      <div className="relative rounded-2xl overflow-hidden bg-black/40 border border-white/10" style={{ height: viewportH }}>
-        <video ref={videoRef} playsInline muted className="w-full h-full object-cover"
-          style={{ transform: "scaleX(-1)", display: isLive ? "block" : "none" }} />
+      <div
+        className="relative rounded-2xl overflow-hidden bg-black/40 border border-white/10"
+        style={{ height: viewportH }}
+      >
+        <video
+          ref={videoRef}
+          playsInline
+          muted
+          className="w-full h-full object-cover"
+          style={{ transform: "scaleX(-1)", display: isLive ? "block" : "none" }}
+        />
         <canvas ref={canvasRef} className="hidden" />
         <canvas ref={sampleRef} width={SAMPLE_W} height={SAMPLE_H} className="hidden" />
 
+        {/* Face oval overlay */}
         {isLive && (
           <div className="absolute inset-0 pointer-events-none">
             <svg width="100%" height="100%" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet">
@@ -437,23 +619,27 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
                 </mask>
               </defs>
               <rect width="400" height="300" fill="rgba(0,0,0,0.5)" mask="url(#liveness-cut)" />
-              <ellipse cx="200" cy="148" rx="98" ry="126" fill="none" stroke={ovalStroke} strokeWidth="2.5" strokeDasharray={isDetecting ? "10 4" : "0"} />
+              <ellipse cx="200" cy="148" rx="98" ry="126" fill="none"
+                stroke={ovalStroke} strokeWidth="2.5"
+                strokeDasharray={isDetecting ? "10 4" : "0"} />
             </svg>
           </div>
         )}
 
+        {/* Progress dots */}
         {isLive && prompts.length > 0 && (
           <div className="absolute top-3 left-3 flex items-center gap-2">
             {prompts.map((_, i) => (
               <div key={i} className={`w-3 h-3 rounded-full border-2 transition-all duration-300 ${
                 completedIdxs.includes(i) ? "bg-emerald-400 border-emerald-200 scale-110"
-                  : i === promptIdx ? "bg-amber-400 border-amber-200 scale-125"
+                  : i === promptIdx       ? "bg-amber-400 border-amber-200 scale-125"
                   : "bg-white/20 border-white/40"
               }`} />
             ))}
           </div>
         )}
 
+        {/* Countdown timer ring */}
         {isDetecting && (
           <div className="absolute top-3 right-3 w-11 h-11 flex items-center justify-center">
             <svg className="absolute inset-0 -rotate-90" viewBox="0 0 44 44">
@@ -467,6 +653,7 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
           </div>
         )}
 
+        {/* Motion bar */}
         {isDetecting && !isStillness && (
           <div className="absolute bottom-0 left-0 right-0 px-4 pb-3 pt-6"
             style={{ background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)" }}>
@@ -475,17 +662,26 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
               Motion detected
             </p>
             <div className="relative h-2 bg-white/20 rounded-full overflow-hidden">
-              <div className="absolute top-0 bottom-0 w-0.5 bg-white/60 rounded-full z-10" style={{ left: `${thresholdPct}%` }} />
+              <div className="absolute top-0 bottom-0 w-0.5 bg-white/60 rounded-full z-10"
+                style={{ left: `${thresholdPct}%` }} />
               <motion.div className="h-full rounded-full"
-                style={{ background: motionPct >= thresholdPct ? "linear-gradient(to right, #34d399, #10b981)" : "linear-gradient(to right, #fbbf24, #f59e0b)", width: `${Math.min(100, motionPct)}%` }}
+                style={{
+                  background: motionPct >= thresholdPct
+                    ? "linear-gradient(to right, #34d399, #10b981)"
+                    : "linear-gradient(to right, #fbbf24, #f59e0b)",
+                  width: `${Math.min(100, motionPct)}%`,
+                }}
                 transition={{ duration: 0.08 }} />
             </div>
           </div>
         )}
 
+        {/* Stillness / capture overlay */}
         {isStillness && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/40">
-            <motion.div animate={{ scale: [1, 1.08, 1] }} transition={{ repeat: Infinity, duration: 1.6 }}
+            <motion.div
+              animate={{ scale: [1, 1.08, 1] }}
+              transition={{ repeat: Infinity, duration: 1.6 }}
               className="w-16 h-16 rounded-full bg-indigo-500/80 flex items-center justify-center shadow-lg">
               <Camera size={26} className="text-white" />
             </motion.div>
@@ -493,17 +689,22 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
           </div>
         )}
 
+        {/* Success flash */}
         {phase === "success_flash" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60">
-            <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
               className="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg">
               <CheckCircle size={30} className="text-white" />
             </motion.div>
-            <p className="text-white font-bold text-sm">{promptIdx < prompts.length - 1 ? "Got it! Next action…" : "All done!"}</p>
+            <p className="text-white font-bold text-sm">
+              {promptIdx < prompts.length - 1 ? "Got it! Next action…" : "All done!"}
+            </p>
           </motion.div>
         )}
 
+        {/* Warm-up */}
         {phase === "warmup" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/50">
             <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
@@ -512,6 +713,7 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
           </div>
         )}
 
+        {/* Idle / requesting */}
         {(phase === "idle" || phase === "requesting") && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
             <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
@@ -524,6 +726,7 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
           </div>
         )}
 
+        {/* Error */}
         {phase === "error" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
             <VideoOff size={24} className="text-red-400" />
@@ -532,6 +735,7 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
         )}
       </div>
 
+      {/* Current prompt card */}
       <AnimatePresence mode="wait">
         {(isDetecting || phase === "warmup") && !isStillness && currentPrompt && (
           <motion.div key={`prompt-${promptIdx}`}
@@ -575,9 +779,9 @@ function LivenessCheck({ onCapture, captured, onRetake, fullHeight = false }) {
 /* ── Status Banner ── */
 function StatusBanner({ kyc, onResubmit }) {
   const cfg = {
-    pending:  { icon: <Clock size={16} />,       title: "Under Review",          body: "Your documents are being reviewed. This typically takes 1–2 business days.", cls: "border-amber-500/20 bg-amber-500/5 text-amber-400", dot: "bg-amber-500"   },
+    pending:  { icon: <Clock size={16} />,       title: "Under Review",          body: "Your documents are being reviewed. This typically takes 1–2 business days.", cls: "border-amber-500/20 bg-amber-500/5 text-amber-400",     dot: "bg-amber-500"   },
     approved: { icon: <CheckCircle size={16} />, title: "Verified",              body: "Identity verified. You have full access to all platform features.",           cls: "border-emerald-500/20 bg-emerald-500/5 text-emerald-400", dot: "bg-emerald-500" },
-    rejected: { icon: <XCircle size={16} />,     title: "Verification Failed",   body: null, cls: "border-red-500/20 bg-red-500/5 text-red-400", dot: "bg-red-500" },
+    rejected: { icon: <XCircle size={16} />,     title: "Verification Failed",   body: null, cls: "border-red-500/20 bg-red-500/5 text-red-400",       dot: "bg-red-500"     },
     resubmit: { icon: <RefreshCw size={16} />,   title: "Resubmission Required", body: null, cls: "border-orange-500/20 bg-orange-500/5 text-orange-400", dot: "bg-orange-500" },
   };
   const c = cfg[kyc.status];
@@ -593,7 +797,11 @@ function StatusBanner({ kyc, onResubmit }) {
             <p className="font-bold text-xs tracking-wide uppercase">{c.title}</p>
           </div>
           {c.body && <p className="text-white/40 text-sm leading-relaxed">{c.body}</p>}
-          {kyc.rejection_reason && <p className="text-white/40 text-sm leading-relaxed"><span className="text-white/25">Reason: </span>{kyc.rejection_reason}</p>}
+          {kyc.rejection_reason && (
+            <p className="text-white/40 text-sm leading-relaxed">
+              <span className="text-white/25">Reason: </span>{kyc.rejection_reason}
+            </p>
+          )}
           {(kyc.status === "rejected" || kyc.status === "resubmit") && (
             <button onClick={onResubmit}
               className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-[#0D1F1A] px-4 py-2 rounded-lg touch-manipulation"
@@ -643,9 +851,9 @@ function ProgressRail({ current }) {
                 transition={{ duration: 0.25 }}
                 className="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold"
                 style={{
-                  background: done ? "linear-gradient(135deg, #C8873A, #E8A850)" : active ? "transparent" : "rgba(255,255,255,0.05)",
+                  background:  done ? "linear-gradient(135deg, #C8873A, #E8A850)" : active ? "transparent" : "rgba(255,255,255,0.05)",
                   borderColor: done || active ? "#C8873A" : "rgba(255,255,255,0.1)",
-                  color: done ? "#0D1F1A" : active ? "#E8A850" : "rgba(255,255,255,0.2)",
+                  color:       done ? "#0D1F1A" : active ? "#E8A850" : "rgba(255,255,255,0.2)",
                 }}>
                 {done ? <CheckCircle size={13} /> : i + 1}
               </motion.div>
@@ -655,8 +863,10 @@ function ProgressRail({ current }) {
             </div>
             {i < STEPS.length - 1 && (
               <div className="flex-1 h-px mx-2 mb-5 bg-white/10 rounded-full overflow-hidden">
-                <motion.div className="h-full rounded-full" style={{ background: "linear-gradient(90deg, #C8873A, #E8A850)" }}
-                  animate={{ width: done ? "100%" : "0%" }} transition={{ duration: 0.4 }} />
+                <motion.div className="h-full rounded-full"
+                  style={{ background: "linear-gradient(90deg, #C8873A, #E8A850)" }}
+                  animate={{ width: done ? "100%" : "0%" }}
+                  transition={{ duration: 0.4 }} />
               </div>
             )}
           </div>
@@ -677,9 +887,7 @@ function ReviewRow({ label, value }) {
   );
 }
 
-const stepAnim = { initial: { opacity: 0, x: 18 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -18 }, transition: { duration: 0.22 } };
-const formatDateDisplay = (iso) => { if (!iso) return ""; const [y, m, d] = iso.split("-"); return `${d}/${m}/${y}`; };
-
+/* ── Nav buttons ── */
 function NavButtons({ step, totalSteps, onNext, onSubmit, onBack, submitting }) {
   const isLast = step === totalSteps - 1;
   return (
@@ -700,13 +908,17 @@ function NavButtons({ step, totalSteps, onNext, onSubmit, onBack, submitting }) 
         <button type="button" onClick={onSubmit} disabled={submitting}
           className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 disabled:opacity-50 text-white font-bold text-sm py-3.5 px-6 rounded-xl transition-all active:scale-95 touch-manipulation">
           {submitting
-            ? <><motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }} className="w-4 h-4 border-2 border-white border-t-transparent rounded-full" />Submitting…</>
+            ? <><motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
+                className="w-4 h-4 border-2 border-white border-t-transparent rounded-full" />Submitting…</>
             : <><Shield size={13} />Submit Verification</>}
         </button>
       )}
     </div>
   );
 }
+
+const stepAnim = { initial: { opacity: 0, x: 18 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -18 }, transition: { duration: 0.22 } };
+const formatDateDisplay = (iso) => { if (!iso) return ""; const [y, m, d] = iso.split("-"); return `${d}/${m}/${y}`; };
 
 /* ══════════════════════════════════════════════════════════════════
    MAIN EXPORT
@@ -750,12 +962,12 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
 
   const setField = (k, v) => setForm(p => ({ ...p, [k]: v }));
   const setFile  = (k, f) => setForm(p => ({ ...p, [k]: f }));
-  const handleIdTypeChange = (val) => setForm(p => ({ ...p, id_type: val, id_number: "" }));
-  const handleIdNumberChange = (e) => {
+  const handleIdTypeChange    = (val) => setForm(p => ({ ...p, id_type: val, id_number: "" }));
+  const handleIdNumberChange  = (e) => {
     const meta = ID_TYPES.find(t => t.value === form.id_type);
     let val = e.target.value;
     if (meta?.numericOnly) val = val.replace(/\D/g, "");
-    if (meta?.maxLen) val = val.slice(0, meta.maxLen);
+    if (meta?.maxLen)      val = val.slice(0, meta.maxLen);
     setField("id_number", val);
   };
 
@@ -772,8 +984,8 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
         if (age < 18)  e.date_of_birth = "You must be at least 18 years old";
         if (age > 120) e.date_of_birth = "Please enter a valid date of birth";
       }
-      if (!form.phone_number.trim())  e.phone_number = "Phone number is required";
-      else if (form.phone_number.length < 7) e.phone_number = "Please enter a valid phone number";
+      if (!form.phone_number.trim())            e.phone_number = "Phone number is required";
+      else if (form.phone_number.length < 7)    e.phone_number = "Please enter a valid phone number";
     }
     if (step === 1) {
       if (!form.address.trim()) e.address = "Address is required";
@@ -801,11 +1013,8 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
   };
 
   const prevStep = () => {
-    if (step === 4 && form.id_type === "bvn") {
-      setStep(2);
-    } else {
-      setStep(s => s - 1);
-    }
+    if (step === 4 && form.id_type === "bvn") { setStep(2); }
+    else { setStep(s => s - 1); }
     setErrors({});
   };
 
@@ -835,9 +1044,11 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
       setShowForm(false);
     } catch (err) {
       const resData = err.response?.data;
-      setSubmitError(resData?.message
-        ? resData.message
-        : resData?.errors ? Object.values(resData.errors).flat().join(" ") : "Submission failed. Please try again.");
+      setSubmitError(
+        resData?.message ? resData.message
+          : resData?.errors ? Object.values(resData.errors).flat().join(" ")
+          : "Submission failed. Please try again."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -868,7 +1079,8 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
       {step === 0 && (
         <motion.div key="s0" {...stepAnim} className="space-y-5">
           <Field label="Full Legal Name" required error={errors.full_name}>
-            <input className={inputCls} placeholder="As appears on your ID" autoComplete="name" autoCapitalize="words"
+            <input className={inputCls} placeholder="As appears on your ID"
+              autoComplete="name" autoCapitalize="words"
               value={form.full_name} onChange={e => setField("full_name", e.target.value)} />
           </Field>
           <Field label="Date of Birth" required error={errors.date_of_birth}>
@@ -881,7 +1093,8 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
                 <span className="text-white/60 font-bold text-sm">+234</span>
               </div>
               <input className="flex-1 bg-transparent text-white placeholder-white/20 px-3.5 py-3.5 text-sm focus:outline-none min-w-0"
-                placeholder="800 000 0000" type="tel" inputMode="numeric" autoComplete="tel-national" maxLength={11}
+                placeholder="800 000 0000" type="tel" inputMode="numeric"
+                autoComplete="tel-national" maxLength={11}
                 value={form.phone_number}
                 onChange={e => setField("phone_number", e.target.value.replace(/\D/g, "").replace(/^0+/, ""))} />
             </div>
@@ -897,7 +1110,8 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
               value={form.address} onChange={e => setField("address", e.target.value)} />
           </Field>
           <Field label="City" required error={errors.city}>
-            <input className={inputCls} placeholder="e.g. Lagos" value={form.city} onChange={e => setField("city", e.target.value)} />
+            <input className={inputCls} placeholder="e.g. Lagos"
+              value={form.city} onChange={e => setField("city", e.target.value)} />
           </Field>
           <Field label="State" required error={errors.state}>
             <select className={selectCls} value={form.state} onChange={e => setField("state", e.target.value)}>
@@ -925,7 +1139,8 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
                 placeholder={selectedIdMeta?.numericOnly ? `${selectedIdMeta.maxLen}-digit number` : "Enter your document number"}
                 inputMode={selectedIdMeta?.numericOnly ? "numeric" : "text"}
                 maxLength={selectedIdMeta?.maxLen}
-                value={form.id_number} onChange={handleIdNumberChange}
+                value={form.id_number}
+                onChange={handleIdNumberChange}
                 style={{ paddingRight: selectedIdMeta?.numericOnly && form.id_number ? "4.5rem" : undefined }}
               />
               {selectedIdMeta?.numericOnly && form.id_number.length > 0 && (
@@ -948,16 +1163,31 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
 
       {step === 3 && form.id_type !== "bvn" && (
         <motion.div key="s3" {...stepAnim} className="space-y-5">
-          <FileDropZone label="ID Front" required sublabel="Clear photo of the front of your document" name="id_front" value={form.id_front} onChange={setFile} />
-          {errors.id_front && <p className="text-red-400 text-xs flex items-center gap-1"><AlertCircle size={11} />{errors.id_front}</p>}
-          <FileDropZone label="ID Back" sublabel="Back of your document (if applicable)" name="id_back" value={form.id_back} onChange={setFile} />
+          <FileDropZone label="ID Front" required sublabel="Clear photo of the front of your document"
+            name="id_front" value={form.id_front} onChange={setFile} />
+          {errors.id_front && (
+            <p className="text-red-400 text-xs flex items-center gap-1">
+              <AlertCircle size={11} />{errors.id_front}
+            </p>
+          )}
+          <FileDropZone label="ID Back" sublabel="Back of your document (if applicable)"
+            name="id_back" value={form.id_back} onChange={setFile} />
         </motion.div>
       )}
 
       {step === 4 && (
         <motion.div key="s4" {...stepAnim}>
-          <LivenessCheck captured={form.selfie} onCapture={f => setFile("selfie", f)} onRetake={() => setFile("selfie", null)} fullHeight />
-          {errors.selfie && <p className="text-red-400 text-xs mt-3 flex items-center gap-1"><AlertCircle size={11} />{errors.selfie}</p>}
+          <LivenessCheck
+            captured={form.selfie}
+            onCapture={f => setFile("selfie", f)}
+            onRetake={() => setFile("selfie", null)}
+            fullHeight
+          />
+          {errors.selfie && (
+            <p className="text-red-400 text-xs mt-3 flex items-center gap-1">
+              <AlertCircle size={11} />{errors.selfie}
+            </p>
+          )}
         </motion.div>
       )}
 
@@ -1013,22 +1243,24 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
         <>
           <ProgressRail current={step} />
 
-          {/* Step header */}
           <div className="flex items-center gap-3 mb-6 pb-5 border-b border-white/10">
             <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
               {React.cloneElement(meta.icon, { size: 15 })}
             </div>
             <div>
-              <h2 className="text-lg text-white font-bold leading-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{meta.title}</h2>
+              <h2 className="text-lg text-white font-bold leading-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                {meta.title}
+              </h2>
               <p className="text-white/30 text-xs mt-0.5">{meta.subtitle}</p>
             </div>
             <span className="ml-auto text-xs text-white/20 font-medium tabular-nums sm:hidden">{step + 1}/{STEPS.length}</span>
           </div>
 
-          {/* Mobile progress bar */}
           <div className="sm:hidden h-0.5 bg-white/10 rounded-full mb-5 overflow-hidden">
-            <motion.div className="h-full rounded-full" style={{ background: "linear-gradient(90deg, #C8873A, #E8A850)" }}
-              animate={{ width: `${((step + 1) / STEPS.length) * 100}%` }} transition={{ duration: 0.4 }} />
+            <motion.div className="h-full rounded-full"
+              style={{ background: "linear-gradient(90deg, #C8873A, #E8A850)" }}
+              animate={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
+              transition={{ duration: 0.4 }} />
           </div>
 
           {renderStepContent()}
