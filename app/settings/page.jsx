@@ -10,7 +10,7 @@ import ProfileSettings from "./ProfileSettings";
 import TransactionPin from "./TransactionPin";
 import ResetPin from "./ResetPin";
 import BankDetails from "./BankDetails";
-import KycPanel from "./KycPanel";
+import KycPanel from "./kyc/KycPanel";
 import api from "../../utils/api";
 
 const NAV = [
