@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -51,27 +51,23 @@ function RegisterForm() {
     referral_code:         "",
   });
 
-  const [loading, setLoading]           = useState(false);
-  const [error, setError]               = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [pwFocused, setPwFocused]       = useState(false);
-  const [showReferral, setShowReferral] = useState(false);
+  const [loading, setLoading]               = useState(false);
+  const [error, setError]                   = useState("");
+  const [showPassword, setShowPassword]     = useState(false);
+  const [pwFocused, setPwFocused]           = useState(false);
+  const [showReferral, setShowReferral]     = useState(false);
   const [referralLocked, setReferralLocked] = useState(false);
 
-  const router       = useRouter();
-  const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
-    const urlRef = searchParams.get("ref");
-    const saved  = getSavedReferralCode();
-    const code   = urlRef ?? saved;
-
-    if (code) {
-      setForm((prev) => ({ ...prev, referral_code: code }));
+    const saved = getSavedReferralCode();
+    if (saved) {
+      setForm((prev) => ({ ...prev, referral_code: saved }));
       setShowReferral(true);
       setReferralLocked(true);
     }
-  }, [searchParams]);
+  }, []);
 
   const set = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -208,7 +204,7 @@ function RegisterForm() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
 
-            {/* ── First & Last name (side by side) ── */}
+            {/* ── First & Last name ── */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-white/50 uppercase tracking-widest mb-2">
@@ -298,7 +294,7 @@ function RegisterForm() {
                 </div>
               )}
 
-              {/* Rules checklist — shows while focused */}
+              {/* Rules checklist */}
               <AnimatePresence>
                 {form.password && pwFocused && (
                   <motion.ul
@@ -384,8 +380,7 @@ function RegisterForm() {
                       )}
                       maxLength={12}
                     />
-                    {/* Applied badge OR clear button */}
-                    {referralLocked ? (
+                    {referralLocked && (
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
                         <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
                           Applied ✓
@@ -403,14 +398,13 @@ function RegisterForm() {
                           ✕
                         </button>
                       </div>
-                    ) : null}
+                    )}
                   </div>
-                  {referralLocked && (
+                  {referralLocked ? (
                     <p className="text-[11px] text-emerald-500/60 mt-1.5">
                       You were referred by a friend — enjoy your welcome bonus!
                     </p>
-                  )}
-                  {!referralLocked && (
+                  ) : (
                     <p className="text-xs text-white/25 mt-1.5">Get 10% off your first purchase</p>
                   )}
                 </motion.div>

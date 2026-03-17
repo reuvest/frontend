@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 
 const PUBLIC_ROUTES = [
   "/",
+  "/r",           
   "/login",
   "/register",
   "/verify-email",
@@ -26,9 +27,12 @@ export function proxy(request) {
   const token    = request.cookies.get("auth_token")?.value;
   const userRole = request.cookies.get("user_role")?.value;
 
-  const isPublicRoute = PUBLIC_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(route + "/")
+  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
+    route === "/"
+      ? pathname === "/"
+      : pathname === route || pathname.startsWith(route + "/")
   );
+
   const isAdminRoute = ADMIN_ROUTES.some((route) =>
     pathname.startsWith(route)
   );
