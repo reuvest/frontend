@@ -29,16 +29,54 @@ export const LIVENESS_PROMPTS = [
 ];
 
 // ─── Liveness detection tuning ────────────────────────────────────────────────
-export const MOTION_THRESHOLDS      = { eye: 0.014, smile: 0.012, left: 0.026, right: 0.026, nod: 0.020 };
+// These are all consumed by LivenessCheck.jsx — do not remove.
 export const SAMPLE_W               = 80;
 export const SAMPLE_H               = 60;
-export const EMA_ALPHA              = 0.30;
-export const CONFIRM_FRAMES         = 5;
-export const BLIND_FRAMES           = 30;
-export const STILLNESS_THRESHOLD    = 0.006;
-export const STILL_CONFIRM_FRAMES   = 18;
+
+// EMA smoothing factor for motion signal (0–1; lower = smoother but slower).
+export const EMA_ALPHA              = 0.25;
+
+// How many accumulated above-threshold frames confirm a deliberate action.
+export const ACCUMULATOR_NEED       = 8;
+
+// Per-frame decay applied to the accumulator when motion drops below threshold.
+export const ACCUMULATOR_DECAY      = 1.2;
+
+// Minimum number of *consecutive* above-threshold frames required before the
+// accumulator total is even considered. Prevents a single fast spike (jolt,
+// head-shake, sitting down) from instantly filling the accumulator.
+export const MIN_SUSTAIN_FRAMES     = 4;
+
+// If the peak EMA during a detection window exceeds this many × the threshold,
+// AND the above-threshold run lasted fewer than MIN_SUSTAIN_FRAMES frames, the
+// burst is classified as a jolt and the accumulator is reset to zero.
+export const JOLT_PEAK_MULTIPLIER   = 3.5;
+
+// EMA alpha used during the active detection phase (after baseline). Lower than
+// the baseline alpha so the smoothed signal is less reactive to single-frame
+// jolts while still tracking genuine deliberate motion.
+export const DETECTION_EMA_ALPHA    = 0.18;
+
+// Number of frames sampled during warmup to learn the user's idle noise floor.
+export const BASELINE_FRAMES        = 40;
+
+// Multiplier over the idle baseline that counts as a "deliberate action".
+// Keyed by prompt icon; _default used when no specific entry exists.
+export const ACTION_MULTIPLIER      = {
+  eye: 2.2, smile: 2.0, left: 2.8, right: 2.8, nod: 2.4, _default: 2.5,
+};
+
+// Minimum mean brightness (0–255) — below this the camera is dark/covered.
+export const MIN_BRIGHTNESS         = 20;
+
+// Maximum retries allowed per prompt before the check hard-fails.
 export const MAX_RETRIES_PER_PROMPT = 2;
+
+// Base countdown in seconds; LivenessCheck adds COUNTDOWN_BONUS on top.
 export const COUNTDOWN_SECS        = 10;
+
+// Extra seconds added to every countdown (effective = COUNTDOWN_SECS + this).
+export const COUNTDOWN_BONUS        = 5;
 
 // ─── Shared Tailwind class strings ───────────────────────────────────────────
 export const inputCls =

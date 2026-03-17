@@ -10,23 +10,20 @@ import {
 import {
   LIVENESS_PROMPTS,
   SAMPLE_W, SAMPLE_H,
-  MAX_RETRIES_PER_PROMPT, COUNTDOWN_SECS,
+  EMA_ALPHA,
+  DETECTION_EMA_ALPHA,  // lower alpha for detection phase — less reactive to jolts
+  ACCUMULATOR_NEED,
+  ACCUMULATOR_DECAY,
+  MIN_SUSTAIN_FRAMES,   // consecutive above-threshold frames needed before accumulator counts
+  JOLT_PEAK_MULTIPLIER, // peak/threshold ratio that classifies a burst as a jolt
+  BASELINE_FRAMES,
+  ACTION_MULTIPLIER,
+  MIN_BRIGHTNESS,
+  MAX_RETRIES_PER_PROMPT,
+  COUNTDOWN_SECS,
+  COUNTDOWN_BONUS,      // FIX Bug 5: imported from constants
   shuffle,
 } from "./constants";
-
-// ─── Adaptive detection constants ────────────────────────────────────────────
-const BASELINE_FRAMES   = 40;   // frames sampled at warmup to learn idle noise
-const EMA_ALPHA         = 0.25; // smoother EMA — less sensitive to single-frame dips
-const ACCUMULATOR_NEED  = 8;    // total above-threshold frames needed
-const ACCUMULATOR_DECAY = 1.2;  
-// How many × the idle baseline counts as "deliberate action".
-const ACTION_MULTIPLIER = { eye: 2.2, smile: 2.0, left: 2.8, right: 2.8, nod: 2.4, _default: 2.5 };
-
-// Min mean brightness (0–255) — below this = dark/covered camera, reject
-const MIN_BRIGHTNESS    = 20;
-
-// Extra seconds added to countdown vs the constant in constants.js
-const COUNTDOWN_BONUS   = 5;   // effective = COUNTDOWN_SECS + COUNTDOWN_BONUS
 
 // ── Prompt icon ───────────────────────────────────────────────────────────────
 function PromptIcon({ icon, size = 18 }) {
@@ -50,8 +47,9 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
   const emaRef         = useRef(0);
   const detectionOnRef = useRef(false);
   const tabHiddenRef   = useRef(false);
-  const timerRef        = useRef(null);
-  // Learned noise floor — measured once during first warmup, reused for all prompts
+  const timerRef       = useRef(null);
+  // Learned noise floor — measured once per camera session.
+  // FIX Bug 3: cleared on every retry so a polluted baseline doesn't carry over.
   const idleBaselineRef = useRef(null);
 
   const [phase, setPhase]             = useState("idle");
@@ -64,6 +62,7 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
   const [retryCount, setRetryCount]   = useState(0);
   const [retryMsg, setRetryMsg]       = useState("");
 
+  // ── Refs that mirror state so stable callbacks can read current values ──────
   const promptsRef    = useRef([]);
   const promptIdxRef  = useRef(0);
   const retryCountRef = useRef(0);
@@ -142,7 +141,7 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
     return () => window.removeEventListener("keydown", onKey);
   }, [stopStream]);
 
-  // ── Motion measurement ────────────────────────────────────────────────────
+  // ── Motion measurement ─────────────────────────────────────────────────────
   const measureMotion = useCallback(() => {
     const video  = videoRef.current;
     const canvas = sampleRef.current;
@@ -167,7 +166,7 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
     return diff / (grey.length * 255);
   }, []);
 
-  // ── Brightness check — rejects dark/covered camera ───────────────────────
+  // ── Brightness check — rejects dark/covered camera ────────────────────────
   const measureBrightness = useCallback(() => {
     const video  = videoRef.current;
     const canvas = sampleRef.current;
@@ -184,7 +183,7 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
     return sum / n; // 0–255
   }, []);
 
-  // ── Selfie capture ──────────────────────────────────────────────────────────
+  // ── Selfie capture ─────────────────────────────────────────────────────────
   const captureSelfie = useCallback(() => {
     const video  = videoRef.current;
     const canvas = canvasRef.current;
@@ -205,33 +204,42 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
   // ── Stillness → capture ───────────────────────────────────────────────────
   const startStillnessCapture = useCallback(() => {
     setPhase("stillness");
-    detectionOnRef.current = false;          // stop any running detection RAF
+    detectionOnRef.current = false;
     cancelAnimationFrame(rafRef.current);
     prevDataRef.current = null;
     emaRef.current      = 0;
-    // 900 ms settle time — enough for EMA to decay and user to read "hold still"
     setTimeout(() => {
       captureSelfie();
     }, 900);
   }, [captureSelfie]);
 
-  // ── Timeout → retry same prompt or hard-fail ────────────────────────────────
+  // ── Timeout → retry same prompt or hard-fail ──────────────────────────────
   const handleTimeout = useCallback((promptIndex) => {
     detectionOnRef.current = false;
     cancelAnimationFrame(rafRef.current);
 
     const currentRetries = retryCountRef.current;
     if (currentRetries < MAX_RETRIES_PER_PROMPT) {
-      const attemptsLeft = MAX_RETRIES_PER_PROMPT - currentRetries;
-      const newRetry = currentRetries + 1;
+      // FIX Bug 2: compute attemptsLeft BEFORE incrementing so the displayed
+      // count is accurate (was: attemptsLeft = MAX - currentRetries, then
+      // newRetry = currentRetries + 1, causing an off-by-one on last retry).
+      const newRetry     = currentRetries + 1;
+      const attemptsLeft = MAX_RETRIES_PER_PROMPT - newRetry;
+
       setRetryCount(newRetry);
       retryCountRef.current = newRetry;
 
-      const prompt = promptsRef.current[promptIndex];
       setRetryMsg(
-        `We didn't detect the action. Please try again — ${attemptsLeft} attempt${attemptsLeft !== 1 ? "s" : ""} remaining.`
+        attemptsLeft > 0
+          ? `We didn't detect the action. Please try again — ${attemptsLeft} attempt${attemptsLeft !== 1 ? "s" : ""} remaining.`
+          : "We didn't detect the action. This is your last attempt."
       );
       setPhase("retry_warning");
+
+      // FIX Bug 3: clear the learned baseline before each retry so that
+      // accidental motion during the first attempt doesn't pollute subsequent
+      // baseline measurements.
+      idleBaselineRef.current = null;
 
       setTimeout(() => {
         if (!streamRef.current) return;
@@ -240,7 +248,7 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
         setTimeout(() => {
           if (!streamRef.current) return;
           setPhase("detecting");
-          startDetectionCountdownRef.current?.(prompt?.icon, promptIndex);
+          startDetectionCountdownRef.current?.(promptsRef.current[promptIndex]?.icon, promptIndex);
         }, 1500);
       }, 2200);
     } else {
@@ -255,25 +263,35 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
 
   handleTimeoutRef.current = handleTimeout;
 
-  // ── Advance to next prompt on confirmed success ─────────────────────────────
+  // ── Advance to next prompt on confirmed success ────────────────────────────
+  // FIX Bug 1: capture the current promptIdx value as a local variable at call
+  // time (doneIdx parameter) rather than reading the React state inside the
+  // closure, which could be stale by the time the success_flash setTimeout fires.
   const advancePrompt = useCallback((doneIdx) => {
     setCompleted(prev => [...prev, doneIdx]);
     setRetryCount(0);  retryCountRef.current = 0;
     setRetryMsg("");
     setMotionPct(0);
+
+    const currentPrompts = promptsRef.current;
+    const isLast = doneIdx >= currentPrompts.length - 1;
+
+    // FIX Bug 1: derive the flash label from doneIdx (passed in, always correct)
+    // instead of reading the promptIdx state which may not have updated yet.
     setPhase("success_flash");
 
     setTimeout(() => {
-      const currentPrompts = promptsRef.current;
-      if (doneIdx < currentPrompts.length - 1) {
+      if (!isLast) {
         const nextIdx = doneIdx + 1;
         setPromptIdx(nextIdx);
+        promptIdxRef.current = nextIdx;
         setPhase("warmup");
         setTimeout(() => {
           if (!streamRef.current) return;
           setPhase("detecting");
           startDetectionCountdownRef.current?.(currentPrompts[nextIdx]?.icon, nextIdx);
-        }, 1200);      } else {
+        }, 1200);
+      } else {
         startStillnessCapture();
       }
     }, 900);
@@ -281,7 +299,16 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
 
   advancePromptRef.current = advancePrompt;
 
-  // ── Detection loop (adaptive baseline) ───────────────────────────────────
+  // Store isLast in a ref so the success_flash overlay can read it without
+  // depending on promptIdx state (which is what caused Bug 1).
+  const isLastPromptRef = useRef(false);
+  const runAdvancePrompt = useCallback((doneIdx) => {
+    const currentPrompts = promptsRef.current;
+    isLastPromptRef.current = doneIdx >= currentPrompts.length - 1;
+    advancePromptRef.current?.(doneIdx);
+  }, []);
+
+  // ── Detection loop (adaptive baseline) ────────────────────────────────────
   const startDetectionLoop = useCallback((promptIcon, promptIndex) => {
     detectionOnRef.current = true;
     prevDataRef.current    = null;
@@ -292,26 +319,34 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
     let baselineSamples   = [];
     let brightnessSamples = [];
 
-    // Reuse previously learned baseline if available (e.g. 2nd prompt, retries)
+    // FIX Bug 3: idleBaselineRef is now cleared before every retry in
+    // handleTimeout, so this check only reuses baseline within the same
+    // uninterrupted detection attempt (e.g. prompt 2 reuses prompt 1's baseline).
     let baselineDone    = !!idleBaselineRef.current;
     let multiplier      = ACTION_MULTIPLIER[promptIcon] ?? ACTION_MULTIPLIER._default;
     let effectiveThresh = idleBaselineRef.current
       ? idleBaselineRef.current * multiplier
       : null;
 
+    // ── Anti-jolt state (local to this detection round) ──────────────────────
+    // consecutiveFrames: how many frames in a row the EMA has been above threshold.
+    // peakEma:           the highest EMA value seen in the current above-threshold run.
+    // Both reset to 0 whenever the EMA drops back below threshold.
+    let consecutiveFrames = 0;
+    let peakEma           = 0;
+
     const loop = () => {
       if (!detectionOnRef.current) return;
 
       const raw = measureMotion();
-      emaRef.current = EMA_ALPHA * raw + (1 - EMA_ALPHA) * emaRef.current;
 
-      // ── Phase 1: learn idle baseline ──────────────────────────────────────
+      // ── Phase 1: learn idle baseline (uses standard EMA_ALPHA) ───────────────
       if (!baselineDone) {
+        emaRef.current = EMA_ALPHA * raw + (1 - EMA_ALPHA) * emaRef.current;
         baselineSamples.push(raw);
         brightnessSamples.push(measureBrightness());
 
         if (baselineSamples.length >= BASELINE_FRAMES) {
-          // Dark / covered camera check
           const avgBrightness = brightnessSamples.reduce((a, b) => a + b, 0) / brightnessSamples.length;
           if (avgBrightness < MIN_BRIGHTNESS) {
             stopStream();
@@ -330,48 +365,79 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
           idleBaselineRef.current = learned;
           effectiveThresh  = learned * multiplier;
           baselineDone     = true;
+          // Reset EMA so the detection phase starts clean
+          emaRef.current   = 0;
         }
         rafRef.current = requestAnimationFrame(loop);
         return;
       }
 
-      // ── Phase 2: detect action ────────────────────────────────────────────
+      // ── Phase 2: detect action ────────────────────────────────────────────────
+      // Use the lower DETECTION_EMA_ALPHA so the signal is less reactive to jolts.
+      emaRef.current = DETECTION_EMA_ALPHA * raw + (1 - DETECTION_EMA_ALPHA) * emaRef.current;
+
       const pct = Math.min(100, Math.round((emaRef.current / effectiveThresh) * 80));
       setMotionPct(pct);
 
       if (emaRef.current >= effectiveThresh) {
+        // Track consecutive run length and peak for jolt detection
+        consecutiveFrames += 1;
+        peakEma = Math.max(peakEma, emaRef.current);
         motionFrames = Math.min(motionFrames + 1, ACCUMULATOR_NEED * 1.5);
       } else {
-        motionFrames = Math.max(0, motionFrames - ACCUMULATOR_DECAY);
+        // Motion dropped below threshold — evaluate whether the preceding run
+        // was a jolt (very high peak but too short to be deliberate).
+        if (consecutiveFrames > 0 && consecutiveFrames < MIN_SUSTAIN_FRAMES) {
+          // Gate 3: jolt rejection — peak was far above threshold but the run
+          // ended before MIN_SUSTAIN_FRAMES consecutive frames, so reset the
+          // accumulator instead of letting those frames count toward detection.
+          if (peakEma >= effectiveThresh * JOLT_PEAK_MULTIPLIER) {
+            motionFrames = 0;
+          }
+        }
+        consecutiveFrames = 0;
+        peakEma           = 0;
+        motionFrames      = Math.max(0, motionFrames - ACCUMULATOR_DECAY);
       }
 
-      if (!detectedThisRound && motionFrames >= ACCUMULATOR_NEED) {
+      // Gate 1 (sustain): only allow the accumulator to trigger detection if the
+      // current above-threshold run has lasted at least MIN_SUSTAIN_FRAMES frames.
+      // A rapid jolt fills frames quickly but consecutiveFrames stays too low.
+      const sustainMet = consecutiveFrames >= MIN_SUSTAIN_FRAMES;
+
+      if (!detectedThisRound && sustainMet && motionFrames >= ACCUMULATOR_NEED) {
         detectedThisRound      = true;
         detectionOnRef.current = false;
         clearInterval(timerRef.current);
-        setTimeout(() => advancePromptRef.current?.(promptIndex), 200);
+        setTimeout(() => runAdvancePrompt(promptIndex), 200);
         return;
       }
 
       rafRef.current = requestAnimationFrame(loop);
     };
     rafRef.current = requestAnimationFrame(loop);
-  }, [measureMotion, measureBrightness, stopStream]);
+  }, [measureMotion, measureBrightness, stopStream, runAdvancePrompt]);
 
-  // ── Countdown ─────────────────────────────────────────────────────────────
+  // ── Countdown — drift-proof via Date.now() snapshot ──────────────────────
+  // FIX Bug 6: replaced setInterval(…, 1000) tick-counting with a deadline
+  // computed from Date.now(). The interval polls at 250ms but rounds to whole
+  // seconds for display, so the shown number stays accurate even under browser
+  // throttling or CPU load.
   const startDetectionCountdown = useCallback((promptIcon, idx) => {
     const totalSecs = COUNTDOWN_SECS + COUNTDOWN_BONUS;
+    const deadline  = Date.now() + totalSecs * 1000;
     timeLeftRef.current = totalSecs;
     setTimeLeft(totalSecs);
 
     timerRef.current = setInterval(() => {
-      timeLeftRef.current -= 1;
-      setTimeLeft(timeLeftRef.current);
-      if (timeLeftRef.current <= 0) {
+      const remaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+      timeLeftRef.current = remaining;
+      setTimeLeft(remaining);
+      if (remaining <= 0) {
         clearInterval(timerRef.current);
         setTimeout(() => handleTimeoutRef.current?.(idx), 100);
       }
-    }, 1000);
+    }, 250); // poll at 250ms for accuracy; display rounds to seconds
 
     startDetectionLoop(promptIcon, idx);
   }, [startDetectionLoop]);
@@ -380,7 +446,7 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
 
   const lastUsedIconsRef = useRef(new Set());
 
-  // ── Start camera ────────────────────────────────────────────────────────────
+  // ── Start camera ───────────────────────────────────────────────────────────
   const startCamera = useCallback(async () => {
     tabHiddenRef.current  = false;
     setPhase("requesting");
@@ -421,6 +487,7 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
       promptsRef.current = chosen;
       setPrompts(chosen);
       setPromptIdx(0);  promptIdxRef.current = 0;
+      isLastPromptRef.current = false;
       setPhase("warmup");
 
       setTimeout(() => {
@@ -439,14 +506,31 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
     }
   }, []);
 
-  // ── Derived ─────────────────────────────────────────────────────────────────
+  // ── Derived ────────────────────────────────────────────────────────────────
   const currentPrompt = prompts[promptIdx];
   const thresholdPct  = 65;
 
-  const capturedUrl = useMemo(() => captured ? URL.createObjectURL(captured) : null, [captured]);
-  useEffect(() => () => { if (capturedUrl) URL.revokeObjectURL(capturedUrl); }, [capturedUrl]);
+  // FIX Bug 4: use a ref to track the previous object URL so we can revoke it
+  // synchronously before creating the next one, avoiding the race between
+  // useMemo and the useEffect cleanup when `captured` changes rapidly.
+  const capturedUrlRef = useRef(null);
+  const capturedUrl = useMemo(() => {
+    if (capturedUrlRef.current) {
+      URL.revokeObjectURL(capturedUrlRef.current);
+      capturedUrlRef.current = null;
+    }
+    if (!captured) return null;
+    const url = URL.createObjectURL(captured);
+    capturedUrlRef.current = url;
+    return url;
+  }, [captured]);
 
-  // ── Render ───────────────────────────────────────────────────────────────────
+  // Final cleanup when component unmounts
+  useEffect(() => () => {
+    if (capturedUrlRef.current) URL.revokeObjectURL(capturedUrlRef.current);
+  }, []);
+
+  // ── Render ─────────────────────────────────────────────────────────────────
   const isLive      = ["warmup","detecting","success_flash","stillness","retry_warning"].includes(phase);
   const isDetecting = phase === "detecting";
   const isStillness = phase === "stillness";
@@ -460,7 +544,7 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
 
   const viewportH = fullHeight ? "clamp(300px, 65vw, 480px)" : "clamp(220px, 48vw, 340px)";
 
-  // ── Captured state ───────────────────────────────────────────────────────────
+  // ── Captured state ─────────────────────────────────────────────────────────
   if (captured && capturedUrl) {
     return (
       <div className="space-y-3">
@@ -595,7 +679,10 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
           </div>
         )}
 
-        {/* Success flash */}
+        {/* Success flash
+            FIX Bug 1: read isLastPromptRef.current (set synchronously in
+            runAdvancePrompt before any state updates) instead of deriving
+            from promptIdx state, which may not have updated yet. */}
         {phase === "success_flash" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60">
@@ -605,7 +692,7 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
               <CheckCircle size={30} className="text-white" />
             </motion.div>
             <p className="text-white font-bold text-sm">
-              {promptIdx < prompts.length - 1 ? "Got it! Next action…" : "All done!"}
+              {isLastPromptRef.current ? "All done!" : "Got it! Next action…"}
             </p>
           </motion.div>
         )}
