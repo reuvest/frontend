@@ -1,22 +1,37 @@
 import { useEffect, useState } from "react";
 import api from "../../utils/api";
 
+function toRelativePath(url) {
+  try {
+    return new URL(url).pathname; 
+  } catch {
+    return url;
+  }
+}
+
 export function AuthImage({ url, alt, className, onBlobReady }) {
   const [src, setSrc] = useState(null);
 
   useEffect(() => {
     if (!url) return;
     let objectUrl;
+    let cancelled = false;
 
-    api.get(url, { responseType: "blob" })
+    api.get(toRelativePath(url), { responseType: "blob" })  
       .then((res) => {
+        if (cancelled) return;
         objectUrl = URL.createObjectURL(res.data);
         setSrc(objectUrl);
         onBlobReady?.(objectUrl);
       })
-      .catch(() => setSrc(null));
+      .catch(() => {
+        if (!cancelled) setSrc(null);
+      });
 
-    return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
   }, [url]);
 
   if (!src) {
