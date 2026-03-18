@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import api from "../../../utils/api";
 import toast from "react-hot-toast";
+import { AuthImage } from "../../components/AuthImage";
 import {
   ShieldCheck, ShieldX, Clock, RefreshCw,
   X, CheckCircle, XCircle, Eye, User,
@@ -35,6 +36,7 @@ export default function AdminKycManagement() {
   const [showModal, setShowModal]       = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+  const [blobUrls, setBlobUrls] = useState({});
 
   useEffect(() => { fetchKycs(); }, [filter]);
 
@@ -61,7 +63,7 @@ export default function AdminKycManagement() {
     }
   };
 
-  const closeModal = () => { setShowModal(false); setRejectionReason(""); };
+  const closeModal = () => { setShowModal(false); setRejectionReason("");  setBlobUrls({});};
 
   const handleApprove = async (kycId) => {
     if (!window.confirm("Approve this KYC submission?")) return;
@@ -297,18 +299,24 @@ export default function AdminKycManagement() {
                     ...(selectedKyc.id_back_url ? [{ label: "ID Back", url: selectedKyc.id_back_url }] : []),
                     { label: "Selfie",   url: selectedKyc.selfie_url },
                   ].map((doc) => (
-                    <a key={doc.label} href={doc.url} target="_blank" rel="noopener noreferrer" className="group block">
-                      <div className="relative rounded-xl overflow-hidden border border-white/10 aspect-4/3 bg-white/5">
-                        <img src={doc.url} alt={doc.label}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <Eye size={20} className="text-white" />
+                      <a key={doc.label} href={blobUrls[doc.label] || "#"}  target="_blank" rel="noopener noreferrer" className="group block">
+                        <div className="relative rounded-xl overflow-hidden border border-white/10 aspect-4/3 bg-white/5">
+                          <AuthImage
+                            src={doc.url}
+                            alt={doc.label}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                             onBlobReady={(blobUrl) =>      
+                              setBlobUrls((prev) => ({ ...prev, [doc.label]: blobUrl }))
+                            }
+                          />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Eye size={20} className="text-white" />
+                          </div>
                         </div>
-                      </div>
-                      <p className="text-xs text-white/30 text-center mt-1.5">{doc.label}</p>
-                    </a>
-                  ))}
-                </div>
+                        <p className="text-xs text-white/30 text-center mt-1.5">{doc.label}</p>
+                      </a>
+                    ))}
+                    </div>
               </section>
 
               {/* Existing rejection reason */}
