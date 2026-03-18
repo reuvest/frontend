@@ -3,7 +3,8 @@ import api from "../../utils/api";
 
 function toRelativePath(url) {
   try {
-    return new URL(url).pathname;
+    const path = new URL(url).pathname; 
+    return path.replace(/^\/api/, "");
   } catch {
     return url;
   }
