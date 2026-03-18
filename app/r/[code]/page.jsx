@@ -1,14 +1,15 @@
 import { Suspense } from "react";
+import ReferralRedirect from "./ReferralRedirect";
 
 // ─── Env ──────────────────────────────────────────────────────────────────────
 
 const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "Sproutvest";
 const APP_URL  = process.env.NEXT_PUBLIC_APP_URL  || "https://sproutapp-eta.vercel.app";
 
-// ─── OG Metadata (server-side — social crawlers get proper preview tags) ──────
+// ─── OG Metadata ──────────────────────────────────────────────────────────────
 
 export async function generateMetadata({ params }) {
-  const code = params?.code ?? "";
+  const { code = "" } = await params; 
 
   let referrerName = null;
   try {
@@ -58,16 +59,10 @@ export async function generateMetadata({ params }) {
   };
 }
 
-// ─── Client redirect component ────────────────────────────────────────────────
-
-// Kept in a separate file so the page itself stays a Server Component.
-// Create this at: app/r/[code]/ReferralRedirect.jsx
-import ReferralRedirect from "./ReferralRedirect";
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function ReferralLanding({ params }) {
-  const code = params?.code ?? "";
+export default async function ReferralLanding({ params }) {
+  const { code = "" } = await params; 
 
   return (
     <Suspense fallback={null}>
