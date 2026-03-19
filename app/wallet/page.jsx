@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "../../utils/api";
 import handleApiError from "../../utils/handleApiError";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import {
   Wallet, TrendingUp, TrendingDown, Clock, CheckCircle,
   XCircle, AlertCircle, CreditCard, ArrowDownCircle, ArrowUpCircle,
@@ -40,19 +40,6 @@ const GATEWAYS = [
       </svg>
     ),
   },
-  // {
-  //   id: "opay",
-  //   label: "OPay",
-  //   description: "Wallet & card",
-  //   icon: (
-  //     <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" aria-hidden>
-  //       <circle cx="12" cy="12" r="10" fill="currentColor" opacity=".15" />
-  //       <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.8"
-  //         strokeLinecap="round" strokeLinejoin="round" opacity=".8" />
-  //       <circle cx="12" cy="12" r="3" fill="currentColor" opacity=".35" />
-  //     </svg>
-  //   ),
-  // },
 ];
 
 export default function WalletPage() {
@@ -261,7 +248,6 @@ export default function WalletPage() {
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative"
       style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
-      <Toaster position="top-right" />
 
       {/* Dot grid */}
       <div className="fixed inset-0 opacity-[0.03] pointer-events-none z-0"
@@ -351,15 +337,12 @@ export default function WalletPage() {
                               : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/8"
                           }`}
                         >
-                          {/* Active indicator dot */}
                           {active && (
                             <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-amber-500" />
                           )}
-
                           <span className={active ? "text-amber-400" : "text-white/30"}>
                             {gw.icon}
                           </span>
-
                           <span className="min-w-0">
                             <span className={`block text-sm font-bold leading-tight ${
                               active ? "text-amber-400" : "text-white/60"
@@ -523,8 +506,6 @@ export default function WalletPage() {
                       className="rounded-xl border border-white/[0.07] bg-white/[0.03] hover:border-white/[0.12] hover:bg-white/[0.05] transition-all p-3 sm:p-4"
                     >
                       <div className="flex items-start gap-3">
-
-                        {/* Icon */}
                         <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
                           isDeposit ? "bg-emerald-500/10" : "bg-blue-500/10"
                         }`}>
@@ -532,8 +513,6 @@ export default function WalletPage() {
                             ? <ArrowDownCircle size={16} className="text-emerald-400" />
                             : <ArrowUpCircle   size={16} className="text-blue-400" />}
                         </div>
-
-                        {/* Type + date */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <p className="text-sm font-bold text-white leading-none">{t.type}</p>
@@ -544,8 +523,6 @@ export default function WalletPage() {
                           </div>
                           <p className="text-xs text-white/30 mt-1">{formatDate(txDate)}</p>
                         </div>
-
-                        {/* Amount */}
                         <p className={`font-bold text-sm tabular-nums shrink-0 ${
                           isDeposit ? "text-emerald-400" : "text-blue-400"
                         }`}>

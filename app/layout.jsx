@@ -1,4 +1,4 @@
-import { Toaster } from "react-hot-toast";
+import ToasterProvider from "./components/ToasterProvider";
 import ConditionalHeader from "./components/ConditionalHeader";
 import ConditionalFooter from "./components/ConditionalFooter";
 import { AuthProvider } from "../context/AuthContext";
@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
           <ConditionalHeader />
           {children}
           <ConditionalFooter />
-          <Toaster />
+          <ToasterProvider />
         </AuthProvider>
       </body>
     </html>
