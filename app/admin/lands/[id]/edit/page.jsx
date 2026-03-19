@@ -116,7 +116,7 @@ export default function EditLand() {
         });
         newImages.forEach(img=>fd.append("images[]",img));
         removeImages.forEach(imgId=>fd.append("remove_images[]",imgId));
-        await api.post(`/admin/lands/${id}`, fd, {headers:{"Content-Type":"multipart/form-data"}});
+        await api.post(`/admin/lands/${id}`, fd);
       } else {
         await api.post(`/admin/lands/${id}`, payload);
       }

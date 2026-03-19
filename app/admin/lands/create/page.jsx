@@ -102,7 +102,7 @@ export default function CreateLand() {
           }
         });
         images.forEach((img) => formData.append("images[]", img));
-        await api.post("/admin/lands", formData, { headers: { "Content-Type": "multipart/form-data" } });
+        await api.post("/admin/lands", formData);
       } else {
         await api.post("/admin/lands", payload);
       }
@@ -183,7 +183,7 @@ export default function CreateLand() {
             </div>
           </FormSection>
 
-          {/* Coordinates — now builds geometry object */}
+          {/* Coordinates */}
           <FormSection title="Location Coordinates" icon={<Layers size={15} className="text-amber-500" />}>
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm text-white/40">

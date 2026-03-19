@@ -221,11 +221,9 @@ function TicketModal({ ticket, onClose, onUpdate }) {
 
       const res = await api.post(
         `/admin/support/tickets/${localTicket.id}/reply`,
-        form,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        form
       );
 
-      // The reply endpoint returns the updated ticket with messages
       const updated = res.data.data;
       setLocalTicket(prev => ({
         ...prev,

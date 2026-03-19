@@ -155,7 +155,7 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
       if (form.id_back)  fd.append("id_back",  form.id_back);
       if (form.selfie)   fd.append("selfie",   form.selfie);
 
-      await api.post("/kyc/submit", fd, { headers: { "Content-Type": "multipart/form-data" } });
+      await api.post("/kyc/submit", fd);
 
       try {
         const { data: statusRes } = await api.get("/kyc/status");
