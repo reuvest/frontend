@@ -40,19 +40,19 @@ const GATEWAYS = [
       </svg>
     ),
   },
-  {
-    id: "opay",
-    label: "OPay",
-    description: "Wallet & card",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" aria-hidden>
-        <circle cx="12" cy="12" r="10" fill="currentColor" opacity=".15" />
-        <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.8"
-          strokeLinecap="round" strokeLinejoin="round" opacity=".8" />
-        <circle cx="12" cy="12" r="3" fill="currentColor" opacity=".35" />
-      </svg>
-    ),
-  },
+  // {
+  //   id: "opay",
+  //   label: "OPay",
+  //   description: "Wallet & card",
+  //   icon: (
+  //     <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" aria-hidden>
+  //       <circle cx="12" cy="12" r="10" fill="currentColor" opacity=".15" />
+  //       <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.8"
+  //         strokeLinecap="round" strokeLinejoin="round" opacity=".8" />
+  //       <circle cx="12" cy="12" r="3" fill="currentColor" opacity=".35" />
+  //     </svg>
+  //   ),
+  // },
 ];
 
 export default function WalletPage() {
