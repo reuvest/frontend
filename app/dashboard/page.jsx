@@ -56,7 +56,7 @@ function useCountUp(target, duration = 1100, enabled = true) {
     if (!enabled || target === 0) { setValue(target); return; }
     const start = performance.now();
     const tick = (now) => {
-      const p = Math.min((now - start) / duration, 1);
+      const p    = Math.min((now - start) / duration, 1);
       const ease = 1 - Math.pow(1 - p, 3);
       setValue(Math.round(target * ease));
       if (p < 1) raf.current = requestAnimationFrame(tick);
@@ -78,23 +78,21 @@ function useDashboardData(enabled) {
   const loadData = useCallback(async () => {
     if (!enabled) return;
     try {
-      const [statsRes, txRes, meRes] = await Promise.all([
+      const [statsRes, txRes] = await Promise.all([
         api.get("/user/stats"),
         api.get("/transactions/user"),
-        api.get("/me"),
       ]);
 
-      const s  = statsRes.data?.data || {};
-      const me = meRes.data?.user ?? meRes.data?.data ?? {};
+      const s = statsRes.data?.data || {};
 
       setStats({
-        balance:             (s.balance_kobo          ?? 0) / 100,
-        current_portfolio_value:      (s.current_portfolio_value_kobo    ?? 0) / 100,
-        total_invested:      (s.total_invested_kobo       ?? 0) / 100,
-        lands_owned:          s.lands_owned       ?? 0,
-        units_owned:          s.units_owned       ?? 0,
-        total_withdrawn:     (s.total_withdrawn_kobo   ?? 0) / 100,
-        pending_withdrawals:  s.pending_withdrawals,
+        balance:                 (s.balance_kobo               ?? 0) / 100,
+        current_portfolio_value: (s.current_portfolio_value_kobo ?? 0) / 100,
+        total_invested:          (s.total_invested_kobo          ?? 0) / 100,
+        lands_owned:              s.lands_owned                 ?? 0,
+        units_owned:              s.units_owned                 ?? 0,
+        total_withdrawn:         (s.total_withdrawn_kobo        ?? 0) / 100,
+        pending_withdrawals:      s.pending_withdrawals,
       });
 
       const txList = txRes.data?.data ?? [];
@@ -114,17 +112,25 @@ function useDashboardData(enabled) {
 /* ── Page ─────────────────────────────────────────────────────────────────── */
 export default function Dashboard() {
   const { user, loading: loadingUser } = useAuth();
-  const router   = useRouter();
-  const [mounted, setMounted] = useState(false);
-  const [hasToken, setHasToken] = useState(false);
+  const router = useRouter();
+
+  const [mounted, setMounted]         = useState(false);
+  const [hasToken, setHasToken]       = useState(false);
+  const [authTimedOut, setAuthTimedOut] = useState(false);
 
   useEffect(() => {
     setHasToken(!!localStorage.getItem("token"));
     requestAnimationFrame(() => setMounted(true));
+
+    // Match the axios timeout in utils/api.js (10 000 ms) plus a small buffer.
+    const timer = setTimeout(() => setAuthTimedOut(true), 12000);
+    return () => clearTimeout(timer);
   }, []);
 
-  const { stats, transactions, loadingStats, loadingTx, refetch } = useDashboardData(!!user && hasToken);
+  const { stats, transactions, loadingStats, loadingTx, refetch } =
+    useDashboardData(!!user && hasToken);
 
+  // Welcome toast — only fires once per login session.
   useEffect(() => {
     if (!user) return;
     if (sessionStorage.getItem("justLoggedIn") === "1") {
@@ -133,18 +139,35 @@ export default function Dashboard() {
     }
   }, [user]);
 
+  // Redirect when the user is not authenticated.
   useEffect(() => {
-    if (!loadingUser && !user) router.replace("/login");
-  }, [loadingUser, user, router]);
+    if (!loadingUser && !user) {
+      router.replace("/login");
+      return;
+    }
+    // Safety fallback: auth check has been loading for too long (server unreachable).
+    if (authTimedOut && !user) {
+      router.replace("/login");
+    }
+  }, [loadingUser, user, router, authTimedOut]);
 
-  if (loadingUser || !user) return (
-    <div className="min-h-screen bg-[#0D1F1A] flex items-center justify-center">
-      <div className="relative w-12 h-12">
-        <div className="absolute inset-0 w-12 h-12 border-2 border-amber-500/15 rounded-full" />
-        <div className="absolute inset-0 w-12 h-12 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+  // Show spinner while auth state resolves.
+  if (loadingUser || !user) {
+    return (
+      <div className="min-h-screen bg-[#0D1F1A] flex flex-col items-center justify-center gap-4">
+        <div className="relative w-12 h-12">
+          <div className="absolute inset-0 w-12 h-12 border-2 border-amber-500/15 rounded-full" />
+          <div className="absolute inset-0 w-12 h-12 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+        {/* After 6 seconds show a hint so users aren't confused */}
+        {authTimedOut && (
+          <p className="text-white/30 text-xs animate-pulse">
+            Having trouble connecting — redirecting you…
+          </p>
+        )}
       </div>
-    </div>
-  );
+    );
+  }
 
   return (
     <div
@@ -294,16 +317,15 @@ function SkeletonCard() {
 /* ── StatCard ─────────────────────────────────────────────────────────────── */
 function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
   const palette = {
-    amber:   { glow: "rgba(200,135,58,0.14)",  icon: "rgba(200,135,58,1)",   ring: "rgba(200,135,58,0.22)" },
-    emerald: { glow: "rgba(45,122,85,0.14)",   icon: "rgba(74,222,128,1)",   ring: "rgba(45,122,85,0.22)"  },
-    blue:    { glow: "rgba(59,130,246,0.14)",  icon: "rgba(96,165,250,1)",   ring: "rgba(59,130,246,0.22)" },
-    purple:  { glow: "rgba(139,92,246,0.14)",  icon: "rgba(167,139,250,1)",  ring: "rgba(139,92,246,0.22)" },
+    amber:   { glow: "rgba(200,135,58,0.14)",  icon: "rgba(200,135,58,1)",   ring: "rgba(200,135,58,0.22)"  },
+    emerald: { glow: "rgba(45,122,85,0.14)",   icon: "rgba(74,222,128,1)",   ring: "rgba(45,122,85,0.22)"   },
+    blue:    { glow: "rgba(59,130,246,0.14)",  icon: "rgba(96,165,250,1)",   ring: "rgba(59,130,246,0.22)"  },
+    purple:  { glow: "rgba(139,92,246,0.14)",  icon: "rgba(167,139,250,1)",  ring: "rgba(139,92,246,0.22)"  },
   };
-  const a   = palette[accent] || palette.amber;
-  const num = parseFloat(value) || 0;
+  const a        = palette[accent] || palette.amber;
+  const num      = parseFloat(value) || 0;
   const animated = useCountUp(num, 1000, mounted);
-
-  const display = isCount
+  const display  = isCount
     ? animated.toLocaleString()
     : "₦" + animated.toLocaleString("en-NG");
 

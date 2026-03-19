@@ -2,6 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
+  timeout: 10000,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -71,7 +72,10 @@ api.interceptors.response.use(
         const res = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/refresh`,
           {},
-          { headers: { Authorization: `Bearer ${token}` } }
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: 10000,
+          }
         );
 
         const newToken = res.data?.access_token || res.data?.token;

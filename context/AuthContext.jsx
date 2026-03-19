@@ -42,16 +42,16 @@ const GUEST_ROUTES = [
   "/support",
   "/terms",
   "/privacy",
-  "/r",   
+  "/r",
 ];
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser]       = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const router = useRouter();
+  const router   = useRouter();
   const pathname = usePathname();
 
   // ── Internal helpers ──────────────────────────────────────────────────────
@@ -73,6 +73,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // ── checkAuth ─────────────────────────────────────────────────────────────
+
   const checkAuth = useCallback(async () => {
     const token = localStorage.getItem("token");
 
@@ -85,14 +86,14 @@ export const AuthProvider = ({ children }) => {
     api.defaults.headers.common.Authorization = `Bearer ${token}`;
 
     try {
-      const res = await api.get("/me");
+      const res      = await api.get("/me");
       const userData = res.data?.data ?? res.data?.user ?? res.data;
       applySession(token, userData);
     } catch (err) {
       const status = err.response?.status;
 
       if (status === 401) {
-        // Token is expired/invalid. Clear the dead session.
+        // Token is definitively expired / invalid — clear and redirect.
         clearSession();
 
         const isGuestRoute = GUEST_ROUTES.some(
@@ -103,8 +104,10 @@ export const AuthProvider = ({ children }) => {
           localStorage.setItem("redirectAfterLogin", pathname);
           router.replace("/login");
         }
+      } else if (!err.response) {
+        console.warn("Auth check failed: no network response (timeout or offline).");
       } else {
-        // Transient error (network issue, 500, etc.) — don't log the user out.
+        // Transient server error (500, 503, etc.) — do not log the user out.
         console.warn("Auth check returned non-401 error:", status);
       }
     } finally {
@@ -123,7 +126,7 @@ export const AuthProvider = ({ children }) => {
     const res = await api.post("/login", { email, password });
 
     const token =
-      res.data?.token ||
+      res.data?.token       ||
       res.data?.access_token ||
       res.data?.data?.token;
 
@@ -132,7 +135,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("token", token);
 
     try {
-      const meRes = await api.get("/me");
+      const meRes    = await api.get("/me");
       const userData = meRes.data?.data ?? meRes.data?.user ?? meRes.data;
       applySession(token, userData);
     } catch {
