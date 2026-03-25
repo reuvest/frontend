@@ -2,28 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import api from "../../utils/api";
+import { useAuth } from "../../context/AuthContext";
 
 export default function AdminGuard({ children }) {
   const router = useRouter();
-  // "loading" | "authorized" | "unauthorized"
+  const { user, loading } = useAuth();
   const [status, setStatus] = useState("loading");
 
   useEffect(() => {
-    api.get("/me")
-      .then((res) => {
-        const user = res.data?.data ?? {};
-        setStatus(user.is_admin === true ? "authorized" : "unauthorized");
-      })
-      .catch(() => {
-        setStatus("unauthorized");
-      });
-  }, []);
+    if (loading) return;
+    if (!user) { setStatus("unauthorized"); return; }
+    setStatus(user.is_admin === true ? "authorized" : "unauthorized");
+  }, [user, loading]);
 
   useEffect(() => {
-    if (status === "unauthorized") {
-      router.replace("/dashboard");
-    }
+    if (status === "unauthorized") router.replace("/dashboard");
   }, [status, router]);
 
   if (status === "loading") {
@@ -35,6 +28,5 @@ export default function AdminGuard({ children }) {
   }
 
   if (status !== "authorized") return null;
-
   return children;
 }

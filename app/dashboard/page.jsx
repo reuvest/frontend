@@ -15,7 +15,7 @@ import {
 /* ── Helpers ──────────────────────────────────────────────────────────────── */
 
 const statusCfg = (status = "") => {
-  const s = status?.toLowerCase() || "";
+  const s = status?.toLowerCase() ?? "";
   if (s.includes("success") || s.includes("complete"))
     return { cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", dot: "bg-emerald-400" };
   if (s.includes("pending"))
@@ -24,7 +24,7 @@ const statusCfg = (status = "") => {
 };
 
 const amountMeta = (type = "") => {
-  const t = type?.toLowerCase() || "";
+  const t = type?.toLowerCase() ?? "";
   if (t.includes("deposit") || t.includes("sale"))
     return { sign: "+", color: "text-emerald-400", isCredit: true };
   if (t.includes("withdraw") || t.includes("purchase") || t.includes("invest"))
@@ -47,7 +47,7 @@ const greeting = () => {
   return "Good evening";
 };
 
-// Animated number counter
+// ── Animated counter ──────────────────────────────────────────────────────────
 function useCountUp(target, duration = 1100, enabled = true) {
   const [value, setValue] = useState(0);
   const raf = useRef(null);
@@ -83,15 +83,14 @@ function useDashboardData(enabled) {
         api.get("/transactions/user"),
       ]);
 
-      const s = statsRes.data?.data || {};
-
+      const s = statsRes.data?.data ?? {};
       setStats({
-        balance:                 (s.balance_kobo               ?? 0) / 100,
+        balance:                 (s.balance_kobo                ?? 0) / 100,
         current_portfolio_value: (s.current_portfolio_value_kobo ?? 0) / 100,
-        total_invested:          (s.total_invested_kobo          ?? 0) / 100,
-        lands_owned:              s.lands_owned                 ?? 0,
-        units_owned:              s.units_owned                 ?? 0,
-        total_withdrawn:         (s.total_withdrawn_kobo        ?? 0) / 100,
+        total_invested:          (s.total_invested_kobo           ?? 0) / 100,
+        lands_owned:              s.lands_owned                  ?? 0,
+        units_owned:              s.units_owned                  ?? 0,
+        total_withdrawn:         (s.total_withdrawn_kobo          ?? 0) / 100,
         pending_withdrawals:      s.pending_withdrawals,
       });
 
@@ -105,7 +104,15 @@ function useDashboardData(enabled) {
     }
   }, [enabled]);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  // Reset loading state when enabled flips (e.g. user logs in)
+  useEffect(() => {
+    if (enabled) {
+      setLoadingStats(true);
+      setLoadingTx(true);
+    }
+    loadData();
+  }, [loadData, enabled]);
+
   return { stats, transactions, loadingStats, loadingTx, refetch: loadData };
 }
 
@@ -115,28 +122,22 @@ export default function Dashboard() {
   const router = useRouter();
 
   const [mounted, setMounted]           = useState(false);
-  const [hasToken, setHasToken]         = useState(false);
   const [authTimedOut, setAuthTimedOut] = useState(false);
 
   useEffect(() => {
-    setHasToken(!!localStorage.getItem("token"));
     requestAnimationFrame(() => setMounted(true));
 
-    const timer = setTimeout(() => setAuthTimedOut(true), 12000);
+    // Safety net: if the auth context is still loading after 12 s (server
+    // unreachable), redirect to login rather than spinning forever.
+    const timer = setTimeout(() => setAuthTimedOut(true), 12_000);
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    const resolved = !loadingUser || authTimedOut;
-    if (resolved && !user) {
-      router.replace("/login");
-    }
-  }, [loadingUser, user, router, authTimedOut]);
-
+  // Only fetch data once the context has resolved and a user exists.
   const { stats, transactions, loadingStats, loadingTx, refetch } =
-    useDashboardData(!!user && hasToken);
+    useDashboardData(!!user);
 
-  // Welcome toast — only fires once per login session.
+  // ── Welcome toast (once per login session) ────────────────────────────────
   useEffect(() => {
     if (!user) return;
     if (sessionStorage.getItem("justLoggedIn") === "1") {
@@ -145,22 +146,34 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  // Show spinner while auth state resolves — but stop if timed out.
-  const isAuthing = (loadingUser || !user) && !authTimedOut;
+  // ── Redirect unauthenticated visitors ────────────────────────────────────
+  useEffect(() => {
+    if (!loadingUser && !user) {
+      router.replace("/login");
+    }
+    if (authTimedOut && !user) {
+      router.replace("/login");
+    }
+  }, [loadingUser, user, router, authTimedOut]);
 
-  if (isAuthing) {
+  // ── Loading spinner ───────────────────────────────────────────────────────
+  if (loadingUser || !user) {
     return (
       <div className="min-h-screen bg-[#0D1F1A] flex flex-col items-center justify-center gap-4">
         <div className="relative w-12 h-12">
           <div className="absolute inset-0 w-12 h-12 border-2 border-amber-500/15 rounded-full" />
           <div className="absolute inset-0 w-12 h-12 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
         </div>
+        {authTimedOut && (
+          <p className="text-white/30 text-xs animate-pulse">
+            Loading....
+          </p>
+        )}
       </div>
     );
   }
 
-  if (!user) return null;
-
+  /* ── Render ──────────────────────────────────────────────────────────────── */
   return (
     <div
       className="min-h-screen bg-[#0D1F1A] relative overflow-x-hidden"
@@ -168,15 +181,21 @@ export default function Dashboard() {
     >
       {/* ── Background ── */}
       <div className="fixed inset-0 pointer-events-none select-none">
-        <div className="absolute inset-0"
+        <div
+          className="absolute inset-0"
           style={{
             backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.065) 1px, transparent 1px)",
             backgroundSize: "32px 32px",
-          }} />
-        <div className="absolute -top-[15%] -right-[5%] w-[55vw] h-[55vw] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(200,135,58,0.11) 0%, transparent 65%)" }} />
-        <div className="absolute -bottom-[10%] -left-[10%] w-[45vw] h-[45vw] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(45,122,85,0.09) 0%, transparent 65%)" }} />
+          }}
+        />
+        <div
+          className="absolute -top-[15%] -right-[5%] w-[55vw] h-[55vw] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(200,135,58,0.11) 0%, transparent 65%)" }}
+        />
+        <div
+          className="absolute -bottom-[10%] -left-[10%] w-[45vw] h-[45vw] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(45,122,85,0.09) 0%, transparent 65%)" }}
+        />
         <div className="absolute top-0 left-0 right-0 h-48 bg-linear-to-b from-black/25 to-transparent" />
       </div>
 
@@ -195,7 +214,9 @@ export default function Dashboard() {
                 </span>
                 <span className="w-1 h-1 rounded-full bg-amber-500/30" />
                 <span className="text-[10px] text-white/20">
-                  {new Date().toLocaleDateString("en-NG", { weekday: "short", month: "short", day: "numeric" })}
+                  {new Date().toLocaleDateString("en-NG", {
+                    weekday: "short", month: "short", day: "numeric",
+                  })}
                 </span>
               </div>
               <h1
@@ -203,13 +224,15 @@ export default function Dashboard() {
                 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
               >
                 <span className="text-white">{greeting()}, </span>
-                <span style={{
-                  background: "linear-gradient(135deg, #E8A850 0%, #C8873A 50%, #E8A850 100%)",
-                  backgroundSize: "200% auto",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}>
+                <span
+                  style={{
+                    background: "linear-gradient(135deg, #E8A850 0%, #C8873A 50%, #E8A850 100%)",
+                    backgroundSize: "200% auto",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
                   {user?.name?.split(" ")[0] || "Investor"}
                 </span>
               </h1>
@@ -234,43 +257,13 @@ export default function Dashboard() {
           style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)" }}
         >
           {loadingStats ? (
-            [1, 2, 3, 4].map(i => <SkeletonCard key={i} />)
+            [1, 2, 3, 4].map((i) => <SkeletonCard key={i} />)
           ) : (
             <>
-              <StatCard
-                icon={<Wallet size={16} />}
-                label="Wallet Balance"
-                value={stats?.balance ?? 0}
-                accent="amber"
-                href="/wallet"
-                mounted={mounted}
-              />
-              <StatCard
-                icon={<TrendingUp size={16} />}
-                label="Portfolio Value"
-                value={stats?.current_portfolio_value ?? 0}
-                accent="emerald"
-                href="/portfolio"
-                mounted={mounted}
-              />
-              <StatCard
-                icon={<MapPin size={16} />}
-                label="Lands Invested"
-                value={stats?.lands_owned ?? 0}
-                accent="blue"
-                href="/portfolio"
-                mounted={mounted}
-                isCount
-                sub={`${stats?.units_owned ?? 0} units`}
-              />
-              <StatCard
-                icon={<Activity size={16} />}
-                label="Sale Proceeds"
-                value={stats?.total_withdrawn ?? 0}
-                accent="purple"
-                href="/wallet"
-                mounted={mounted}
-              />
+              <StatCard icon={<Wallet size={16} />}     label="Wallet Balance"  value={stats?.balance ?? 0}                  accent="amber"   href="/wallet"    mounted={mounted} />
+              <StatCard icon={<TrendingUp size={16} />} label="Portfolio Value" value={stats?.current_portfolio_value ?? 0}  accent="emerald" href="/portfolio" mounted={mounted} />
+              <StatCard icon={<MapPin size={16} />}     label="Lands Invested"  value={stats?.lands_owned ?? 0}              accent="blue"    href="/portfolio" mounted={mounted} isCount sub={`${stats?.units_owned ?? 0} units`} />
+              <StatCard icon={<Activity size={16} />}   label="Sale Proceeds"   value={stats?.total_withdrawn ?? 0}          accent="purple"  href="/wallet"    mounted={mounted} />
             </>
           )}
         </section>
@@ -292,6 +285,7 @@ export default function Dashboard() {
         >
           <TransactionsSection transactions={transactions} loading={loadingTx} />
         </section>
+
       </main>
     </div>
   );
@@ -309,12 +303,12 @@ function SkeletonCard() {
 /* ── StatCard ─────────────────────────────────────────────────────────────── */
 function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
   const palette = {
-    amber:   { glow: "rgba(200,135,58,0.14)",  icon: "rgba(200,135,58,1)",   ring: "rgba(200,135,58,0.22)"  },
-    emerald: { glow: "rgba(45,122,85,0.14)",   icon: "rgba(74,222,128,1)",   ring: "rgba(45,122,85,0.22)"   },
-    blue:    { glow: "rgba(59,130,246,0.14)",  icon: "rgba(96,165,250,1)",   ring: "rgba(59,130,246,0.22)"  },
-    purple:  { glow: "rgba(139,92,246,0.14)",  icon: "rgba(167,139,250,1)",  ring: "rgba(139,92,246,0.22)"  },
+    amber:   { glow: "rgba(200,135,58,0.14)",  icon: "rgba(200,135,58,1)",  ring: "rgba(200,135,58,0.22)"  },
+    emerald: { glow: "rgba(45,122,85,0.14)",   icon: "rgba(74,222,128,1)",  ring: "rgba(45,122,85,0.22)"   },
+    blue:    { glow: "rgba(59,130,246,0.14)",  icon: "rgba(96,165,250,1)",  ring: "rgba(59,130,246,0.22)"  },
+    purple:  { glow: "rgba(139,92,246,0.14)",  icon: "rgba(167,139,250,1)", ring: "rgba(139,92,246,0.22)"  },
   };
-  const a        = palette[accent] || palette.amber;
+  const a        = palette[accent] ?? palette.amber;
   const num      = parseFloat(value) || 0;
   const animated = useCountUp(num, 1000, mounted);
   const display  = isCount
@@ -323,20 +317,19 @@ function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
 
   const inner = (
     <div className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4 sm:p-5 hover:bg-white/5.5 hover:border-white/12 transition-all duration-300 overflow-hidden h-full flex flex-col">
-      <div className="absolute -top-10 -right-10 w-28 h-28 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-        style={{ background: `radial-gradient(circle, ${a.glow}, transparent 70%)` }} />
-
+      <div
+        className="absolute -top-10 -right-10 w-28 h-28 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{ background: `radial-gradient(circle, ${a.glow}, transparent 70%)` }}
+      />
       <div
         className="w-9 h-9 rounded-xl flex items-center justify-center mb-4 shrink-0"
         style={{ background: a.glow, boxShadow: `0 0 0 1px ${a.ring}`, color: a.icon }}
       >
         {icon}
       </div>
-
       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/25 mb-1.5 truncate">
         {label}
       </p>
-
       <p
         className="text-xl sm:text-2xl font-bold text-white leading-none mt-auto"
         style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
@@ -344,9 +337,7 @@ function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
       >
         {display}
       </p>
-
       {sub && <p className="text-[11px] text-white/25 mt-1.5 truncate">{sub}</p>}
-
       <ChevronRight
         size={12}
         className="absolute bottom-4 right-4 text-white/15 opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0 transition-all duration-300"
@@ -419,8 +410,10 @@ function TransactionsSection({ transactions, loading }) {
       <div className="rounded-2xl border border-white/[0.07] bg-white/3 overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 bg-white/2">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: "rgba(200,135,58,0.1)", boxShadow: "0 0 0 1px rgba(200,135,58,0.18)" }}>
+            <div
+              className="w-7 h-7 rounded-lg flex items-center justify-center"
+              style={{ background: "rgba(200,135,58,0.1)", boxShadow: "0 0 0 1px rgba(200,135,58,0.18)" }}
+            >
               <Activity size={13} className="text-amber-500" />
             </div>
             <h2 className="text-[10px] font-black uppercase tracking-[0.22em] text-white/35">
@@ -428,7 +421,6 @@ function TransactionsSection({ transactions, loading }) {
             </h2>
           </div>
         </div>
-
         <div className="flex flex-col items-center text-center px-5 py-10">
           <div
             className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
@@ -442,7 +434,7 @@ function TransactionsSection({ transactions, loading }) {
           >
             No transactions yet
           </p>
-          <p className="text-xs text-white/25 mb-5 max-w-50 leading-relaxed">
+          <p className="text-xs text-white/25 mb-5 max-w-[200px] leading-relaxed">
             Invest in verified land to see activity here.
           </p>
           <Link
@@ -462,8 +454,10 @@ function TransactionsSection({ transactions, loading }) {
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 bg-white/2">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-            style={{ background: "rgba(200,135,58,0.1)", boxShadow: "0 0 0 1px rgba(200,135,58,0.18)" }}>
+          <div
+            className="w-7 h-7 rounded-lg flex items-center justify-center"
+            style={{ background: "rgba(200,135,58,0.1)", boxShadow: "0 0 0 1px rgba(200,135,58,0.18)" }}
+          >
             <Activity size={13} className="text-amber-500" />
           </div>
           <h2 className="text-[10px] font-black uppercase tracking-[0.22em] text-white/35">
@@ -473,8 +467,10 @@ function TransactionsSection({ transactions, loading }) {
             {transactions.length}
           </span>
         </div>
-        <Link href="/wallet"
-          className="flex items-center gap-1 text-xs font-bold text-amber-500/65 hover:text-amber-400 transition-colors">
+        <Link
+          href="/wallet"
+          className="flex items-center gap-1 text-xs font-bold text-amber-500/65 hover:text-amber-400 transition-colors"
+        >
           View all <ChevronRight size={11} />
         </Link>
       </div>
@@ -490,8 +486,10 @@ function TransactionsSection({ transactions, loading }) {
                 { label: "Status",       align: "text-left"  },
                 { label: "Date",         align: "text-left"  },
               ].map(({ label, align }) => (
-                <th key={label}
-                  className={`px-5 py-3 text-[9px] font-black uppercase tracking-[0.22em] text-white/20 ${align}`}>
+                <th
+                  key={label}
+                  className={`px-5 py-3 text-[9px] font-black uppercase tracking-[0.22em] text-white/20 ${align}`}
+                >
                   {label}
                 </th>
               ))}
@@ -502,20 +500,22 @@ function TransactionsSection({ transactions, loading }) {
               const { sign, color, isCredit } = amountMeta(tx?.type);
               const { cls, dot }              = statusCfg(tx?.status);
               const amountNaira = Number(tx?.amount ?? 0);
-              const landName    = tx?.land ?? null;
               const txDate      = tx?.date ?? tx?.created_at;
 
               return (
-                <tr key={idx}
-                  className="border-b border-white/[0.035] hover:bg-white/[0.022] transition-colors group">
-
+                <tr
+                  key={idx}
+                  className="border-b border-white/[0.035] hover:bg-white/[0.022] transition-colors group"
+                >
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-[1.04] ${
-                        isCredit === true    ? "bg-emerald-500/10"
-                        : isCredit === false ? "bg-red-500/10"
-                        : "bg-white/5"
-                      }`}>
+                      <div
+                        className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-[1.04] ${
+                          isCredit === true    ? "bg-emerald-500/10"
+                          : isCredit === false ? "bg-red-500/10"
+                          : "bg-white/5"
+                        }`}
+                      >
                         {isCredit === true
                           ? <ArrowDownLeft size={14} className="text-emerald-400" />
                           : isCredit === false
@@ -527,9 +527,11 @@ function TransactionsSection({ transactions, loading }) {
                           {tx?.type || "Transaction"}
                         </p>
                         <p className="text-[11px] text-white/22 mt-1 truncate">
-                          {landName || "Wallet"}
+                          {tx?.land || "Wallet"}
                           {tx?.units != null && (
-                            <span className="ml-1.5 text-white/20">· {tx.units} unit{tx.units !== 1 ? "s" : ""}</span>
+                            <span className="ml-1.5 text-white/20">
+                              · {tx.units} unit{tx.units !== 1 ? "s" : ""}
+                            </span>
                           )}
                         </p>
                       </div>
@@ -537,8 +539,10 @@ function TransactionsSection({ transactions, loading }) {
                   </td>
 
                   <td className="px-5 py-4 text-right">
-                    <span className={`font-bold tabular-nums text-[0.9rem] ${color}`}
-                      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                    <span
+                      className={`font-bold tabular-nums text-[0.9rem] ${color}`}
+                      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                    >
                       {sign}₦{amountNaira.toLocaleString("en-NG")}
                     </span>
                   </td>
@@ -566,17 +570,20 @@ function TransactionsSection({ transactions, loading }) {
           const { sign, color, isCredit } = amountMeta(tx?.type);
           const { cls, dot }              = statusCfg(tx?.status);
           const amountNaira = Number(tx?.amount ?? 0);
-          const landName    = tx?.land ?? null;
           const txDate      = tx?.date ?? tx?.created_at;
 
           return (
-            <div key={idx}
-              className="px-4 py-3.5 flex items-center gap-3 hover:bg-white/2 transition-colors">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                isCredit === true    ? "bg-emerald-500/10"
-                : isCredit === false ? "bg-red-500/10"
-                : "bg-white/5"
-              }`}>
+            <div
+              key={idx}
+              className="px-4 py-3.5 flex items-center gap-3 hover:bg-white/2 transition-colors"
+            >
+              <div
+                className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                  isCredit === true    ? "bg-emerald-500/10"
+                  : isCredit === false ? "bg-red-500/10"
+                  : "bg-white/5"
+                }`}
+              >
                 {isCredit === true
                   ? <ArrowDownLeft size={15} className="text-emerald-400" />
                   : isCredit === false
@@ -588,9 +595,11 @@ function TransactionsSection({ transactions, loading }) {
                   {tx?.type || "Transaction"}
                 </p>
                 <p className="text-[11px] text-white/22 mt-1 truncate">
-                  {landName || "Wallet"}
+                  {tx?.land || "Wallet"}
                   {tx?.units != null && (
-                    <span className="ml-1.5 text-white/20">· {tx.units} unit{tx.units !== 1 ? "s" : ""}</span>
+                    <span className="ml-1.5 text-white/20">
+                      · {tx.units} unit{tx.units !== 1 ? "s" : ""}
+                    </span>
                   )}
                   {" · "}{formatDate(txDate)}
                 </p>
@@ -612,8 +621,10 @@ function TransactionsSection({ transactions, loading }) {
       {/* Footer */}
       {transactions.length > 6 && (
         <div className="px-5 py-3 border-t border-white/5 text-center bg-white/1">
-          <Link href="/wallet"
-            className="text-xs text-white/20 hover:text-amber-500 transition-colors font-semibold">
+          <Link
+            href="/wallet"
+            className="text-xs text-white/20 hover:text-amber-500 transition-colors font-semibold"
+          >
             View all {transactions.length} transactions →
           </Link>
         </div>

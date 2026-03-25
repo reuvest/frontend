@@ -1,23 +1,18 @@
 import axios from "axios";
+import { getToken, setToken, clearToken } from "./tokenStore";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
-  timeout: 10000,
+  timeout: 10_000,
   headers: { "Content-Type": "application/json" },
 });
 
-// Attach JWT token + fix Content-Type for FormData requests
-api.interceptors.request.use((config) => {
-  // Attach token
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
+// ── Request interceptor ───────────────────────────────────────────────────────
 
-  // Let the browser set Content-Type automatically for FormData
-  // (it needs to include the multipart boundary — setting it manually breaks file uploads)
+api.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+
   if (config.data instanceof FormData) {
     delete config.headers["Content-Type"];
   }
@@ -25,91 +20,86 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Track whether a refresh is already in progress to avoid parallel refresh calls
+// ── Refresh state ─────────────────────────────────────────────────────────────
+
 let isRefreshing = false;
 let refreshQueue = [];
 
-const processQueue = (error, token = null) => {
-  refreshQueue.forEach(({ resolve, reject }) => {
-    if (error) reject(error);
-    else resolve(token);
-  });
+function processQueue(error, token = null) {
+  refreshQueue.forEach(({ resolve, reject }) =>
+    error ? reject(error) : resolve(token)
+  );
   refreshQueue = [];
-};
+}
 
-const SKIP_REFRESH_URLS = ["/me", "/login", "/refresh", "/logout"];
+const SKIP_REFRESH = ["/me", "/login", "/refresh", "/logout"];
+const shouldSkip = (url = "") => SKIP_REFRESH.some((p) => url.includes(p));
 
-const shouldSkipRefresh = (url = "") =>
-  SKIP_REFRESH_URLS.some((path) => url.includes(path));
+// ── Response interceptor ─────────────────────────────────────────────────────
 
 api.interceptors.response.use(
-  (response) => response,
+  (res) => res,
   async (error) => {
-    const originalRequest = error.config;
+    const original = error.config;
 
     if (
-      error.response?.status === 401 &&
-      typeof window !== "undefined" &&
-      !originalRequest._retry &&
-      !shouldSkipRefresh(originalRequest.url)
+      error.response?.status !== 401 ||
+      original._retry ||
+      shouldSkip(original.url)
     ) {
-      const token = localStorage.getItem("token");
-
-      // No token at all — not logged in
-      if (!token) {
-        window.location.href = "/login";
-        return Promise.reject(error);
-      }
-
-      // Queue parallel requests while refresh is in progress
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          refreshQueue.push({ resolve, reject });
-        })
-          .then((newToken) => {
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
-            return api(originalRequest);
-          })
-          .catch((err) => Promise.reject(err));
-      }
-
-      originalRequest._retry = true;
-      isRefreshing = true;
-
-      try {
-        const res = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/refresh`,
-          {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            timeout: 10000,
-          }
-        );
-
-        const newToken = res.data?.access_token || res.data?.token;
-        if (!newToken) throw new Error("No token in refresh response");
-
-        localStorage.setItem("token", newToken);
-        api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
-
-        processQueue(null, newToken);
-
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return api(originalRequest);
-      } catch (refreshError) {
-        // Refresh failed — clear everything and force re-login
-        processQueue(refreshError, null);
-        localStorage.removeItem("token");
-        delete api.defaults.headers.common.Authorization;
-        // Use replace so the user can't go "back" to the broken state
-        window.location.replace("/login");
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
-      }
+      return Promise.reject(error);
     }
 
-    return Promise.reject(error);
+    const token = getToken();
+
+    // No token → not logged in; send straight to login.
+    if (!token) {
+      if (typeof window !== "undefined") window.location.href = "/login";
+      return Promise.reject(error);
+    }
+
+    // Queue parallel requests while a refresh is in flight.
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        refreshQueue.push({ resolve, reject });
+      }).then((newToken) => {
+        original.headers.Authorization = `Bearer ${newToken}`;
+        return api(original);
+      });
+    }
+
+    original._retry = true;
+    isRefreshing = true;
+
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/refresh`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          timeout: 10_000,
+        }
+      );
+
+      const newToken = res.data?.access_token ?? res.data?.token;
+      if (!newToken) throw new Error("No token in refresh response");
+
+      // Persist to cookie; role stays unchanged so pass undefined.
+      setToken(newToken);
+      api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+      processQueue(null, newToken);
+
+      original.headers.Authorization = `Bearer ${newToken}`;
+      return api(original);
+    } catch (refreshError) {
+      processQueue(refreshError, null);
+      clearToken();
+      delete api.defaults.headers.common.Authorization;
+      if (typeof window !== "undefined") window.location.replace("/login");
+      return Promise.reject(refreshError);
+    } finally {
+      isRefreshing = false;
+    }
   }
 );
 

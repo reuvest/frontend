@@ -1,33 +1,25 @@
 "use client";
 
-import { createContext, useState, useEffect, useContext, useCallback } from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+} from "react";
 import { useRouter, usePathname } from "next/navigation";
 import api from "../utils/api";
+import { getToken, setToken, clearToken } from "../utils/tokenStore";
 import { resetNotificationCache } from "../services/notificationService";
 
 export const AuthContext = createContext(null);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-function getRole(user) {
+function deriveRole(user) {
   if (!user) return "user";
-  if (user.is_admin === true) return "admin";
-  if (user.role === "admin") return "admin";
-  return "user";
+  return user.is_admin === true || user.role === "admin" ? "admin" : "user";
 }
-
-function setCookie(name, value) {
-  const minutes = parseInt(process.env.NEXT_PUBLIC_JWT_TTL_MINUTES ?? "1440", 10);
-  const ms = (isNaN(minutes) ? 1440 : minutes) * 60 * 1000;
-  const expires = new Date(Date.now() + ms).toUTCString();
-  document.cookie = `${name}=${value}; path=/; expires=${expires}; SameSite=Lax`;
-}
-
-function clearCookie(name) {
-  document.cookie = `${name}=; path=/; max-age=0`;
-}
-
-// ─── Constants ────────────────────────────────────────────────────────────────
 
 const GUEST_ROUTES = [
   "/",
@@ -45,7 +37,7 @@ const GUEST_ROUTES = [
   "/r",
 ];
 
-// ─── Provider ─────────────────────────────────────────────────────────────────
+// ── Provider ──────────────────────────────────────────────────────────────────
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser]       = useState(null);
@@ -54,28 +46,26 @@ export const AuthProvider = ({ children }) => {
   const router   = useRouter();
   const pathname = usePathname();
 
-  // ── Internal helpers ──────────────────────────────────────────────────────
+  // ── clearSession ────────────────────────────────────────────────────────
 
   const clearSession = useCallback(() => {
     resetNotificationCache();
-    localStorage.removeItem("token");
+    clearToken(); // erases auth_token + user_role cookies
     delete api.defaults.headers.common.Authorization;
-    clearCookie("auth_token");
-    clearCookie("user_role");
     setUser(null);
   }, []);
 
+  // ── applySession ────────────────────────────────────────────────────────
+
   const applySession = useCallback((token, userData) => {
+    setToken(token, deriveRole(userData)); // writes both cookies with correct TTL
     api.defaults.headers.common.Authorization = `Bearer ${token}`;
     setUser(userData);
-    setCookie("auth_token", token);
-    setCookie("user_role", getRole(userData));
   }, []);
 
-  // ── checkAuth ─────────────────────────────────────────────────────────────
-
+  // ── checkAuth ───────────────────────────────────────────────────────────
   const checkAuth = useCallback(async () => {
-    const token = localStorage.getItem("token");
+    const token = getToken(); // cookie read
 
     if (!token) {
       setUser(null);
@@ -83,6 +73,7 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
+    // Pre-seed axios so the /me call carries the token even before applySession.
     api.defaults.headers.common.Authorization = `Bearer ${token}`;
 
     try {
@@ -93,22 +84,24 @@ export const AuthProvider = ({ children }) => {
       const status = err.response?.status;
 
       if (status === 401) {
-        // Token is definitively expired / invalid — clear and redirect.
+        // Definitively invalid — wipe session and redirect.
         clearSession();
 
-        const isGuestRoute = GUEST_ROUTES.some(
+        const isGuest = GUEST_ROUTES.some(
           (r) => pathname === r || pathname.startsWith(r + "/")
         );
 
-        if (!isGuestRoute) {
-          localStorage.setItem("redirectAfterLogin", pathname);
+        if (!isGuest) {
+          sessionStorage.setItem("redirectAfterLogin", pathname);
           router.replace("/login");
         }
       } else if (!err.response) {
-        console.warn("Auth check failed: no network response (timeout or offline).");
+        // Network timeout / offline — keep token, surface nothing to the user.
+        // The dashboard's own auth timeout fallback handles this gracefully.
+        console.warn("Auth check: no network response (offline or timeout).");
       } else {
-        // Transient server error (500, 503, etc.) — do not log the user out.
-        console.warn("Auth check returned non-401 error:", status);
+        // 500 / 503 transient error — do not log the user out.
+        console.warn("Auth check: server error", status);
       }
     } finally {
       setLoading(false);
@@ -118,43 +111,40 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     checkAuth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // intentionally run only once on mount
+  }, []); // Intentionally once on mount
 
-  // ── login ─────────────────────────────────────────────────────────────────
+  // ── login ────────────────────────────────────────────────────────────────
 
   const login = async (email, password) => {
     const res = await api.post("/login", { email, password });
 
     const token =
-      res.data?.token       ||
-      res.data?.access_token ||
+      res.data?.token        ??
+      res.data?.access_token ??
       res.data?.data?.token;
 
     if (!token) throw new Error("Token not returned from server");
 
-    localStorage.setItem("token", token);
-
     try {
+      api.defaults.headers.common.Authorization = `Bearer ${token}`;
       const meRes    = await api.get("/me");
       const userData = meRes.data?.data ?? meRes.data?.user ?? meRes.data;
       applySession(token, userData);
     } catch {
-      // Fallback: use whatever the login response returned
-      const userData = res.data?.user ?? null;
-      applySession(token, userData);
+      applySession(token, res.data?.user ?? null);
     }
   };
 
-  // ── logout ────────────────────────────────────────────────────────────────
+  // ── logout ───────────────────────────────────────────────────────────────
 
   const logout = () => {
-    api.post("/logout").catch(() => {});
+    api.post("/logout").catch(() => {}); // fire-and-forget server invalidation
     clearSession();
-    localStorage.removeItem("redirectAfterLogin");
+    sessionStorage.removeItem("redirectAfterLogin");
     router.replace("/login");
   };
 
-  // ── context value ─────────────────────────────────────────────────────────
+  // ── context ──────────────────────────────────────────────────────────────
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout, checkAuth }}>
