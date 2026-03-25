@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import {
   ArrowLeft, MapPin, Layers, TrendingUp, ShieldCheck,
   Lock, X, AlertCircle, Info, Tag, Wallet, ToggleLeft, ToggleRight,
+  Info as InfoIcon,
 } from "lucide-react";
 
 import Lightbox from "yet-another-react-lightbox";
@@ -85,42 +86,44 @@ function BreakdownRow({ label, value, highlight, strikethrough, green, muted }) 
   );
 }
 
+/** Shown when a discount was capped — explains the saving vs what was possible */
+function CapNotice({ preview }) {
+  const isCapped = preview?.discount_label?.toLowerCase().includes("capped");
+  if (!isCapped) return null;
+
+  // Work out the "uncapped" saving so we can show the delta
+  const cappedKobo   = preview.total_discount_kobo ?? 0;
+  const originalKobo = preview.original_cost_kobo  ?? 0;
+
+  return (
+    <div className="flex items-start gap-2 rounded-lg border border-amber-500/15 bg-amber-500/5 px-3 py-2 mt-1">
+      <InfoIcon size={11} className="text-amber-400/60 shrink-0 mt-0.5" />
+      <p className="text-xs text-amber-400/70 leading-relaxed">
+        A maximum discount cap applies. Your saving is limited to{" "}
+        <span className="font-semibold text-amber-400">
+          ₦{(cappedKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
+        </span>{" "}
+        on this order.
+      </p>
+    </div>
+  );
+}
+
 function SlideTile({ slide, index, label, style, className = "", onClick, overlayCount }) {
   return (
-    <div
-      className={`relative overflow-hidden group cursor-pointer ${className}`}
-      style={style}
-      onClick={onClick}
-    >
-      <img
-        src={slide.src}
-        alt={label}
+    <div className={`relative overflow-hidden group cursor-pointer ${className}`} style={style} onClick={onClick}>
+      <img src={slide.src} alt={label}
         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        onError={(e) => {
-          if (!e.target.dataset.errored) {
-            e.target.dataset.errored = "1";
-            e.target.src = "/no-image.jpeg";
-          }
-        }}
-      />
-      {/* "+N more" overlay on last visible tile */}
+        onError={(e) => { if (!e.target.dataset.errored) { e.target.dataset.errored = "1"; e.target.src = "/no-image.jpeg"; } }} />
       {overlayCount > 0 ? (
-        <div
-          className="absolute inset-0 flex items-center justify-center"
-          style={{ background: "rgba(13,31,26,0.70)" }}
-        >
-          <span
-            className="text-white text-2xl font-bold"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+        <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(13,31,26,0.70)" }}>
+          <span className="text-white text-2xl font-bold" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
             +{overlayCount}
           </span>
         </div>
       ) : (
-        <div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3"
-          style={{ background: "linear-gradient(to top, rgba(13,31,26,0.6), transparent)" }}
-        >
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3"
+          style={{ background: "linear-gradient(to top, rgba(13,31,26,0.6), transparent)" }}>
           <span className="text-white/80 text-xs font-bold uppercase tracking-widest">View</span>
         </div>
       )}
@@ -128,13 +131,10 @@ function SlideTile({ slide, index, label, style, className = "", onClick, overla
   );
 }
 
-// ── Photo grid ──────────────────────────────────────────────────────────────
 function PhotoGrid({ slides, land, onOpen }) {
   if (!slides.length) return null;
-
   const open = (i) => onOpen(i);
 
-  // ── 1 image: full width ──────────────────────────────────────────────────
   if (slides.length === 1) {
     return (
       <div className="rounded-2xl overflow-hidden border border-white/10" style={{ height: 400 }}>
@@ -144,7 +144,6 @@ function PhotoGrid({ slides, land, onOpen }) {
     );
   }
 
-  // ── 2 images: side by side ───────────────────────────────────────────────
   if (slides.length === 2) {
     return (
       <div className="rounded-2xl overflow-hidden border border-white/10"
@@ -157,39 +156,16 @@ function PhotoGrid({ slides, land, onOpen }) {
     );
   }
 
-  // ── 3+ images: mosaic — big left, two stacked right ──────────────────────
   const extraCount = slides.length > 3 ? slides.length - 3 : 0;
-
   return (
-    <div
-      className="rounded-2xl overflow-hidden border border-white/10"
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gridTemplateRows: "205px 205px",
-        gap: 3,
-        height: 413, // 205 + 3 + 205
-      }}
-    >
-      {/* Large hero tile — spans both rows */}
-      <SlideTile
-        slide={slides[0]} index={0} label={`${land.title} 1`}
-        style={{ gridRow: "1 / 3", height: "100%" }}
-        onClick={() => open(0)}
-      />
-      {/* Top-right */}
-      <SlideTile
-        slide={slides[1]} index={1} label={`${land.title} 2`}
-        style={{ height: "100%" }}
-        onClick={() => open(1)}
-      />
-      {/* Bottom-right — may show "+N" overlay */}
-      <SlideTile
-        slide={slides[2]} index={2} label={`${land.title} 3`}
-        style={{ height: "100%" }}
-        overlayCount={extraCount}
-        onClick={() => open(2)}
-      />
+    <div className="rounded-2xl overflow-hidden border border-white/10"
+      style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "205px 205px", gap: 3, height: 413 }}>
+      <SlideTile slide={slides[0]} index={0} label={`${land.title} 1`}
+        style={{ gridRow: "1 / 3", height: "100%" }} onClick={() => open(0)} />
+      <SlideTile slide={slides[1]} index={1} label={`${land.title} 2`}
+        style={{ height: "100%" }} onClick={() => open(1)} />
+      <SlideTile slide={slides[2]} index={2} label={`${land.title} 3`}
+        style={{ height: "100%" }} overlayCount={extraCount} onClick={() => open(2)} />
     </div>
   );
 }
@@ -203,8 +179,8 @@ export default function LandDetails() {
   const [loading, setLoading]     = useState(true);
   const [error, setError]         = useState("");
 
-  const [pinIsSet, setPinIsSet]   = useState(true);
-  const [kycStatus, setKycStatus] = useState("approved");
+  const [pinIsSet, setPinIsSet]         = useState(true);
+  const [kycStatus, setKycStatus]       = useState("approved");
   const [statusLoaded, setStatusLoaded] = useState(false);
 
   const [modalType, setModalType]           = useState(null);
@@ -268,7 +244,6 @@ export default function LandDetails() {
     fetchAccountStatus();
   }, [fetchLand, fetchUserUnits, fetchAccountStatus]);
 
-  // ── Purchase preview — debounced ─────────────────────────────────────────
   useEffect(() => {
     if (modalType !== "purchase") return;
     const units = Number(unitsInput);
@@ -390,14 +365,10 @@ export default function LandDetails() {
           <ArrowLeft size={13} /> Back to Lands
         </Link>
 
-        {/* ── Photo grid ─────────────────────────────────────────────────── */}
         {slides.length > 0 && (
           <div className="mb-10">
-            <PhotoGrid
-              slides={slides}
-              land={land}
-              onOpen={(i) => { setPhotoIndex(i); setLightboxOpen(true); }}
-            />
+            <PhotoGrid slides={slides} land={land}
+              onOpen={(i) => { setPhotoIndex(i); setLightboxOpen(true); }} />
           </div>
         )}
 
@@ -486,7 +457,7 @@ export default function LandDetails() {
           plugins={slides.length > 1 ? [Thumbnails] : []} />
       )}
 
-      {/* ── Transaction modal ───────────────────────────────────────────────── */}
+      {/* ── Transaction modal ─────────────────────────────────────────────── */}
       {modalType && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="relative w-full max-w-md rounded-2xl border border-white/10 overflow-hidden"
@@ -590,21 +561,29 @@ export default function LandDetails() {
                           <span className="text-xs font-bold text-emerald-400">{preview.discount_label}</span>
                         </div>
                       )}
+
                       <BreakdownRow label="Original cost"
                         value={`₦${preview.original_cost_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`}
                         strikethrough={preview.total_discount_kobo > 0} />
+
                       {preview.first_purchase_discount_kobo > 0 && (
                         <BreakdownRow label="First-purchase discount"
                           value={`-₦${preview.first_purchase_discount_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`} green />
                       )}
+
                       {preview.referral_discount_kobo > 0 && (
                         <BreakdownRow label="Referral discount"
                           value={`-₦${preview.referral_discount_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`} green />
                       )}
+
+                      {/* ── Cap notice — only when label contains "capped" ── */}
+                      <CapNotice preview={preview} />
+
                       {preview.paid_from_rewards_kobo > 0 && (
                         <BreakdownRow label="From rewards balance"
                           value={`-₦${preview.paid_from_rewards_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`} green />
                       )}
+
                       <div className="border-t border-white/10 mt-2 pt-2">
                         <div className="flex justify-between items-center">
                           <span className="text-xs font-bold uppercase tracking-wider text-white/50">You pay</span>
