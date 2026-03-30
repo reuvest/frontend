@@ -180,7 +180,7 @@ export default async function Homepage() {
 
           <div className="relative z-10 w-full max-w-4xl mx-auto px-5 sm:px-8 text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs font-bold mb-6">
-              <BadgeCheck size={12} /> Fully verified land · C of O backed titles
+              <BadgeCheck size={12} /> Fully verified land · Legally backed
             </div>
 
             <h1
@@ -215,11 +215,11 @@ export default async function Homepage() {
             </div>
 
             {/* Social proof stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto mb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-2xl mx-auto mb-8">
               <StatBadge value="₦5,000" label="Min. investment" />
               <StatBadge value="10–20%" label="Projected annual ROI" />
-              <StatBadge value="C of O" label="Title standard" />
-              <StatBadge value="3 cities" label="Ogun · Oyo · Abuja" />
+              {/* <StatBadge value="C of O" label="Title standard" /> */}
+              <StatBadge value="Multiple cities" label="Ogun · Oyo · Abuja" />
             </div>
 
             <div className="flex flex-wrap justify-center gap-5 text-xs text-white/35">
