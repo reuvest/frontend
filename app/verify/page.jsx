@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import api from "../../../utils/api";
+import api from "../../utils/api";
 import {
   ShieldCheck, ShieldX, MapPin, CheckCircle2,
   Loader2, RefreshCw, Search, X, ArrowRight,
