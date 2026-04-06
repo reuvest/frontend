@@ -195,7 +195,7 @@ function RegisterForm() {
           <div className="flex items-center gap-3 mb-16">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm"
               style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)", color: "#071410" }}>
-              S
+              R
             </div>
             <span className="text-xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
               {APP_NAME}

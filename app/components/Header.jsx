@@ -60,7 +60,7 @@ export default function Header() {
               className="w-8 h-8 rounded-lg flex items-center justify-center text-[#0D1F1A] font-black text-sm transition-transform group-hover:scale-105"
               style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)" }}
             >
-              S
+              R
             </div>
             <span className="text-xl font-bold text-white tracking-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
               {appname}

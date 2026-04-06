@@ -109,8 +109,8 @@ function LoginForm() {
           <Link href="/">
             <h1 className="text-4xl font-bold text-white inline-block"
               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-              {appname.slice(0, -4)}
-              <span style={{ color: "#C8873A" }}>{appname.slice(-4)}</span>
+              {appname.slice(0, -3)}
+              <span style={{ color: "#C8873A" }}>{appname.slice(-3)}</span>
             </h1>
           </Link>
           <p className="text-white/40 mt-2 text-sm">Welcome back — your portfolio awaits</p>
