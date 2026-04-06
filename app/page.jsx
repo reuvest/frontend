@@ -574,7 +574,7 @@ export default async function Homepage() {
         {/* ══════════════════════════════════════════
             TESTIMONIALS
         ══════════════════════════════════════════ */}
-        <section className="py-16 sm:py-20 px-5 sm:px-10 bg-[#FDFAF5]" aria-label="Investor testimonials">
+        {/* <section className="py-16 sm:py-20 px-5 sm:px-10 bg-[#FDFAF5]" aria-label="Investor testimonials">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8 sm:mb-10">
               <SectionLabel>Investors</SectionLabel>
@@ -616,12 +616,12 @@ export default async function Homepage() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* ══════════════════════════════════════════
             CTA
         ══════════════════════════════════════════ */}
-        <section className="relative py-16 sm:py-20 px-5 sm:px-10 bg-[#0D1F1A] overflow-hidden">
+        {/* <section className="relative py-16 sm:py-20 px-5 sm:px-10 bg-[#0D1F1A] overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[70vw] h-[35vh] opacity-15 rounded-full blur-3xl"
               style={{ background: "radial-gradient(ellipse, #C8873A 0%, transparent 70%)" }} />
@@ -649,7 +649,7 @@ export default async function Homepage() {
             </div>
           </div>
         </section>
-
+ */}
         {/* ══════════════════════════════════════════
             FAQ
         ══════════════════════════════════════════ */}
