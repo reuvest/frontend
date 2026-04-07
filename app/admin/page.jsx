@@ -5,7 +5,7 @@ import Link from "next/link";
 import api from "../../utils/api";
 import toast from "react-hot-toast";
 import {
-  MapPin, ShieldCheck, Gift, Wallet,
+  MapPin, ShieldCheck, Gift, Wallet, FileText,
   ArrowRight, TrendingUp, Clock, CheckCircle,
   XCircle, Plus, Eye, MessageSquare, AlertCircle, Users,
 } from "lucide-react";
@@ -30,6 +30,7 @@ export default function AdminDashboard() {
         referralsRes,
         supportAllRes, supportOpenRes, supportWaitingRes,
         usersAllRes, usersSuspendedRes, usersAdminRes,
+        blogAllRes, blogPublishedRes, blogDraftRes,
       ] = await Promise.all([
         api.get("/admin/lands"),
         api.get("/admin/kyc?per_page=1"),
@@ -42,6 +43,9 @@ export default function AdminDashboard() {
         api.get("/admin/users?per_page=1"),
         api.get("/admin/users?per_page=1&suspended=true"),
         api.get("/admin/users?per_page=1&is_admin=true"),
+        api.get("/admin/blog?per_page=1"),
+        api.get("/admin/blog?per_page=1&status=published"),
+        api.get("/admin/blog?per_page=1&status=draft"),
       ]);
 
       const landsData  = landsRes.data?.data?.data ?? landsRes.data?.data ?? [];
@@ -60,6 +64,10 @@ export default function AdminDashboard() {
       const usersTotal     = usersAllRes.data?.data?.total       ?? 0;
       const usersSuspended = usersSuspendedRes.data?.data?.total ?? 0;
       const usersAdmins    = usersAdminRes.data?.data?.total     ?? 0;
+
+      const blogTotal     = blogAllRes.data?.data?.total ?? 0;
+      const blogPublished = blogPublishedRes.data?.data?.total ?? 0;
+      const blogDraft     = blogDraftRes.data?.data?.total ?? 0;
 
       setStats({
         lands: {
@@ -88,6 +96,11 @@ export default function AdminDashboard() {
           total:     usersTotal,
           suspended: usersSuspended,
           admins:    usersAdmins,
+        },
+        blog: {
+          total: blogTotal,
+          published: blogPublished,
+          draft: blogDraft,
         },
       });
     } catch {
@@ -154,6 +167,17 @@ export default function AdminDashboard() {
       sub: [
         { label: "Open",    value: stats.support.open,    color: "text-emerald-400" },
         { label: "Waiting", value: stats.support.waiting, color: "text-amber-400" },
+      ],
+    },
+    {
+      label: "Blog Posts",
+      value: stats.blog.total,
+      icon: <FileText size={22} />,
+      accent: "#F97316",
+      href: "/admin/blog",
+      sub: [
+        { label: "Published", value: stats.blog.published, color: "text-emerald-400" },
+        { label: "Drafts",    value: stats.blog.draft,     color: "text-amber-400" },
       ],
     },
   ];
@@ -237,7 +261,7 @@ export default function AdminDashboard() {
             </div>
             <div className="p-4 space-y-2">
               <ManagementRow href="/admin/lands"        icon={<Eye size={15} />}  title="View All Lands"  subtitle={`Manage ${stats.lands.total} properties`} accent="white" />
-              <ManagementRow href="/admin/lands/create" icon={<Plus size={15} />} title="Add New Land"    subtitle="Create a new property listing"           accent="#C8873A" highlight />
+              <ManagementRow href="/admin/lands/create" icon={<Plus size={15} />} title="Add New Land"    subtitle="Create a new property listing"           accent="#C8873A" />
             </div>
           </div>
 
@@ -260,7 +284,7 @@ export default function AdminDashboard() {
               )}
             </div>
             <div className="p-4 space-y-2">
-              <ManagementRow href="/admin/kyc?status=pending" icon={<Clock size={15} />} title="Pending Reviews"   subtitle={`${stats.kyc.pending} awaiting review`} accent="#F59E0B" highlight />
+              <ManagementRow href="/admin/kyc?status=pending" icon={<Clock size={15} />} title="Pending Reviews"   subtitle={`${stats.kyc.pending} awaiting review`} accent="#F59E0B" />
               <ManagementRow href="/admin/kyc"                icon={<Eye  size={15} />} title="All Submissions"   subtitle="View all KYC verifications"              accent="white" />
             </div>
           </div>
@@ -306,20 +330,59 @@ export default function AdminDashboard() {
               )}
             </div>
             <div className="p-4 space-y-2">
-              <ManagementRow href="/admin/support?status=open" icon={<AlertCircle size={15} />} title="Open Tickets"   subtitle={`${stats.support.open} need attention`} accent="#10B981" highlight />
+              <ManagementRow href="/admin/support?status=open" icon={<AlertCircle size={15} />} title="Open Tickets"   subtitle={`${stats.support.open} need attention`} accent="#10B981" />
               <ManagementRow href="/admin/support"             icon={<Eye        size={15} />} title="All Tickets"    subtitle="View full ticket history"               accent="white" />
             </div>
           </div>
+           {/* Blog Management */}
+            <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+              <div className="flex items-center justify-between px-5 sm:px-6 py-5 border-b border-white/10">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-orange-500/15 flex items-center justify-center">
+                    <FileText size={18} className="text-orange-400" />
+                  </div>
+                  <h2
+                    className="font-bold text-white text-base sm:text-lg"
+                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                  >
+                    Blog Management
+                  </h2>
+                </div>
+                <span className="text-xs text-white/30 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                  {stats.blog.total} posts
+                </span>
+              </div>
 
-          {/* Referral — full width */}
-          <div className="md:col-span-2 rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+              <div className="p-4 space-y-2">
+                <ManagementRow
+                  href="/admin/blog"
+                  icon={<Eye size={15} />}
+                  title="All Posts"
+                  subtitle={`Manage ${stats.blog.total} posts`}
+                  accent="white"
+                />
+
+                <ManagementRow
+                  href="/admin/blog?status=draft"
+                  icon={<Clock size={15} />}
+                  title="Drafts"
+                  subtitle={`${stats.blog.draft} drafts`}
+                  accent="#F59E0B"
+                />
+              </div>
+            </div>
+           
+          {/* Referral */}
+            <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
             <div className="flex items-center justify-between px-5 sm:px-6 py-5 border-b border-white/10">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-emerald-500/15 flex items-center justify-center">
                   <Gift size={18} className="text-emerald-400" />
                 </div>
-                <h2 className="font-bold text-white text-base sm:text-lg"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                <h2
+                  className="font-bold text-white text-base sm:text-lg"
+                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                >
                   Referral System
                 </h2>
               </div>
@@ -327,13 +390,26 @@ export default function AdminDashboard() {
                 {stats.referrals.total} total
               </span>
             </div>
-            <div className="p-4 grid sm:grid-cols-2 gap-2">
-              <ManagementRow href="/admin/referrals"                icon={<TrendingUp size={15} />} title="View Stats"         subtitle={`₦${koboToNaira(stats.referrals.totalRewards)} rewards issued`} accent="#2D7A55" />
-              <ManagementRow href="/admin/referrals?status=pending" icon={<Clock      size={15} />} title="Pending Referrals"  subtitle={`${stats.referrals.pending} awaiting purchase`}               accent="#F59E0B" highlight />
+
+            <div className="p-4 space-y-2">
+              <ManagementRow
+                href="/admin/referrals"
+                icon={<TrendingUp size={15} />}
+                title="View Stats"
+                subtitle={`₦${koboToNaira(stats.referrals.totalRewards)} rewards issued`}
+                accent="#2D7A55"
+              />
+
+              <ManagementRow
+                href="/admin/referrals?status=pending"
+                icon={<Clock size={15} />}
+                title="Pending Referrals"
+                subtitle={`${stats.referrals.pending} awaiting purchase`}
+                accent="#F59E0B"
+              />
             </div>
           </div>
         </div>
-
         {/* Quick Actions */}
         <div className="rounded-2xl p-5 sm:p-6 relative overflow-hidden"
           style={{ background: "linear-gradient(135deg, #1a3a2a 0%, #0D1F1A 100%)", border: "1px solid rgba(200,135,58,0.2)" }}>
