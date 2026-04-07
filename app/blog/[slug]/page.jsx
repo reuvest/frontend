@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import api  from "@/utils/api";
 import { ArrowLeft, Clock, Eye, Folder, Tag, Calendar } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -15,6 +16,15 @@ export default function BlogPostPage() {
   const [post, setPost]     = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]   = useState("");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+  api.get("/me")
+    .then(res => setUser(res.data))
+    .catch(() => setUser(null));
+}, []);
+
+const isLoggedIn = !!user;
 
   useEffect(() => {
     fetch(`${API}/blog/${slug}`)
@@ -79,11 +89,13 @@ export default function BlogPostPage() {
 
         {/* Category */}
         {post.category && (
-          <Link href={`/blog?category=${post.category.slug}`}
-            className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-amber-500/70 hover:text-amber-400 transition-colors mb-3">
-            <Folder size={10} /> {post.category.name}
-          </Link>
-        )}
+        <Link
+          href={`/blog?category=${post.category.slug}`}
+          className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-amber-500/70 hover:text-amber-400 transition-colors mb-3 mt-2 ml-2"
+        >
+          <Folder size={10} /> {post.category.name}
+        </Link>
+      )}
 
         {/* Title */}
         <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-4"
@@ -138,6 +150,7 @@ export default function BlogPostPage() {
         )}
 
         {/* Bottom CTA */}
+       {!isLoggedIn && (
         <div className="mt-12 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-6 text-center">
           <p className="text-sm font-bold text-white/80 mb-1"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
@@ -152,6 +165,7 @@ export default function BlogPostPage() {
             Get Started
           </Link>
         </div>
+      )}
 
       </div>
 
