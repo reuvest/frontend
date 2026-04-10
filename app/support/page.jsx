@@ -232,7 +232,7 @@ export default function SupportPage() {
 
   useEffect(() => {
     if (authLoading) return;
-    setView(user ? "chat" : "faq");
+    setView(user ? "list" : "faq");
   }, [authLoading, user]);
 
   if (view === "init") return (
@@ -244,8 +244,8 @@ export default function SupportPage() {
   const openDetail = (id) => { setSelectedId(id); setView("detail"); };
 
   const authTabs  = [
-    { id: "chat",    icon: <Bot size={14} />,        label: "AI Chat"    },
-    { id: "live",    icon: <UserCheck size={14} />,   label: "Live Agent"}, 
+    // { id: "chat",    icon: <Bot size={14} />,        label: "AI Chat"    },
+    // { id: "live",    icon: <UserCheck size={14} />,   label: "Live Agent"}, 
     { id: "list",    icon: <Ticket size={14} />,     label: "My Tickets" },
     { id: "new",     icon: <Plus size={14} />,        label: "New Ticket" },
     { id: "faq",     icon: <HelpCircle size={14} />,  label: "FAQ"        },
@@ -324,8 +324,8 @@ export default function SupportPage() {
         </div>
 
        {/* ── Views ── */}
-      {view === "chat"    && <AiChatView />}
-      {view === "live"    && <LiveChatView onSwitchToAi={() => setView("chat")} />}
+      {/* {view === "chat"    && <AiChatView />} */}
+      {/* {view === "live"    && <LiveChatView onSwitchToAi={() => setView("chat")} />} */}
       {view === "list"    && <TicketList onOpen={openDetail} onNew={() => setView("new")} />}
       {view === "new"     && <NewTicketForm onSuccess={(id) => { setSelectedId(id); setView("detail"); }} />}
       {view === "detail"  && <TicketDetail id={selectedId} onBack={() => setView("list")} />}
