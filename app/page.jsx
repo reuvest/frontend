@@ -10,7 +10,7 @@ import {
   BadgeCheck, Globe, ChevronRight,
 } from "lucide-react";
 
-const appname = process.env.NEXT_PUBLIC_APP_NAME || "Sproutvest";
+const appname = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
 const appurl  = process.env.NEXT_PUBLIC_APP_URL  || "https://yourdomain.com";
 
 // ─── SEO Metadata ─────────────────────────────────────────────────────────────
@@ -262,7 +262,7 @@ export default async function Homepage() {
                   step: "01",
                   icon: <BadgeCheck size={22} />,
                   title: "Choose a Verified Property",
-                  desc: "Browse C of O-backed land plots in Ogun, Oyo and Abuja. Every listing includes full title documentation and an independent survey plan.",
+                  desc: "Browse legally owned land plots in Ogun, Oyo and Abuja. Every listing includes full title documentation and an independent survey plan.",
                   accent: "#C8873A",
                 },
                 {
@@ -349,7 +349,7 @@ export default async function Homepage() {
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
               {[
-                { icon: <Shield size={22} />,    title: "Verified Titles",     desc: "Every plot carries a Certificate of Occupancy, survey plan and deed of assignment.", accent: "#C8873A" },
+                { icon: <Shield size={22} />,    title: "Verified Titles",     desc: "Every plot carries a legally valid title, survey plan and deed of assignment.", accent: "#C8873A" },
                 { icon: <Lock size={22} />,      title: "Secure Payments",     desc: "Bank-grade SSL, Paystack & Monnify — multiple verified gateways.", accent: "#2D7A55" },
                 { icon: <BarChart3 size={22} />, title: "Live Dashboard",      desc: "Track your holdings, estimated value and ROI in real time.", accent: "#8B5CF6" },
                 { icon: <Users size={22} />,     title: "Dedicated Support",   desc: "Real humans via live chat, email and WhatsApp — every step.", accent: "#C8873A" },
