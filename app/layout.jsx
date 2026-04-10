@@ -5,7 +5,6 @@ import { AuthProvider } from "../context/AuthContext";
 import "./globals.css";
 import WhatsAppButton from "./components/WhatsAppButton";
 
-
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
@@ -19,11 +18,18 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <AuthProvider>
-          <ConditionalHeader />
-          {children}
-          <WhatsAppButton />
-          <ConditionalFooter />
-          <ToasterProvider />
+          <div className="relative min-h-screen flex flex-col max-w-screen-2xl mx-auto">
+            <ConditionalHeader />
+
+            {/* Page content — grows to fill remaining height */}
+            <main className="flex-1">
+              {children}
+            </main>
+            <WhatsAppButton />
+
+            <ConditionalFooter />
+            <ToasterProvider />
+          </div>
         </AuthProvider>
       </body>
     </html>
