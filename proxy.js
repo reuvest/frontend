@@ -35,7 +35,8 @@ export function proxy(request) {
   const isAdminRoute = ADMIN_ROUTES.some((route) =>
     pathname.startsWith(route)
   );
-
+  
+  //waitlist redirect
   // if (!token && pathname === "/register") {
   //   return NextResponse.redirect(new URL("/waitlist", request.url));
   // }
