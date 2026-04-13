@@ -73,7 +73,7 @@ api.interceptors.response.use(
 
     try {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/refresh`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/refresh`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
