@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "Sproutvest";
+const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
 
 export default function ReferralRedirect({ code }) {
   const router = useRouter();

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { MapPin, Mail, Phone } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
-const appname = process.env.NEXT_PUBLIC_APP_NAME || "Sproutvest";
+const appname = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
 
 const footerLinks = [
   {

@@ -8,7 +8,7 @@ import { useAuth } from "../../context/AuthContext";
 import FormError from "../components/FormError";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 
-const appname = process.env.NEXT_PUBLIC_APP_NAME || "Sproutvest";
+const appname = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
 
 export default function Login() {
   return (

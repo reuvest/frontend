@@ -14,6 +14,8 @@ import toast from "react-hot-toast";
 /* ── Constants ─────────────────────────────────────────────────────────────── */
 const TABS = ["chat", "faq", "ticket"];
 
+const appname = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
+
 const FAQ_PREVIEWS = [
   "How do I fund my wallet?",
   "How do I complete KYC?",
@@ -99,7 +101,7 @@ export default function SupportWidget() {
                   <Sparkles size={14} className="text-[#0D1F1A]" />
                 </div>
                 <div>
-                  <p className="text-white text-sm font-bold leading-none">Sproutvest Support</p>
+                  <p className="text-white text-sm font-bold leading-none">{appname} Support</p>
                   <p className="text-white/30 text-xs mt-0.5 flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
                     Online · Replies instantly
@@ -156,7 +158,7 @@ function ChatTab({ user, onEscalate }) {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      content: `Hi ${user?.name?.split(" ")[0] || "there"}! 👋 I'm your Sproutvest assistant. Ask me anything about your account, investments, or payments.`,
+      content: `Hi ${user?.name?.split(" ")[0] || "there"}! 👋 I'm your ${appname} assistant. Ask me anything about your account, investments, or payments.`,
     },
   ]);
   const [input, setInput]       = useState("");

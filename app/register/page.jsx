@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import api from "../../utils/api";
 
-const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "Sproutvest";
+const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
 
 function getSavedReferralCode() {
   try {
@@ -208,8 +208,7 @@ function RegisterForm() {
             Nigerian land.
           </h2>
           <p className="text-white/40 text-sm leading-relaxed max-w-xs">
-            Join over 10,000 Nigerians investing in fully verified land plots —
-            starting from just ₦5,000.
+            Invest in fully verified land plots across Nigeria — starting from just ₦5,000.
           </p>
         </div>
       </div>

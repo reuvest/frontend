@@ -1,6 +1,3 @@
-// app/components/FaqSection.jsx
-// Separate client component because it uses browser interactivity (details/summary is fine without JS,
-// but if you want animated open/close state, use this pattern)
 "use client";
 
 import { useState } from "react";

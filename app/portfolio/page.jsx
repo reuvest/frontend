@@ -597,13 +597,6 @@ export default function Portfolio() {
                         value={`₦${preview.original_cost_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`}
                         strikethrough={preview.total_discount_kobo > 0}
                       />
-                      {preview.first_purchase_discount_kobo > 0 && (
-                        <BreakdownRow
-                          label="First-purchase discount"
-                          value={`-₦${preview.first_purchase_discount_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`}
-                          green
-                        />
-                      )}
                       {preview.referral_discount_kobo > 0 && (
                         <BreakdownRow
                           label="Referral discount"

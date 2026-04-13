@@ -1112,7 +1112,7 @@ function AiChatView() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      content: `Hi ${user?.name?.split(" ")[0] || "there"}! I'm your Sproutvest assistant. Ask me anything about your account, investments, deposits, KYC, or anything else.`,
+      content: `Hi ${user?.name?.split(" ")[0] || "there"}! I'm your ${process.env.NEXT_PUBLIC_APP_NAME} assistant. Ask me anything about your account, investments, deposits, KYC, or anything else.`,
     },
   ]);
   const [input, setInput]               = useState("");

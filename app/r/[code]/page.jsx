@@ -3,8 +3,8 @@ import ReferralRedirect from "./ReferralRedirect";
 
 // ─── Env ──────────────────────────────────────────────────────────────────────
 
-const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "Sproutvest";
-const APP_URL  = process.env.NEXT_PUBLIC_APP_URL  || "https://sproutapp-eta.vercel.app";
+const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
+const APP_URL  = process.env.NEXT_PUBLIC_APP_URL  || "reu.ng";
 
 // ─── OG Metadata ──────────────────────────────────────────────────────────────
 

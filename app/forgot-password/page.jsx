@@ -16,6 +16,8 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const appname = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(""); setMessage(""); setFieldErrors({});
@@ -54,7 +56,7 @@ export default function ForgotPassword() {
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">Sproutvest</p>
+          <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">{appname}</p>
           <h1 className="text-3xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
             Land Investment
           </h1>

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 const appname = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
-const appurl  = process.env.NEXT_PUBLIC_APP_URL  || "https://yourdomain.com";
+const appurl  = process.env.NEXT_PUBLIC_APP_URL  || "api.reu.ng";
 
 // ─── SEO Metadata ─────────────────────────────────────────────────────────────
 export const metadata = {
@@ -80,7 +80,7 @@ function JsonLd() {
     mainEntity: [
       {
         "@type": "Question",
-        name: "What is the minimum investment on Sproutvest?",
+        name: "What is the minimum investment on {appname}?",
         acceptedAnswer: { "@type": "Answer", text: "You can start investing from as little as ₦5,000 per unit. Unit prices vary by property." },
       },
       {

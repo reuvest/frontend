@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { FileText, ArrowLeft } from "lucide-react";
 
-const appname = process.env.NEXT_PUBLIC_APP_NAME || "Sproutvest";
-const appurl  = process.env.NEXT_PUBLIC_APP_URL  || "https://yourdomain.com";
-const email   = `legal@${appname.toLowerCase()}.com`;
+const appname = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
+const appurl  = process.env.NEXT_PUBLIC_APP_URL  || "api.reu.ng";
+const email   = `legal@${appname.toLowerCase()}`;
 
 export const metadata = {
   title: `Terms of Service | ${appname}`,

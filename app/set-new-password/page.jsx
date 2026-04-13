@@ -87,7 +87,9 @@ export default function SetNewPassword() {
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">Sproutvest</p>
+          <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2"> 
+             {process.env.NEXT_PUBLIC_APP_NAME}
+          </p>
           <h1 className="text-3xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
             Land Investment
           </h1>

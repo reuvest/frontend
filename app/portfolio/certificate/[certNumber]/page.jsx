@@ -17,6 +17,8 @@ const fmtDate = (d) =>
 const fmtNaira = (v) =>
   v != null ? `₦${Number(v).toLocaleString("en-NG", { minimumFractionDigits: 2 })}` : "—";
 
+const appname  = process.env.NEXT_PUBLIC_APP_NAME  || "REU.ng";
+
 /* ─── Certificate Seal SVG ──────────────────────────────────────────────── */
 function Seal({ size = 96 }) {
   return (
@@ -218,7 +220,7 @@ export default function CertificatePage() {
             </div>
 
             <p className="text-[10px] font-black tracking-[0.35em] text-amber-500/60 mb-3">
-              SPROUTVEST
+              {appname.toUpperCase()} 
             </p>
 
             <h1 className="text-2xl font-bold text-white mb-1"
@@ -320,9 +322,9 @@ export default function CertificatePage() {
           <div className="px-8 py-5 border-t border-white/[0.05] text-center"
             style={{ background: "rgba(0,0,0,0.1)" }}>
             <p className="text-[9px] text-white/20 leading-relaxed">
-              This certificate is digitally issued and verifiable at sproutvest.com/verify
+              This certificate is digitally issued and verifiable at {appname}/verify
               <br />
-              SproutVest Technologies Ltd · info@sproutvest.com
+              {appname} · info@{appname.toLowerCase()}
             </p>
           </div>
         </div>

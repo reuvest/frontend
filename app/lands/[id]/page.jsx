@@ -450,23 +450,23 @@ function BreakdownRow({ label, value, highlight, strikethrough, green, muted }) 
   );
 }
 
-function CapNotice({ preview }) {
-  const isCapped = preview?.discount_label?.toLowerCase().includes("capped");
-  if (!isCapped) return null;
-  const cappedKobo = preview.total_discount_kobo ?? 0;
-  return (
-    <div className="flex items-start gap-2 rounded-lg border border-amber-500/15 bg-amber-500/5 px-3 py-2 mt-1">
-      <InfoIcon size={11} className="text-amber-400/60 shrink-0 mt-0.5" />
-      <p className="text-xs text-amber-400/70 leading-relaxed">
-        A maximum discount cap applies. Your saving is limited to{" "}
-        <span className="font-semibold text-amber-400">
-          ₦{(cappedKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
-        </span>{" "}
-        on this order.
-      </p>
-    </div>
-  );
-}
+// function CapNotice({ preview }) {
+//   const isCapped = preview?.discount_label?.toLowerCase().includes("capped");
+//   if (!isCapped) return null;
+//   const cappedKobo = preview.total_discount_kobo ?? 0;
+//   return (
+//     <div className="flex items-start gap-2 rounded-lg border border-amber-500/15 bg-amber-500/5 px-3 py-2 mt-1">
+//       <InfoIcon size={11} className="text-amber-400/60 shrink-0 mt-0.5" />
+//       <p className="text-xs text-amber-400/70 leading-relaxed">
+//         A maximum discount cap applies. Your saving is limited to{" "}
+//         <span className="font-semibold text-amber-400">
+//           ₦{(cappedKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
+//         </span>{" "}
+//         on this order.
+//       </p>
+//     </div>
+//   );
+// }
 
 /* ─── Photo Grid ────────────────────────────────────────────────────────── */
 function SlideTile({ slide, index, label, style, className = "", onClick, overlayCount }) {
@@ -1138,7 +1138,7 @@ export default function LandDetails() {
                         <BreakdownRow label="Referral discount"
                           value={`-₦${preview.referral_discount_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`} green />
                       )}
-                      <CapNotice preview={preview} />
+                      {/* <CapNotice preview={preview} /> */}
                       {preview.paid_from_rewards_kobo > 0 && (
                         <BreakdownRow label="From rewards balance"
                           value={`-₦${preview.paid_from_rewards_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`} green />
