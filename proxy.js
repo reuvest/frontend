@@ -36,9 +36,9 @@ export function proxy(request) {
     pathname.startsWith(route)
   );
 
-  if (!token && pathname === "/register") {
-    return NextResponse.redirect(new URL("/waitlist", request.url));
-  }
+  // if (!token && pathname === "/register") {
+  //   return NextResponse.redirect(new URL("/waitlist", request.url));
+  // }
 
   // Logged-in user hitting "/" or auth pages → dashboard
   if (token && (pathname === "/" || pathname === "/login" || pathname === "/register")) {
