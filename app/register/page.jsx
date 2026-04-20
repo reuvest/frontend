@@ -187,19 +187,13 @@ function RegisterForm() {
           style={{ backgroundImage: "radial-gradient(circle at 30% 40%, rgba(200,135,58,0.12) 0%, transparent 60%), radial-gradient(circle at 80% 80%, rgba(45,122,85,0.18) 0%, transparent 55%)" }} />
         <div className="absolute inset-0 opacity-[0.03]"
           style={{ backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
-        <div className="absolute -bottom-24 -left-24 w-[480px] h-[480px] rounded-full opacity-20"
+        <div className="absolute -bottom-24 -left-24 w-120 h-120 rounded-full opacity-20"
           style={{ background: "radial-gradient(circle, #2D7A55 0%, transparent 65%)" }} />
         <div className="absolute -top-16 right-0 w-[320px] h-80 rounded-full opacity-15"
           style={{ background: "radial-gradient(circle, #C8873A 0%, transparent 65%)" }} />
         <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-16">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm"
-              style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)", color: "#071410" }}>
-              R
-            </div>
-            <span className="text-xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-              {APP_NAME}
-            </span>
+          <div className="flex items-center gap-3 mb-6">
+          <img src="/reu_ng_logo.png" alt={APP_NAME} className="h-20 w-auto" style={{ maxWidth: "180px ", filter: "brightness(2.1)" }} />
           </div>
           <h2 className="text-4xl xl:text-5xl font-bold text-white leading-[1.1] mb-6"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
@@ -222,17 +216,11 @@ function RegisterForm() {
             style={{ background: "radial-gradient(circle, #2D7A55 0%, transparent 70%)" }} />
         </div>
 
-        <div className="relative z-10 w-full max-w-[440px]">
+        <div className="relative z-10 w-full max-w-110">
 
           {/* Mobile logo */}
-          <div className="flex lg:hidden items-center justify-center gap-2.5 mb-10">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm"
-              style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)", color: "#071410" }}>
-              S
-            </div>
-            <span className="text-xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-              {APP_NAME}
-            </span>
+          <div className="flex lg:hidden items-center justify-center gap-2.5 mb-4">
+            <img src="/reu_ng_logo.png" alt={APP_NAME} className="h-20 w-auto" style={{ maxWidth: "180px ", filter: "brightness(2.1)" }} />
           </div>
 
           <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="mb-8">

@@ -102,19 +102,13 @@ export default function Footer() {
 function BrandBlock({ user, appname }) {
   return (
     <div>
-      <Link href={user ? "/dashboard" : "/"} className="inline-flex items-center gap-2.5 mb-4 group">
-        <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm shrink-0 transition-transform group-hover:scale-105"
-          style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)", color: "#0D1F1A" }}
-        >
-          R
-        </div>
-        <span
-          className="text-xl font-bold"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#ffffff" }}
-        >
-          {appname}
-        </span>
+      <Link href={user ? "/dashboard" : "/"} className="inline-flex items-center mb-4 group">
+        <img
+          src="/reu_ng_logo.png"
+          alt={`${appname} logo`}
+          className="h-16 w-auto transition-opacity group-hover:opacity-80"
+          style={{ maxWidth: "180px", filter: "brightness(2.1)" }}
+        />
       </Link>
 
       <p className="text-sm leading-relaxed mb-5 max-w-xs" style={{ color: "rgba(255,255,255,0.7)" }}>

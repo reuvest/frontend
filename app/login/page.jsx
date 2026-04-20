@@ -106,12 +106,13 @@ function LoginForm() {
       <div className="relative z-10 w-full max-w-md">
 
         <div className="text-center mb-10">
-          <Link href="/">
-            <h1 className="text-4xl font-bold text-white inline-block"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-              {appname.slice(0, -3)}
-              <span style={{ color: "#C8873A" }}>{appname.slice(-3)}</span>
-            </h1>
+          <Link href="/" className="inline-flex items-center justify-center group">
+            <img
+              src="/reu_ng_logo.png"
+              alt={appname}
+              className="h-20 w-auto transition-opacity group-hover:opacity-80"
+              style={{ maxWidth: "180px ", filter: "brightness(2.1)" }}
+            />
           </Link>
           <p className="text-white/40 mt-2 text-sm">Welcome back — your portfolio awaits</p>
         </div>

@@ -52,26 +52,20 @@ export default function Header() {
           zIndex: 40,
         }}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-5 sm:px-8 py-3.5 gap-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-5 sm:px-8 py-3 gap-4">
 
-          {/* Logo — never shrinks */}
+          {/* Logo */}
           <Link
             href={user ? "/dashboard" : "/"}
-            className="flex items-center gap-2.5 group shrink-0"
+            className="flex items-center shrink-0 group"
             aria-label={`${appname} Home`}
           >
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#0D1F1A] font-black text-sm transition-transform group-hover:scale-105"
-              style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)" }}
-            >
-              R
-            </div>
-            <span
-              className="text-xl font-bold text-white tracking-tight"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              {appname}
-            </span>
+           <img
+              src="/reu_ng_logo.png"
+              alt={`${appname} logo`}
+              className="h-16 w-auto transition-opacity group-hover:opacity-80" 
+              style={{ maxWidth: "160px", filter: "brightness(2.1)"  }}  
+            />
           </Link>
 
           {user && (
@@ -162,12 +156,18 @@ export default function Header() {
           >
             {/* Drawer header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/8 shrink-0">
-              <span
-                className="text-base font-bold text-white"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              <Link
+                href={user ? "/dashboard" : "/"}
+                onClick={() => setMenuOpen(false)}
+                aria-label={`${appname} Home`}
               >
-                Menu
-              </span>
+                <img
+                  src="/reu_ng_logo.png"
+                  alt={`${appname} logo`}
+                  className="h-10 w-auto"
+                  style={{ maxWidth: "130px", filter: "brightness(2.1)" }}
+                />
+              </Link>
               <button
                 onClick={() => setMenuOpen(false)}
                 className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all"
