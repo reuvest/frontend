@@ -189,7 +189,7 @@ function RegisterForm() {
           style={{ backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
         <div className="absolute -bottom-24 -left-24 w-[480px] h-[480px] rounded-full opacity-20"
           style={{ background: "radial-gradient(circle, #2D7A55 0%, transparent 65%)" }} />
-        <div className="absolute -top-16 right-0 w-[320px] h-[320px] rounded-full opacity-15"
+        <div className="absolute -top-16 right-0 w-[320px] h-80 rounded-full opacity-15"
           style={{ background: "radial-gradient(circle, #C8873A 0%, transparent 65%)" }} />
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-16">

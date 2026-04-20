@@ -185,13 +185,17 @@ export default function ResetVerify() {
                 {resending ? "Sending..." : "Resend Code"}
               </button>
             </p>
-            <button
-              type="button"
-              onClick={() => router.push("/forgot-password")}
-              className="inline-flex items-center gap-1.5 text-sm text-white/25 hover:text-white/50 transition-colors"
-            >
-              <ArrowLeft size={13} /> Use different email
-            </button>
+           <button
+            type="button"
+            onClick={() => {
+              localStorage.removeItem("otp_verified");
+              localStorage.removeItem("reset_email");
+              router.push("/forgot-password");
+            }}
+            className="inline-flex items-center gap-1.5 text-sm text-white/25 hover:text-white/50 transition-colors"
+          >
+            <ArrowLeft size={13} /> Use different email
+          </button>
           </div>
         </div>
       </div>

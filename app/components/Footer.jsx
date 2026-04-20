@@ -124,7 +124,7 @@ function BrandBlock({ user, appname }) {
       <div className="space-y-2.5">
         {[
           { icon: <MapPin size={12} />, text: "Ibadan, Oyo State, Nigeria"         },
-          { icon: <Mail size={12} />,   text: `hello@${appname.toLowerCase()}.com` },
+          { icon: <Mail size={12} />,   text: `hello@${appname.toLowerCase()}` },
           { icon: <Phone size={12} />,  text: "+234 808 132 5657"                   },
         ].map((item) => (
           <div key={item.text} className="flex items-center gap-2 text-xs" style={{ color: "rgba(255,255,255,0.7)" }}>
