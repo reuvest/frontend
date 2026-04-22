@@ -223,37 +223,43 @@ export default function Dashboard() {
                   })}
                 </span>
               </div>
-            <div className="flex items-center gap-2 min-w-0">
-             <h1 className="text-2xl sm:text-4xl font-bold leading-tight whitespace-nowrap" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-                <span className="text-white">{greeting()}, </span>
-                <span
-                  style={{
-                    background: "linear-gradient(135deg, #E8A850 0%, #C8873A 50%, #E8A850 100%)",
-                    backgroundSize: "200% auto",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
-                  }}
-                >
-                  {user?.name?.split(" ")[0] || "Investor"}
-                </span>
-              </h1>
-              {isFoundingMember(user) && (
-                <span
-                  className="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold border align-middle ml-1.5 sm:ml-2"
-                  style={{
-                    background: "linear-gradient(135deg, rgba(200,135,58,0.15), rgba(232,168,80,0.08))",
-                    borderColor: "rgba(200,135,58,0.35)",
-                    color: "#E8A850",
-                    fontFamily: "'DM Sans', sans-serif",
-                  }}
-                >
-                  <Star size={8} className="fill-amber-400 text-amber-400 sm:w-[10px] sm:h-[10px]" />
-                  Founding Investor
-                </span>
-              )}
-            </div>
-              <p className="text-sm text-white/30 mt-1.5">
+              <div className="flex items-center gap-2 min-w-0">
+                  <h1 className="text-2xl sm:text-4xl font-bold leading-tight whitespace-nowrap" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                    <span className="text-white">{greeting()}, </span>
+                    <span
+                      style={{
+                        background: "linear-gradient(135deg, #E8A850 0%, #C8873A 50%, #E8A850 100%)",
+                        backgroundSize: "200% auto",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                      }}
+                    >
+                      {user?.name?.split(" ")[0] || "Investor"}
+                    </span>
+                  </h1>
+                  {isFoundingMember(user) && (
+                    <>
+                      {/* Mobile: star icon with tap-to-show tooltip */}
+                      <MobileFoundingBadge />
+
+                      {/* Desktop: full badge */}
+                      <span
+                        className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border"
+                        style={{
+                          background: "linear-gradient(135deg, rgba(200,135,58,0.15), rgba(232,168,80,0.08))",
+                          borderColor: "rgba(200,135,58,0.35)",
+                          color: "#E8A850",
+                          fontFamily: "'DM Sans', sans-serif",
+                        }}
+                      >
+                        <Star size={10} className="fill-amber-400 text-amber-400" />
+                        Founding Investor
+                      </span>
+                    </>
+                  )}
+                                
+                </div>        <p className="text-sm text-white/30 mt-1.5">
                 Here's how your investments are performing today.
               </p>
             </div>
@@ -308,6 +314,37 @@ export default function Dashboard() {
   );
 }
 
+function MobileFoundingBadge() {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (!show) return;
+    const t = setTimeout(() => setShow(false), 2000); // auto-hide after 2s
+    return () => clearTimeout(t);
+  }, [show]);
+
+  return (
+    <div className="relative flex sm:hidden items-center">
+      <Star
+        size={16}
+        className="fill-amber-400 text-amber-400 cursor-pointer shrink-0"
+        onClick={() => setShow(v => !v)}
+      />
+      <span
+        className={`absolute left-1/2 -translate-x-1/2 bottom-6 z-50 whitespace-nowrap px-2 py-1 rounded-lg text-[10px] font-bold border pointer-events-none transition-opacity duration-200 ${
+          show ? "opacity-100" : "opacity-0"
+        }`}
+        style={{
+          background: "linear-gradient(135deg, rgba(20,40,30,0.98), rgba(15,30,22,0.98))",
+          borderColor: "rgba(200,135,58,0.35)",
+          color: "#E8A850",
+        }}
+      >
+        Founding Investor
+      </span>
+    </div>
+  );
+}
 /* ── SkeletonCard ─────────────────────────────────────────────────────────── */
 function SkeletonCard() {
   return (
@@ -451,7 +488,7 @@ function TransactionsSection({ transactions, loading }) {
           >
             No transactions yet
           </p>
-          <p className="text-xs text-white/25 mb-5 max-w-[200px] leading-relaxed">
+          <p className="text-xs text-white/25 mb-5 max-w-50 leading-relaxed">
             Invest in verified land to see activity here.
           </p>
           <Link

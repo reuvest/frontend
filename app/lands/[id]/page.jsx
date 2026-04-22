@@ -74,11 +74,11 @@ function Section({ title, icon, children, defaultOpen = true, accent = "amber" }
   const a = accentMap[accent] || accentMap.amber;
 
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] overflow-hidden">
+    <div className="rounded-2xl border border-white/[0.07] bg-white/2.5 overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.03] transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/3 transition-colors"
       >
         <div className="flex items-center gap-3">
           <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${a.icon}`}>
@@ -104,7 +104,7 @@ function Section({ title, icon, children, defaultOpen = true, accent = "amber" }
 /* ─── Data Row ──────────────────────────────────────────────────────────── */
 function DataRow({ label, value, highlight, mono, children }) {
   return (
-    <div className="flex items-start justify-between gap-4 py-2 border-b border-white/[0.04] last:border-0">
+    <div className="flex items-start justify-between gap-4 py-2 border-b border-white/4 last:border-0">
       <span className="text-xs text-white/35 shrink-0 w-44">{label}</span>
       {children ?? (
         <span className={`text-xs text-right ${
@@ -229,7 +229,7 @@ function PriceTrendPanel({ valuations = [] }) {
   };
 
   return (
-    <div className="mb-10 rounded-2xl border border-white/[0.09] overflow-hidden"
+    <div className="mb-10 rounded-2xl border border-white/9 overflow-hidden"
       style={{ background: "linear-gradient(160deg, rgba(200,135,58,0.06) 0%, rgba(13,31,26,0) 60%)" }}>
 
       {/* Header */}
@@ -362,7 +362,7 @@ function PriceTrendPanel({ valuations = [] }) {
       </div>
 
       {/* Month-by-month breakdown */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-px border-t border-white/[0.06] mt-1">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-px border-t border-white/6 mt-1">
         {points.map(([year, value, month], i) => {
           const prev   = i > 0 ? points[i - 1][1] : null;
           const deltaP = prev ? (((value - prev) / prev) * 100).toFixed(0) : null;

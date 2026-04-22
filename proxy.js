@@ -42,9 +42,11 @@ export function proxy(request) {
   // }
 
   // Logged-in user hitting "/" or auth pages → dashboard
-  if (token && (pathname === "/" || pathname === "/login" || pathname === "/register")) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
+if (token && (pathname === "/" || pathname === "/login" || pathname === "/register")) {
+  const redirectTo = request.nextUrl.searchParams.get("redirect");
+  const destination = redirectTo && redirectTo.startsWith("/") ? redirectTo : "/dashboard";
+  return NextResponse.redirect(new URL(destination, request.url));
+}
 
   // Not logged in, trying to access a protected route
   if (!token && !isPublicRoute) {
