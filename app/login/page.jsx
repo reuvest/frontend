@@ -54,7 +54,7 @@ function LoginForm() {
 
       // Safer redirect logic (from file 2)
       const paramRedirect = searchParams.get("redirect");
-      const savedRedirect = localStorage.getItem("redirectAfterLogin");
+      const savedRedirect = sessionStorage.getItem("redirectAfterLogin");
       let destination     = paramRedirect || savedRedirect || "/dashboard";
 
       // Safety: prevent external redirects
@@ -62,7 +62,7 @@ function LoginForm() {
         destination = "/dashboard";
       }
 
-      localStorage.removeItem("redirectAfterLogin");
+      sessionStorage.removeItem("redirectAfterLogin");
 
       if (destination.startsWith("/dashboard")) {
         sessionStorage.setItem("justLoggedIn", "1");

@@ -125,14 +125,16 @@ export const AuthProvider = ({ children }) => {
 
     if (!token) throw new Error("Token not returned from server");
 
+    let userData;
     try {
       api.defaults.headers.common.Authorization = `Bearer ${token}`;
-      const meRes    = await api.get("/me");
-      const userData = meRes.data?.data ?? meRes.data?.user ?? meRes.data;
-      applySession(token, userData);
+      const meRes = await api.get("/me");
+      userData    = meRes.data?.data ?? meRes.data?.user ?? meRes.data;
     } catch {
-      applySession(token, res.data?.user ?? null);
+      userData = res.data?.user ?? null;
     }
+    applySession(token, userData);
+    return userData;
   };
 
   // ── logout ───────────────────────────────────────────────────────────────
@@ -141,7 +143,7 @@ export const AuthProvider = ({ children }) => {
     api.post("/logout").catch(() => {}); // fire-and-forget server invalidation
     clearSession();
     sessionStorage.removeItem("redirectAfterLogin");
-    router.replace("/login");
+    window.location.href = "/login";
   };
 
   // ── context ──────────────────────────────────────────────────────────────
