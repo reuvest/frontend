@@ -25,7 +25,6 @@ function LoginForm() {
   const [loading, setLoading]         = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const router       = useRouter();
   const searchParams = useSearchParams();
   const { login }    = useAuth();
 
@@ -49,21 +48,28 @@ function LoginForm() {
     try {
       const user = await login(form.email, form.password);
 
-      // Set user_role cookie
+      // Set user_role cookie (from file 1)
       const isAdmin = user?.is_admin === true || user?.data?.is_admin === true;
       setCookie("user_role", isAdmin ? "admin" : "user");
 
+      // Safer redirect logic (from file 2)
       const paramRedirect = searchParams.get("redirect");
       const savedRedirect = localStorage.getItem("redirectAfterLogin");
-      const destination   = paramRedirect || savedRedirect || "/dashboard";
+      let destination     = paramRedirect || savedRedirect || "/dashboard";
+
+      // Safety: prevent external redirects
+      if (!destination.startsWith("/")) {
+        destination = "/dashboard";
+      }
 
       localStorage.removeItem("redirectAfterLogin");
 
-      if (destination === "/dashboard" || destination.startsWith("/dashboard/")) {
+      if (destination.startsWith("/dashboard")) {
         sessionStorage.setItem("justLoggedIn", "1");
       }
 
-      router.push(destination);
+      // Full reload so middleware sees cookies
+      window.location.href = destination;
     } catch (err) {
       if (err.response?.status === 422) {
         const errors = err.response.data?.errors;
@@ -96,34 +102,46 @@ function LoginForm() {
       className="min-h-screen bg-[#0D1F1A] flex items-center justify-center px-4 py-12 relative overflow-hidden"
       style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
     >
-      <div className="absolute top-[-15%] left-[-10%] w-[55vw] h-[55vw] rounded-full opacity-20 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #C8873A 0%, transparent 70%)" }} />
-      <div className="absolute bottom-[-15%] right-[-10%] w-[45vw] h-[45vw] rounded-full opacity-15 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #2D7A55 0%, transparent 70%)" }} />
-      <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
-        style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+      {/* Background glows */}
+      <div
+        className="absolute top-[-15%] left-[-10%] w-[55vw] h-[55vw] rounded-full opacity-20 pointer-events-none"
+        style={{ background: "radial-gradient(circle, #C8873A 0%, transparent 70%)" }}
+      />
+      <div
+        className="absolute bottom-[-15%] right-[-10%] w-[45vw] h-[45vw] rounded-full opacity-15 pointer-events-none"
+        style={{ background: "radial-gradient(circle, #2D7A55 0%, transparent 70%)" }}
+      />
+      <div
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
+        style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }}
+      />
 
       <div className="relative z-10 w-full max-w-md">
 
+        {/* Logo */}
         <div className="text-center mb-10">
           <Link href="/" className="inline-flex items-center justify-center group">
             <img
               src="/reu_ng_logo.png"
               alt={appname}
               className="h-20 w-auto transition-opacity group-hover:opacity-80"
-              style={{ maxWidth: "180px ", filter: "brightness(2.1)" }}
+              style={{ maxWidth: "180px", filter: "brightness(2.1)" }}
             />
           </Link>
           <p className="text-white/40 mt-2 text-sm">Welcome back — your portfolio awaits</p>
         </div>
 
+        {/* Card */}
         <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm p-8 shadow-2xl">
-          <h2 className="text-2xl font-bold text-white mb-1"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h2
+            className="text-2xl font-bold text-white mb-1"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
             Sign In
           </h2>
           <p className="text-white/40 text-sm mb-8">Enter your credentials to continue</p>
 
+          {/* Global error */}
           {error && (
             <div className="mb-6 p-3.5 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-sm flex items-start gap-2.5">
               <AlertCircle size={15} className="mt-0.5 shrink-0" />
@@ -132,8 +150,13 @@ function LoginForm() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
+
+            {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-xs font-semibold text-white/50 uppercase tracking-widest mb-2">
+              <label
+                htmlFor="email"
+                className="block text-xs font-semibold text-white/50 uppercase tracking-widest mb-2"
+              >
                 Email Address
               </label>
               <div className="relative">
@@ -150,12 +173,19 @@ function LoginForm() {
               <FormError error={fieldErrors.email} />
             </div>
 
+            {/* Password */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label htmlFor="password" className="block text-xs font-semibold text-white/50 uppercase tracking-widest">
+                <label
+                  htmlFor="password"
+                  className="block text-xs font-semibold text-white/50 uppercase tracking-widest"
+                >
                   Password
                 </label>
-                <Link href="/forgot-password" className="text-xs text-amber-500 hover:text-amber-400 transition-colors font-medium">
+                <Link
+                  href="/forgot-password"
+                  className="text-xs text-amber-500 hover:text-amber-400 transition-colors font-medium"
+                >
                   Forgot password?
                 </Link>
               </div>
@@ -170,18 +200,25 @@ function LoginForm() {
                     fieldErrors.password ? "border-red-500/50" : "border-white/10 hover:border-white/20"
                   }`}
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
-                  aria-label={showPassword ? "Hide password" : "Show password"}>
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
               <FormError error={fieldErrors.password} />
             </div>
 
-            <button type="submit" disabled={loading}
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
               className="w-full py-4 rounded-xl font-bold text-[#0D1F1A] flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 mt-2"
-              style={{ background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" }}>
+              style={{ background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" }}
+            >
               {loading ? (
                 <>
                   <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -196,12 +233,14 @@ function LoginForm() {
             </button>
           </form>
 
+          {/* Divider */}
           <div className="flex items-center gap-3 my-7">
             <div className="flex-1 h-px bg-white/10" />
             <span className="text-white/20 text-xs">OR</span>
             <div className="flex-1 h-px bg-white/10" />
           </div>
 
+          {/* Register link */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-1 text-sm">
             <span className="text-white/40">Don't have an account?</span>
             <Link href="/register" className="text-amber-500 hover:text-amber-400 font-semibold transition-colors">
@@ -210,6 +249,7 @@ function LoginForm() {
           </div>
         </div>
 
+        {/* Footer */}
         <p className="text-center text-xs text-white/20 mt-6 px-4">
           By continuing, you agree to our{" "}
           <Link href="/terms" className="underline hover:text-white/40 transition-colors">Terms</Link>
