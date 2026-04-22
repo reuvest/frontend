@@ -112,7 +112,7 @@ function BrandBlock({ user, appname }) {
       </Link>
 
       <p className="text-sm leading-relaxed mb-5 max-w-xs" style={{ color: "rgba(255,255,255,0.7)" }}>
-        Nigeria&apos;s trusted platform for fractional land investment. Grow your wealth one plot at a time.
+        Nigeria&apos;s trusted platform for fractional land investment. Land Ownership, Reimagined.
       </p>
 
       <div className="space-y-2.5">
