@@ -1,3 +1,5 @@
+import LandList from "./LandList";
+
 const appname = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
 const appurl  = process.env.NEXT_PUBLIC_APP_URL  || "https://reu.ng";
 
