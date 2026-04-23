@@ -35,6 +35,34 @@ function processQueue(error, token = null) {
 const SKIP_REFRESH = ["/me", "/login", "/lands", "/refresh", "/logout"];
 const shouldSkip = (url = "") => SKIP_REFRESH.some((p) => url.includes(p));
 
+// Pages where a 401 should never trigger a redirect to /login.
+const PUBLIC_PATHS = [
+  "/",
+  "/lands",
+  "/login",
+  "/register",
+  "/waitlist",
+  "/blog",
+  "/support",
+  "/terms",
+  "/privacy",
+  "/verify",
+  "/verify-email",
+  "/email-verified",
+  "/forgot-password",
+  "/reset-verify",
+  "/set-new-password",
+  "/r",
+];
+
+function isPublicPage() {
+  if (typeof window === "undefined") return true; // SSR — never redirect
+  const pathname = window.location.pathname;
+  return PUBLIC_PATHS.some(
+    (p) => pathname === p || pathname.startsWith(p + "/")
+  );
+}
+
 // ── Response interceptor ─────────────────────────────────────────────────────
 
 api.interceptors.response.use(
@@ -52,9 +80,11 @@ api.interceptors.response.use(
 
     const token = getToken();
 
-    // No token → not logged in; send straight to login.
+    // No token → guest user. Only redirect if they're on a protected page.
     if (!token) {
-      if (typeof window !== "undefined") window.location.href = "/login";
+      if (!isPublicPage()) {
+        window.location.href = "/login";
+      }
       return Promise.reject(error);
     }
 
@@ -95,7 +125,9 @@ api.interceptors.response.use(
       processQueue(refreshError, null);
       clearToken();
       delete api.defaults.headers.common.Authorization;
-      if (typeof window !== "undefined") window.location.replace("/login");
+      if (!isPublicPage()) {
+        window.location.replace("/login");
+      }
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;
