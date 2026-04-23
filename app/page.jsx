@@ -144,9 +144,9 @@ function SectionHeading({ children, light = false }) {
 
 function StatBadge({ value, label }) {
   return (
-    <div className="text-center px-4 py-3 rounded-2xl bg-white/5 border border-white/10">
-      <p className="text-2xl font-bold text-amber-400" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{value}</p>
-      <p className="text-xs text-white/40 mt-0.5">{label}</p>
+    <div className="text-center px-2 py-3 rounded-2xl bg-white/5 border border-white/10">
+      <p className="text-lg sm:text-2xl font-bold text-amber-400 leading-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{value}</p>
+      <p className="text-[10px] sm:text-xs text-white/40 mt-0.5 leading-snug">{label}</p>
     </div>
   );
 }
@@ -167,7 +167,7 @@ export default async function Homepage() {
         ══════════════════════════════════════════ */}
         <section
           className="relative flex items-center justify-center bg-[#0D1F1A]"
-          style={{ minHeight: "90vh", paddingBottom: "80px", paddingTop: "60px" }}
+          style={{ minHeight: "80dvh", paddingBottom: "100px", paddingTop: "50px" }}
         >
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-[-10%] left-[-5%] w-[55vw] h-[55vw] rounded-full opacity-20"
@@ -179,17 +179,17 @@ export default async function Homepage() {
           </div>
 
           <div className="relative z-10 w-full max-w-4xl mx-auto px-5 sm:px-8 text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs font-bold mb-6">
-              <BadgeCheck size={12} /> Fully verified land · Legally backed
-            </div>
-
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs font-bold mb-6">
+            <BadgeCheck size={12} />
+            <span>Fully verified land · Legally backed</span>
+          </div>
             <h1
               className="font-bold text-white mb-5 leading-[1.08] tracking-tight"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(2rem, 6vw, 4.5rem)" }}
+              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(1.75rem, 5.5vw, 3rem)" }}
             >
               Invest, Own &amp; Trade Land.
               <br />
-              <span style={{ color: "#C8873A" }}>Build Lasting Wealth.</span>
+              <span style={{ color: "#C8873A" }}>Land Investment, Reimagined</span>
             </h1>
 
             <p
@@ -197,7 +197,7 @@ export default async function Homepage() {
               style={{ fontSize: "clamp(0.95rem, 2.2vw, 1.15rem)", maxWidth: "36rem" }}
             >
               Fractional land ownership across key cities in Nigeria — minimum investment of <strong className="text-white/85">₦5,000</strong>.
-              Projected <strong className="text-white/85">10-30% annual appreciation</strong>.
+              Projected <strong className="text-white/85">15-30% annual appreciation</strong>.
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-8">
@@ -214,7 +214,7 @@ export default async function Homepage() {
             </div>
 
             {/* Social proof stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-2xl mx-auto mb-8">
+            <div className="grid grid-cols-3 gap-3 max-w-2xl mx-auto mb-8">
               <StatBadge value="₦5,000" label="Min. investment" />
               <StatBadge value="10–30%" label="Projected annual ROI" />
               {/* <StatBadge value="C of O" label="Title standard" /> */}

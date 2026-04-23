@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  ArrowRight, CheckCircle, MapPin, TrendingUp,
-  Users, Shield, BadgeCheck, Star, ChevronRight,
-  Sparkles, Lock, Search, X, TrendingDown,
+  ArrowRight, CheckCircle, MapPin,
+  Users, Shield, BadgeCheck, Star,
+  Sparkles, Lock, Search, X,
 } from "lucide-react";
 import { getSavedReferralCode } from "../components/RefCapture";
 
 // ── Config ────────────────────────────────────────────────────────────────────
-const appname  = process.env.NEXT_PUBLIC_APP_NAME  || "REU.ng";
-const API_URL  = process.env.NEXT_PUBLIC_API_URL   || "https://api.reu.ng";
+const appname = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
+const API_URL  = process.env.NEXT_PUBLIC_API_URL  || "https://api.reu.ng";
 
 const BUDGET_OPTIONS = [
   { value: "5k_50k",    label: "₦5,000 – ₦50,000"   },
@@ -20,69 +20,59 @@ const BUDGET_OPTIONS = [
 ];
 
 const CITY_OPTIONS = [
-  { value: "ogun",   label: "Ogun"   },
-  { value: "oyo",    label: "Oyo"    },
-  { value: "abuja",  label: "Abuja"  },
-  { value: "other",  label: "Other"  },
+  { value: "ogun",  label: "Ogun"  },
+  { value: "oyo",   label: "Oyo"   },
+  { value: "abuja", label: "Abuja" },
+  { value: "other", label: "Other" },
 ];
 
 const STATS = [
-  { value: "3",      label: "Cities covered"          },
-  { value: "10–20%", label: "Projected annual ROI"    },
-  { value: "₦5k",   label: "Minimum investment"      },
+  { value: "Multiple Cities", label: "Growth corridors"   },
+  { value: "10–30%",          label: "Projected annual ROI" },
+  { value: "₦5k",             label: "Minimum investment"  },
 ];
 
 const PERKS = [
-  { icon: <Star size={15} />,       text: "Founding investor badge on your profile"            },
-  { icon: <Lock size={15} />,       text: "Locked-in entry pricing before public launch"      },
-  { icon: <Sparkles size={15} />,   text: "10% discount on your first investment" },
+  { icon: <Star size={15} />,     text: "Founding investor badge on your profile"       },
+  { icon: <Lock size={15} />,     text: "Locked-in entry pricing before public launch"  },
+  { icon: <Sparkles size={15} />, text: "10% discount on your first investment"         },
 ];
 
-// ── Animated counter ──────────────────────────────────────────────────────────
-function useCountUp(target, duration = 1800) {
-  const [count, setCount] = useState(0);
-  const started = useRef(false);
-
-  useEffect(() => {
-    if (started.current) return;
-    started.current = true;
-    let start = null;
-    const step = (ts) => {
-      if (!start) start = ts;
-      const progress = Math.min((ts - start) / duration, 1);
-      setCount(Math.floor(progress * target));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [target, duration]);
-
-  return count;
+// ── Helpers ───────────────────────────────────────────────────────────────────
+/** Safe window.location.origin — returns "" during SSR. */
+function getOrigin() {
+  return typeof window !== "undefined" ? window.location.origin : "";
 }
 
-// ── Waitlist count display ────────────────────────────────────────────────────
-// function WaitlistCount({ count }) {
-//   const displayed = useCountUp(count);
-//   return (
-//     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-sm font-bold mb-6">
-//       <Sparkles size={13} />
-//       {displayed.toLocaleString()}+ investors already waiting
-//     </div>
-//   );
-// }
+/** Build a full referral URL from a code. */
+function referralUrl(code) {
+  return `${getOrigin()}/waitlist?ref=${code}`;
+}
 
 // ── Avatar stack ──────────────────────────────────────────────────────────────
+/** Purely decorative avatar stack. Initials and colors are illustrative only. */
 function AvatarStack() {
-  const colors = ["#C8873A", "#2D7A55", "#8B5CF6", "#E8A850", "#06B6D4"];
+  const avatars = [
+    { initial: "T", color: "#C8873A" },
+    { initial: "F", color: "#2D7A55" },
+    { initial: "A", color: "#8B5CF6" },
+    { initial: "C", color: "#E8A850" },
+    { initial: "B", color: "#06B6D4" },
+  ];
+
   return (
     <div className="flex items-center gap-3">
       <div className="flex -space-x-2">
-        {colors.map((c, i) => (
+        {avatars.map(({ initial, color }, i) => (
           <div
             key={i}
             className="w-8 h-8 rounded-full border-2 border-[#0D1F1A] flex items-center justify-center text-xs font-bold text-[#0D1F1A]"
-            style={{ background: `linear-gradient(135deg, ${c}, ${c}cc)`, zIndex: colors.length - i }}
+            style={{
+              background: `linear-gradient(135deg, ${color}, ${color}cc)`,
+              zIndex: avatars.length - i,
+            }}
           >
-            {["T", "F", "A", "C", "B"][i]}
+            {initial}
           </div>
         ))}
       </div>
@@ -91,21 +81,30 @@ function AvatarStack() {
   );
 }
 
-// ── Check position panel ──────────────────────────────────────────────────────
+// ── Check-position panel ──────────────────────────────────────────────────────
 function CheckPositionPanel({ onClose }) {
-  const [email, setEmail]       = useState("");
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState("");
-  const [result, setResult]     = useState(null);
-  const [copied, setCopied]     = useState(false);
+  // FIX: renamed to `errors` / `setErrors` (plural) to match the JSX references
+  // that were incorrectly using the parent's state names.
+  const [email, setEmail]   = useState("");
+  const [loading, setLoading] = useState(false);
+  // FIX: use `errors` object (keyed) so the email field className logic works
+  const [errors, setErrors] = useState({});
+  const [result, setResult] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  /** Clear a single field error on change. */
+  const clearError = (field) =>
+    setErrors((prev) => ({ ...prev, [field]: "" }));
 
   const handleCheck = async (e) => {
     e.preventDefault();
-    setError("");
+    setErrors({});
+
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError("Enter a valid email address");
+      setErrors({ email: "Enter a valid email address" });
       return;
     }
+
     setLoading(true);
     try {
       const res  = await fetch(`${API_URL}/waitlist/check`, {
@@ -116,12 +115,13 @@ function CheckPositionPanel({ onClose }) {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || "We couldn't find that email on the waitlist.");
+        setErrors({ global: data.message || "We couldn't find that email on the waitlist." });
         return;
       }
+
       setResult(data.data ?? data);
     } catch {
-      setError("Network error. Please try again.");
+      setErrors({ global: "Network error. Please try again." });
     } finally {
       setLoading(false);
     }
@@ -129,22 +129,31 @@ function CheckPositionPanel({ onClose }) {
 
   const handleCopy = () => {
     if (!result?.referral_code) return;
-    const link = `${window.location.origin}/waitlist?ref=${result.referral_code}`;
-    navigator.clipboard.writeText(link).then(() => {
+    // FIX: getOrigin() guards against SSR — no bare window access
+    navigator.clipboard.writeText(referralUrl(result.referral_code)).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
   };
 
-  const reset = () => { setResult(null); setEmail(""); setError(""); };
+  const reset = () => {
+    setResult(null);
+    setEmail("");
+    setErrors({});
+  };
 
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-            style={{ background: "rgba(200,135,58,0.12)", boxShadow: "0 0 0 1px rgba(200,135,58,0.22)" }}>
+          <div
+            className="w-7 h-7 rounded-lg flex items-center justify-center"
+            style={{
+              background: "rgba(200,135,58,0.12)",
+              boxShadow: "0 0 0 1px rgba(200,135,58,0.22)",
+            }}
+          >
             <Search size={13} className="text-amber-500" />
           </div>
           <p className="text-sm font-bold text-white">Check your position</p>
@@ -152,18 +161,17 @@ function CheckPositionPanel({ onClose }) {
         <button
           onClick={onClose}
           className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition-all"
+          aria-label="Close"
         >
           <X size={14} />
         </button>
       </div>
 
       <div className="p-5">
-        {/* Result view */}
         {result ? (
+          /* ── Result view ── */
           <div className="space-y-4">
-
-            {/* Invited banner — shown only when admin has sent invite */}
-            {result.invited && (
+            {result.invited ? (
               <div className="flex items-start gap-3 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10">
                 <CheckCircle size={16} className="text-emerald-400 shrink-0 mt-0.5" />
                 <div>
@@ -173,10 +181,7 @@ function CheckPositionPanel({ onClose }) {
                   </p>
                 </div>
               </div>
-            )}
-
-            {/* Still waiting banner */}
-            {!result.invited && (
+            ) : (
               <div className="flex items-start gap-3 p-4 rounded-xl border border-white/10 bg-white/5">
                 <Sparkles size={15} className="text-amber-400 shrink-0 mt-0.5" />
                 <div>
@@ -214,6 +219,7 @@ function CheckPositionPanel({ onClose }) {
                   #{result.position?.toLocaleString() ?? "—"}
                 </span>
               </div>
+
               {result.name && (
                 <p className="text-sm text-white/50">
                   Welcome back,{" "}
@@ -236,7 +242,6 @@ function CheckPositionPanel({ onClose }) {
                   </span>
                 </div>
 
-                {/* Progress bar — 3 referrals = priority access */}
                 <div>
                   <div className="flex justify-between text-[10px] text-white/25 mb-1.5">
                     <span>Priority access at 3 referrals</span>
@@ -261,9 +266,8 @@ function CheckPositionPanel({ onClose }) {
                 {/* Referral link */}
                 <div className="flex gap-2">
                   <div className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-[11px] text-white/40 font-mono truncate">
-                    {typeof window !== "undefined"
-                      ? `${window.location.origin}/waitlist?ref=${result.referral_code}`
-                      : `...?ref=${result.referral_code}`}
+                    {/* FIX: uses referralUrl() helper — SSR-safe */}
+                    {referralUrl(result.referral_code)}
                   </div>
                   <button
                     onClick={handleCopy}
@@ -284,32 +288,44 @@ function CheckPositionPanel({ onClose }) {
             </button>
           </div>
         ) : (
-          /* Lookup form */
+          /* ── Lookup form ── */
           <form onSubmit={handleCheck} className="space-y-3" noValidate>
+            {errors.global && (
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+                {errors.global}
+              </div>
+            )}
+
             <p className="text-xs text-white/40 leading-relaxed">
               Enter the email you used to join and we'll show your position and referral link.
             </p>
+
             <input
               type="email"
               value={email}
-              onChange={(e) => { setEmail(e.target.value); setError(""); }}
+              onChange={(e) => { setEmail(e.target.value); clearError("email"); }}
               placeholder="you@example.com"
               className={`w-full bg-white/5 border text-white placeholder-white/20 px-4 py-3 rounded-xl text-sm outline-none transition-all ${
-                error
-                  ? "border-red-500/50"
+                errors.email
+                  ? "border-red-500/50 focus:border-red-500"
                   : "border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20"
               }`}
             />
-            {error && <p className="text-red-400 text-xs">{error}</p>}
+            {errors.email && (
+              <p className="text-red-400 text-xs">{errors.email}</p>
+            )}
+
             <button
               type="submit"
               disabled={loading}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-[#0D1F1A] text-sm transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60"
               style={{ background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" }}
             >
-              {loading
-                ? <div className="w-4 h-4 border-2 border-[#0D1F1A]/30 border-t-[#0D1F1A] rounded-full animate-spin" />
-                : <><Search size={14} /> Check my position</>}
+              {loading ? (
+                <div className="w-4 h-4 border-2 border-[#0D1F1A]/30 border-t-[#0D1F1A] rounded-full animate-spin" />
+              ) : (
+                <><Search size={14} /> Check my position</>
+              )}
             </button>
           </form>
         )}
@@ -320,17 +336,16 @@ function CheckPositionPanel({ onClose }) {
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function WaitlistPage() {
-  const [form, setForm]       = useState({ name: "", email: "", budget: "", city: "" });
-  const [errors, setErrors]   = useState({});
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [refCode, setRefCode] = useState(null);
+  const [form, setForm]         = useState({ firstName: "", lastName: "", email: "", budget: "", city: "" });
+  const [errors, setErrors]     = useState({});
+  const [loading, setLoading]   = useState(false);
+  const [success, setSuccess]   = useState(false);
+  const [refCode, setRefCode]   = useState(null);
   const [position, setPosition] = useState(null);
   const [userRefCode, setUserRefCode] = useState(null);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied]     = useState(false);
   const [showCheck, setShowCheck] = useState(false);
 
-  // Read saved referral code on mount
   useEffect(() => {
     const saved = getSavedReferralCode();
     if (saved) setRefCode(saved);
@@ -338,11 +353,12 @@ export default function WaitlistPage() {
 
   const validate = () => {
     const e = {};
-    if (!form.name.trim())  e.name   = "Name is required";
-    if (!form.email.trim()) e.email  = "Email is required";
+    if (!form.firstName.trim()) e.firstName = "First name is required";
+    if (!form.lastName.trim())  e.lastName  = "Last name is required";
+    if (!form.email.trim())     e.email     = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Enter a valid email";
-    if (!form.budget)       e.budget = "Please select a budget range";
-    if (!form.city)         e.city   = "Please select your city";
+    if (!form.budget)           e.budget    = "Please select a budget range";
+    if (!form.city)             e.city      = "Please select your city";
     return e;
   };
 
@@ -357,16 +373,21 @@ export default function WaitlistPage() {
       const res = await fetch(`${API_URL}/waitlist`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, referral_code: refCode }),
+        body: JSON.stringify({
+          ...form,
+          name: `${form.firstName.trim()} ${form.lastName.trim()}`,
+          referral_code: refCode,
+        }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        // Handle validation errors from backend
         if (data.errors) {
           const mapped = {};
-          Object.entries(data.errors).forEach(([k, v]) => { mapped[k] = Array.isArray(v) ? v[0] : v; });
+          Object.entries(data.errors).forEach(([k, v]) => {
+            mapped[k] = Array.isArray(v) ? v[0] : v;
+          });
           setErrors(mapped);
         } else {
           setErrors({ global: data.message || "Something went wrong. Please try again." });
@@ -374,7 +395,7 @@ export default function WaitlistPage() {
         return;
       }
 
-      setPosition(data.data?.position   ?? data.position   ?? null);
+      setPosition(data.data?.position     ?? data.position     ?? null);
       setUserRefCode(data.data?.referral_code ?? data.referral_code ?? null);
       setSuccess(true);
     } catch {
@@ -385,21 +406,21 @@ export default function WaitlistPage() {
   };
 
   const handleCopy = () => {
-    const link = `${window.location.origin}?ref=${userRefCode}`;
-    navigator.clipboard.writeText(link).then(() => {
+    if (!userRefCode) return;
+    // FIX: uses referralUrl() helper — SSR-safe, no bare window access
+    navigator.clipboard.writeText(referralUrl(userRefCode)).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
   };
 
-  // ── Success screen ──────────────────────────────────────────────────────────
+  // ── Success screen ────────────────────────────────────────────────────────
   if (success) {
     return (
       <main
         className="min-h-screen bg-[#0D1F1A] flex items-center justify-center px-5 py-16"
         style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
       >
-        {/* Background glows */}
         <div className="pointer-events-none fixed inset-0 overflow-hidden">
           <div className="absolute top-[-10%] left-[-5%] w-[55vw] h-[55vw] rounded-full opacity-20"
             style={{ background: "radial-gradient(circle, #C8873A 0%, transparent 70%)" }} />
@@ -410,7 +431,6 @@ export default function WaitlistPage() {
         </div>
 
         <div className="relative z-10 max-w-lg w-full text-center">
-          {/* Animated checkmark */}
           <div className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
             style={{ background: "linear-gradient(135deg, #2D7A55, #22c55e)" }}>
             <CheckCircle size={36} className="text-white" />
@@ -434,7 +454,6 @@ export default function WaitlistPage() {
             We'll email you as soon as early access opens. Refer friends to move up the list faster.
           </p>
 
-          {/* Referral share card */}
           {userRefCode && (
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5 mb-6 text-left">
               <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3">
@@ -442,7 +461,8 @@ export default function WaitlistPage() {
               </p>
               <div className="flex gap-2">
                 <div className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white/50 font-mono truncate">
-                  {typeof window !== "undefined" ? `${window.location.origin}?ref=${userRefCode}` : `...?ref=${userRefCode}`}
+                  {/* FIX: uses referralUrl() helper — SSR-safe */}
+                  {referralUrl(userRefCode)}
                 </div>
                 <button
                   onClick={handleCopy}
@@ -459,17 +479,18 @@ export default function WaitlistPage() {
             </div>
           )}
 
-          {/* What's next */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5 mb-6 text-left space-y-3">
             <p className="text-xs font-bold uppercase tracking-widest text-white/30">What happens next</p>
             {[
               "We'll email you market insights while you wait",
-              "Early-access invite sent by batch when we launch",
+              "Only the first 500 investors get founding perks",
               "Founding investors get locked-in pricing",
             ].map((step, i) => (
               <div key={i} className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-bold text-[#0D1F1A]"
-                  style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)" }}>
+                <div
+                  className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-bold text-[#0D1F1A]"
+                  style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)" }}
+                >
                   {i + 1}
                 </div>
                 <p className="text-sm text-white/60">{step}</p>
@@ -488,13 +509,12 @@ export default function WaitlistPage() {
     );
   }
 
-  // ── Main waitlist form ──────────────────────────────────────────────────────
+  // ── Main waitlist form ────────────────────────────────────────────────────
   return (
     <main
       className="min-h-screen bg-[#0D1F1A]"
       style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
     >
-      {/* Background */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-5%] w-[55vw] h-[55vw] rounded-full opacity-20"
           style={{ background: "radial-gradient(circle, #C8873A 0%, transparent 70%)" }} />
@@ -505,14 +525,10 @@ export default function WaitlistPage() {
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 py-16 sm:py-24">
-
-        {/* Two-column layout on desktop */}
         <div className="grid lg:grid-cols-[1fr_440px] gap-12 lg:gap-20 items-start">
 
-          {/* ── Left column — value prop ──────────────────────────────────── */}
+          {/* ── Left column ── */}
           <div>
-            {/* <WaitlistCount count={1247} /> */}
-
             <h1
               className="font-bold text-white leading-[1.06] tracking-tight mb-5"
               style={{
@@ -529,12 +545,12 @@ export default function WaitlistPage() {
               className="text-white/50 mb-8 leading-relaxed max-w-lg"
               style={{ fontSize: "clamp(0.95rem, 2vw, 1.1rem)" }}
             >
-              {appname} opens to the public soon. Join the waitlist now and
-              get founding investor access — before everyone else, at locked-in pricing.
+              {appname} opens to the public soon. Join the waitlist now and get founding investor
+              access — before everyone else, at locked-in pricing.
             </p>
 
-            {/* Stats row */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+            {/* Stats */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
               {STATS.map((s) => (
                 <div key={s.label} className="text-center p-3 rounded-2xl bg-white/5 border border-white/10">
                   <p
@@ -567,21 +583,26 @@ export default function WaitlistPage() {
             </div>
 
             {/* City coverage */}
-            <div className="flex flex-wrap gap-2 mb-8">
+            {/* <div className="flex flex-wrap gap-2 mb-8">
               {["Ogun", "Oyo (Ibadan)", "Abuja"].map((city) => (
-                <span key={city}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-white/10 bg-white/5 text-white/50">
+                <span
+                  key={city}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-white/10 bg-white/5 text-white/50"
+                >
                   <MapPin size={10} className="text-amber-500" />
                   {city}
                 </span>
               ))}
-            </div>
-
+            </div> */}
           </div>
 
-          {/* ── Right column — form ───────────────────────────────────────── */}
+          {/* ── Right column — form ── */}
+          {/*
+            NOTE: `sticky top-8` can clip on short viewports on mobile.
+            Consider wrapping in `lg:sticky` to restrict stickiness to desktop only.
+          */}
           <div
-            className="rounded-3xl p-6 sm:p-8 border border-white/10 sticky top-8"
+            className="rounded-3xl p-6 sm:p-8 border border-white/10 lg:sticky top-8"
             style={{ background: "rgba(255,255,255,0.03)", backdropFilter: "blur(12px)" }}
           >
             <div className="mb-6">
@@ -595,9 +616,7 @@ export default function WaitlistPage() {
               >
                 Reserve your spot
               </h2>
-              <p className="text-sm text-white/40 mt-1">
-                Takes 30 seconds. No credit card required.
-              </p>
+              <p className="text-sm text-white/40 mt-1">Takes 30 seconds. No credit card required.</p>
             </div>
 
             {/* Already joined? toggle */}
@@ -611,7 +630,6 @@ export default function WaitlistPage() {
               </button>
             )}
 
-            {/* Check position panel — shown inline */}
             {showCheck && (
               <div className="mb-5">
                 <CheckPositionPanel onClose={() => setShowCheck(false)} />
@@ -626,22 +644,42 @@ export default function WaitlistPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
               {/* Name */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Your full name"
-                  className={`w-full bg-white/5 border text-white placeholder-white/20 px-4 py-3.5 rounded-xl text-sm outline-none transition-all ${
-                    errors.name
-                      ? "border-red-500/50 focus:border-red-500"
-                      : "border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20"
-                  }`}
-                />
-                {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    value={form.firstName}
+                    onChange={(e) => { setForm({ ...form, firstName: e.target.value }); setErrors((p) => ({ ...p, firstName: "" })); }}
+                    placeholder="First name"
+                    className={`w-full bg-white/5 border text-white placeholder-white/20 px-4 py-3.5 rounded-xl text-sm outline-none transition-all ${
+                      errors.firstName
+                        ? "border-red-500/50 focus:border-red-500"
+                        : "border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20"
+                    }`}
+                  />
+                  {errors.firstName && <p className="text-red-400 text-xs mt-1">{errors.firstName}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    value={form.lastName}
+                    onChange={(e) => { setForm({ ...form, lastName: e.target.value }); setErrors((p) => ({ ...p, lastName: "" })); }}
+                    placeholder="Last name"
+                    className={`w-full bg-white/5 border text-white placeholder-white/20 px-4 py-3.5 rounded-xl text-sm outline-none transition-all ${
+                      errors.lastName
+                        ? "border-red-500/50 focus:border-red-500"
+                        : "border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20"
+                    }`}
+                  />
+                  {errors.lastName && <p className="text-red-400 text-xs mt-1">{errors.lastName}</p>}
+                </div>
               </div>
 
               {/* Email */}
@@ -652,7 +690,7 @@ export default function WaitlistPage() {
                 <input
                   type="email"
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  onChange={(e) => { setForm({ ...form, email: e.target.value }); setErrors((p) => ({ ...p, email: "" })); }}
                   placeholder="you@example.com"
                   className={`w-full bg-white/5 border text-white placeholder-white/20 px-4 py-3.5 rounded-xl text-sm outline-none transition-all ${
                     errors.email
@@ -673,7 +711,7 @@ export default function WaitlistPage() {
                     <button
                       key={opt.value}
                       type="button"
-                      onClick={() => setForm({ ...form, budget: opt.value })}
+                      onClick={() => { setForm({ ...form, budget: opt.value }); setErrors((p) => ({ ...p, budget: "" })); }}
                       className={`py-3 px-2 rounded-xl text-xs font-semibold border transition-all text-center ${
                         form.budget === opt.value
                           ? "border-amber-500/60 bg-amber-500/15 text-amber-400"
@@ -697,7 +735,7 @@ export default function WaitlistPage() {
                     <button
                       key={opt.value}
                       type="button"
-                      onClick={() => setForm({ ...form, city: opt.value })}
+                      onClick={() => { setForm({ ...form, city: opt.value }); setErrors((p) => ({ ...p, city: "" })); }}
                       className={`py-3 px-3 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 ${
                         form.city === opt.value
                           ? "border-amber-500/60 bg-amber-500/15 text-amber-400"
@@ -712,7 +750,7 @@ export default function WaitlistPage() {
                 {errors.city && <p className="text-red-400 text-xs mt-1">{errors.city}</p>}
               </div>
 
-              {/* Referral code display (auto-populated) */}
+              {/* Referral indicator */}
               {refCode && (
                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-emerald-500/20 bg-emerald-500/8 text-emerald-400 text-xs">
                   <CheckCircle size={11} />
@@ -732,7 +770,7 @@ export default function WaitlistPage() {
                 ) : (
                   <>
                     Join the Waitlist
-                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight size={16} />
                   </>
                 )}
               </button>
@@ -742,7 +780,6 @@ export default function WaitlistPage() {
               </p>
             </form>
 
-            {/* Bottom avatar */}
             <div className="mt-5 pt-5 border-t border-white/8">
               <AvatarStack />
             </div>
@@ -754,8 +791,8 @@ export default function WaitlistPage() {
           <div className="flex flex-wrap gap-4 text-xs text-white/20">
             {[
               [CheckCircle, "Verified land titles"],
-              [Shield, "Secure payments"],
-              [BadgeCheck, "Legal compliance"],
+              [Shield,      "Secure payments"    ],
+              [BadgeCheck,  "Legal compliance"   ],
             ].map(([Icon, label]) => (
               <span key={label} className="flex items-center gap-1.5">
                 <Icon size={11} className="text-emerald-400" /> {label}
