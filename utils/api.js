@@ -32,7 +32,7 @@ function processQueue(error, token = null) {
   refreshQueue = [];
 }
 
-const SKIP_REFRESH = ["/me", "/login", "/refresh", "/logout"];
+const SKIP_REFRESH = ["/me", "/login", "/lands", "/refresh", "/logout"];
 const shouldSkip = (url = "") => SKIP_REFRESH.some((p) => url.includes(p));
 
 // ── Response interceptor ─────────────────────────────────────────────────────

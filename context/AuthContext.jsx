@@ -24,6 +24,7 @@ function deriveRole(user) {
 const GUEST_ROUTES = [
   "/",
   "/login",
+  "/lands",
   "/register",
   "/forgot-password",
   "/reset-password",
