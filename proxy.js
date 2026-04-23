@@ -38,31 +38,21 @@ export function proxy(request) {
   const isAdminRoute = ADMIN_ROUTES.some((route) =>
     normalizedPath.startsWith(route)
   );
-
-  // 🔍 TRACE BLOCK
-  console.log("---- MIDDLEWARE TRACE ----");
-  console.log("Path:", pathname);
-  console.log("Normalized:", normalizedPath);
-  console.log("Token exists:", !!token);
-  console.log("User role:", userRole);
-  console.log("isPublicRoute:", isPublicRoute);
-  console.log("isAdminRoute:", isAdminRoute);
-
+  
   //waitlist redirect
   if (!token && pathname === "/register") {
     return NextResponse.redirect(new URL("/waitlist", request.url));
   }
 
   // Logged-in user hitting "/" or auth pages → dashboard
-if (token && (pathname === "/" || pathname === "/login" || pathname === "/register")) {
-  const redirectTo = request.nextUrl.searchParams.get("redirect");
-  const destination = redirectTo && redirectTo.startsWith("/") ? redirectTo : "/dashboard";
-  return NextResponse.redirect(new URL(destination, request.url));
-}
+  if (token && (pathname === "/" || pathname === "/login" || pathname === "/register")) {
+    const redirectTo = request.nextUrl.searchParams.get("redirect");
+    const destination = redirectTo && redirectTo.startsWith("/") ? redirectTo : "/dashboard";
+    return NextResponse.redirect(new URL(destination, request.url));
+  }
 
   // Not logged in, trying to access a protected route
   if (!token && !isPublicRoute) {
-    debugger;
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);

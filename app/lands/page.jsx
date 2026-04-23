@@ -1,14 +1,5 @@
 "use client";
 
-/**
- * /app/lands/page.jsx  — or wherever your lands listing lives
- *
- * PUBLIC browsing, auth-gated investing.
- * Separate metadata export (SEO) is at the bottom of this file
- * — move it to a sibling `page.jsx` wrapper if you use the
- * App Router pattern of a Server Component shell + Client Component.
- */
-
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -222,7 +213,7 @@ function TrustBar() {
       {[
         [BadgeCheck, "Verified Titles"],
         [ShieldCheck, "Legally Backed"],
-        [TrendingUp,  "10–30% Projected ROI"],
+        [TrendingUp,  "15–30% Projected ROI"],
       ].map(([Icon, label]) => (
         <span key={label} className="flex items-center gap-1.5 text-xs text-white/35">
           <Icon size={12} className="text-emerald-400" />
@@ -282,7 +273,7 @@ export default function LandList() {
 
   // ── Fetch lands (public endpoint) ──────────────────────────────────────────
   useEffect(() => {
-    api.get("/lands")
+    api.get("/land")
       .then((res) => {
         const list = res.data?.data ?? [];
         setLands(list);
@@ -620,7 +611,7 @@ export default function LandList() {
                     <div className="flex gap-2">
                       {/* View Details — always public */}
                       <Link
-                        href={`/lands/${land.id}`}
+                        href={`/land/${land.id}`}
                         className="flex-1 py-2.5 rounded-xl text-sm font-bold text-center text-[#0D1F1A] transition-all hover:scale-[1.02] active:scale-[0.98]"
                         style={{ background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" }}
                       >
