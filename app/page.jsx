@@ -18,7 +18,7 @@ export const metadata = {
   metadataBase: new URL(appurl),
   title: `${appname} — Fractional Land Investment in Nigeria from ₦5,000`,
   description:
-    `Invest in fully verified land across major growth corridors in Nigeria, minimum investment from ₦5,000. ${appname} offers secure fractional land ownership, 10-30% annual appreciation, legally verified titles, and a real-time investor dashboard. Start building wealth today.`,
+    `Invest in fully verified land across major growth corridors in Nigeria, minimum investment from ₦5,000. ${appname} offers secure fractional land ownership, 15-30% annual appreciation, legally verified titles, and a real-time investor dashboard. Start building wealth today.`,
   keywords: [
     "fractional land investment Nigeria",
     "buy land Ogun fractional",
@@ -37,7 +37,7 @@ export const metadata = {
   ],
   openGraph: {
     title: `${appname} — Fractional Land Investment in Nigeria from ₦5,000`,
-    description: `Secure verified land across Nigeria from ₦5,000. legally verified titles, 10-30% projected annual appreciation, real-time portfolio dashboard. Join ${appname} today.`,
+    description: `Secure verified land across Nigeria from ₦5,000. legally verified titles, 15-30% projected annual appreciation, real-time portfolio dashboard. Join ${appname} today.`,
     url: appurl,
     siteName: appname,
     images: [{ url: `${appurl}/og-image.jpg`, width: 1200, height: 630, alt: `${appname} — Fractional Land Investment Nigeria` }],
@@ -47,7 +47,7 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: `${appname} — Own Verified Land in Nigeria from ₦5,000`,
-    description: `Fractional land ownership, legally verified titles, 10-30% projected annual returns. Join ${appname}.`,
+    description: `Fractional land ownership, legally verified titles, 15-30% projected annual returns. Join ${appname}.`,
     images: [`${appurl}/og-image.jpg`],
   },
   alternates: { canonical: appurl },
@@ -91,7 +91,7 @@ function JsonLd() {
       {
         "@type": "Question",
         name: "What returns can I expect on land investment?",
-        acceptedAnswer: { "@type": "Answer", text: "Land on the platform has historically appreciated 10-30% annually, driven by Nigeria's urbanisation and infrastructure growth. Past performance is not a guarantee of future returns." },
+        acceptedAnswer: { "@type": "Answer", text: "Land on the platform has historically appreciated 15-30% annually, driven by Nigeria's urbanisation and infrastructure growth. Past performance is not a guarantee of future returns." },
       },
       {
         "@type": "Question",
@@ -216,7 +216,7 @@ export default async function Homepage() {
             {/* Social proof stats */}
             <div className="grid grid-cols-3 gap-3 max-w-2xl mx-auto mb-8">
               <StatBadge value="₦5,000" label="Min. investment" />
-              <StatBadge value="10–30%" label="Projected annual ROI" />
+              <StatBadge value="15–30%" label="Projected annual ROI" />
               {/* <StatBadge value="C of O" label="Title standard" /> */}
               <StatBadge value="Multiple cities" label="Major growth corridors in Nigeria" />
             </div>
@@ -314,7 +314,7 @@ export default async function Homepage() {
             </div>
             <div className="grid sm:grid-cols-3 gap-5 mb-8">
               {[
-                { icon: <TrendingUp size={20} />, label: "Projected Annual Appreciation", value: "10-30%", note: "Based on market trends", accent: "#C8873A" },
+                { icon: <TrendingUp size={20} />, label: "Projected Annual Appreciation", value: "15-30%", note: "Based on market trends", accent: "#C8873A" },
                 { icon: <BarChart3 size={20} />, label: "Sources of Return", value: "Multiple streams", note: "Land value growth + rental income on eligible plots", accent: "#2D7A55" },
                 { icon: <Clock size={20} />, label: "Min. Holding Period", value: "None", note: "Sell units on the secondary market at any time", accent: "#8B5CF6" },
               ].map((r) => (
