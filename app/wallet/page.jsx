@@ -11,20 +11,23 @@ import {
   WifiOff, RefreshCw, ServerCrash,
 } from "lucide-react";
 
-const FEE_PERCENT  = 2;
-const FEE_CAP      = 3000;
+const FEE_PERCENT   = 2;
+const FEE_CAP       = 3000;
 const QUICK_AMOUNTS = [1000, 5000, 10000, 50000];
 
 const GATEWAYS = [
-  {
-    id: "monnify",
-    label: "Monnify",
-    description: "Bank transfer & USSD",
+   {
+    id: "opay",
+    label: "OPay",
+    description: "OPay wallet & card",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" aria-hidden>
-        <rect x="2" y="5" width="20" height="14" rx="3" fill="currentColor" opacity=".15" />
-        <rect x="2" y="9" width="20" height="3" fill="currentColor" opacity=".4" />
-        <rect x="5" y="15" width="4" height="2" rx="1" fill="currentColor" opacity=".6" />
+        <circle cx="12" cy="12" r="10" fill="currentColor" opacity=".15" />
+        <path
+          d="M12 7a5 5 0 100 10A5 5 0 0012 7zm0 2a3 3 0 110 6 3 3 0 010-6z"
+          fill="currentColor" opacity=".7"
+        />
+        <circle cx="12" cy="12" r="1.2" fill="currentColor" />
       </svg>
     ),
   },
@@ -39,6 +42,18 @@ const GATEWAYS = [
           strokeLinecap="round" opacity=".8" />
       </svg>
     ),
+  }, 
+  {
+    id: "monnify",
+    label: "Monnify",
+    description: "Bank transfer & USSD",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" aria-hidden>
+        <rect x="2" y="5" width="20" height="14" rx="3" fill="currentColor" opacity=".15" />
+        <rect x="2" y="9" width="20" height="3" fill="currentColor" opacity=".4" />
+        <rect x="5" y="15" width="4" height="2" rx="1" fill="currentColor" opacity=".6" />
+      </svg>
+    ),
   },
 ];
 
@@ -49,7 +64,7 @@ export default function WalletPage() {
   const [pin, setPin]                       = useState("");
   const [loading, setLoading]               = useState(null);
   const [transactions, setTransactions]     = useState([]);
-  const [gateway, setGateway]               = useState("monnify");
+  const [gateway, setGateway]               = useState("opay");
   const [feePreview, setFeePreview]         = useState(0);
   const [totalPreview, setTotalPreview]     = useState(0);
   const [activeTab, setActiveTab]           = useState("deposit");
@@ -119,12 +134,20 @@ export default function WalletPage() {
     const amountNaira = Number(depositAmount);
     if (!Number.isInteger(amountNaira) || amountNaira < 1000)
       return toast.error("Minimum deposit is ₦1,000");
+
     setLoading("deposit");
+
     try {
-      const res = await api.post("/deposit", { amount: amountNaira * 100, gateway });
+      const res = await api.post("/deposit", {
+        amount: amountNaira * 100, // always send in kobo
+        gateway,                   // "opay" | "monnify" | "paystack"
+      });
+
       if (res.data.payment_url) {
-        toast.success(`Redirecting to ${gateway}…`);
+        toast.success(`Redirecting to ${GATEWAYS.find((g) => g.id === gateway)?.label ?? gateway}…`);
         setTimeout(() => window.location.assign(res.data.payment_url), 400);
+      } else {
+        toast.error("No payment URL received. Please try again.");
       }
     } catch (err) {
       handleApiError(err);
@@ -139,6 +162,7 @@ export default function WalletPage() {
       return toast.error("Minimum withdrawal is ₦1,000");
     if (amountNaira > balance / 100) return toast.error("Insufficient balance");
     if (!/^\d{4}$/.test(pin))        return toast.error("PIN must be 4 digits");
+
     setLoading("withdraw");
     try {
       const res = await api.post("/withdraw", {
@@ -227,7 +251,7 @@ export default function WalletPage() {
               : "Unable to load your wallet. Please check your connection and try again."}
           </p>
           {isServer && serverError && (
-            <p className="text-red-400/70 text-xs font-mono mb-6 px-3 py-2 rounded-lg bg-red-500/5 border border-red-500/10 break-words">
+            <p className="text-red-400/70 text-xs font-mono mb-6 px-3 py-2 rounded-lg bg-red-500/5 border border-red-500/10 wrap-break-word">
               {serverError}
             </p>
           )}
@@ -357,6 +381,36 @@ export default function WalletPage() {
                       );
                     })}
                   </div>
+
+                  {/* Info banner – shown when a gateway is selected */}
+                  {gateway === "opay" && (
+                    <div className="mt-3 flex items-start gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3">
+                      <AlertCircle size={14} className="text-amber-500 shrink-0 mt-0.5" />
+                      <p className="text-xs text-amber-500/70 leading-relaxed">
+                        You'll be redirected to the OPay secure payment page. Your wallet will
+                        be credited automatically once payment is confirmed.
+                      </p>
+                    </div>
+                  )}
+                  {gateway === "paystack" && (
+                    <div className="mt-3 flex items-start gap-3 rounded-xl border border-blue-500/20 bg-blue-500/5 px-4 py-3">
+                      <AlertCircle size={14} className="text-blue-400 shrink-0 mt-0.5" />
+                      <p className="text-xs text-blue-400/70 leading-relaxed">
+                        You'll be redirected to Paystack's secure checkout to pay with your
+                        card or bank. Your wallet will be credited automatically once confirmed.
+                      </p>
+                    </div>
+                  )}
+                  {gateway === "monnify" && (
+                    <div className="mt-3 flex items-start gap-3 rounded-xl border border-purple-500/20 bg-purple-500/5 px-4 py-3">
+                      <AlertCircle size={14} className="text-purple-400 shrink-0 mt-0.5" />
+                      <p className="text-xs text-purple-400/70 leading-relaxed">
+                        You'll be redirected to Monnify to complete your deposit via bank
+                        transfer or USSD. Your wallet is credited automatically once the
+                        transfer is received.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Amount */}
@@ -374,14 +428,22 @@ export default function WalletPage() {
                       className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 text-white placeholder-white/20 pl-10 pr-4 py-3 rounded-xl text-sm outline-none transition-all"
                     />
                   </div>
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {QUICK_AMOUNTS.map((a) => (
-                      <button key={a} type="button" onClick={() => setDepositAmount(a.toString())}
-                        className="px-3 py-1.5 text-xs font-bold bg-white/5 border border-white/10 hover:border-amber-500/30 hover:text-amber-400 text-white/40 rounded-lg transition-all">
-                        ₦{a.toLocaleString()}
-                      </button>
-                    ))}
-                  </div>
+                 <div className="flex flex-wrap gap-2 mt-3">
+                  {QUICK_AMOUNTS.map((a) => (
+                    <button key={a} type="button" onClick={() => setDepositAmount(a.toString())}
+                      className="px-3 py-1.5 text-xs font-bold bg-white/5 border border-white/10 hover:border-amber-500/30 hover:text-amber-400 text-white/40 rounded-lg transition-all">
+                      ₦{a.toLocaleString()}
+                    </button>
+                  ))}
+                  {/* +1,000 stepper */}
+                  <button
+                    type="button"
+                    onClick={() => setDepositAmount((prev) => String((Number(prev) || 0) + 1000))}
+                    className="px-3 py-1.5 text-xs font-bold bg-white/5 border border-white/10 hover:border-amber-500/30 hover:text-amber-400 text-white/40 rounded-lg transition-all"
+                  >
+                    +₦1,000
+                  </button>
+                </div>
                   <p className="text-xs text-white/20 mt-2">
                     {FEE_PERCENT}% processing fee · max ₦{FEE_CAP.toLocaleString()} cap
                   </p>
@@ -503,9 +565,10 @@ export default function WalletPage() {
                   return (
                     <div
                       key={t.reference ?? i}
-                      className="rounded-xl border border-white/[0.07] bg-white/[0.03] hover:border-white/[0.12] hover:bg-white/[0.05] transition-all p-3 sm:p-4"
+                      className="rounded-xl border border-white/[0.07] bg-white/3 hover:border-white/12 hover:bg-white/5 transition-all p-3 sm:p-4"
                     >
                       <div className="flex items-start gap-3">
+                        {/* Gateway badge */}
                         <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
                           isDeposit ? "bg-emerald-500/10" : "bg-blue-500/10"
                         }`}>
@@ -516,6 +579,12 @@ export default function WalletPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <p className="text-sm font-bold text-white leading-none">{t.type}</p>
+                            {/* Show gateway tag when present */}
+                            {t.gateway && (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-white/5 border border-white/10 text-white/30 uppercase tracking-wide">
+                                {t.gateway}
+                              </span>
+                            )}
                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border ${statusStyle}`}>
                               {getStatusIcon(t.status)}
                               {t.status}
