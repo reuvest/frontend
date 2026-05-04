@@ -60,12 +60,17 @@ export default function Header() {
             className="flex items-center shrink-0 group"
             aria-label={`${appname} Home`}
           >
-           <img
-              src="/reu_ng_logo.png"
-              alt={`${appname} logo`}
-              className="h-16 w-auto transition-opacity group-hover:opacity-80" 
-              style={{ maxWidth: "160px", filter: "brightness(2.1)"  }}  
-            />
+          <img
+            src="/reu_ng_logo.png"
+            alt={`${appname} logo`}
+            className="h-16 w-auto transition-opacity group-hover:opacity-80"
+            style={{
+              maxWidth: "160px",
+              filter: "brightness(2.1)",
+              background: "transparent",
+              mixBlendMode: "screen",
+            }}
+          />
           </Link>
 
           {user && (
