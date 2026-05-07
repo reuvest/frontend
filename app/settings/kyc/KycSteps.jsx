@@ -2,12 +2,18 @@
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertCircle, Camera, CreditCard, MapPin, User, XCircle } from "lucide-react";
+import { AlertCircle, Camera, CreditCard, MapPin, Shield, User, XCircle } from "lucide-react";
 import { inputCls, selectCls, stepAnim, ID_TYPES, NIGERIAN_STATES, formatDateDisplay } from "./constants";
 import DobInput      from "./DobInput";
 import FileDropZone  from "./FileDropZone";
 import LivenessCheck from "./LivenessCheck";
 import { Field, ReviewRow } from "./FormComponents";
+
+const PEP_RELATIONSHIPS = [
+  { value: "self",      label: "Myself — I currently hold or have held a public position" },
+  { value: "family",    label: "A close family member holds or has held a public position" },
+  { value: "associate", label: "A close business associate holds or has held a public position" },
+];
 
 export default function KycSteps({
   step,
@@ -16,18 +22,16 @@ export default function KycSteps({
   submitError,
   setField,
   setFile,
-  setErrors,          
+  setErrors,
   handleIdTypeChange,
   handleIdNumberChange,
   selectedIdMeta,
   idTypeLabel,
 }) {
-  // Called by FileDropZone when a file is rejected or compression fails
   const handleFileError = (fieldName, message) => {
     setErrors(prev => ({ ...prev, [fieldName]: message }));
   };
 
-  // Called by FileDropZone when a valid file is accepted — also clears any prior error
   const handleFileChange = (fieldName, file) => {
     setFile(fieldName, file);
     if (file) {
@@ -36,6 +40,17 @@ export default function KycSteps({
         delete next[fieldName];
         return next;
       });
+    }
+  };
+
+  // When is_pep is toggled off, clear all PEP sub-fields
+  const handlePepToggle = (value) => {
+    setField("is_pep", value);
+    if (!value) {
+      setField("pep_relationship", "");
+      setField("pep_role", "");
+      setField("pep_country", "");
+      setField("pep_details", "");
     }
   };
 
@@ -220,9 +235,160 @@ export default function KycSteps({
         </motion.div>
       )}
 
-      {/* ── Step 5: Review ── */}
+      {/* ── Step 5: PEP Declaration ── */}
       {step === 5 && (
-        <motion.div key="s5" {...stepAnim} className="space-y-4">
+        <motion.div key="s5" {...stepAnim} className="space-y-5">
+
+          {/* Info banner */}
+          <div className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4">
+            <Shield size={14} className="text-amber-500 mt-0.5 shrink-0" />
+            <div className="space-y-1">
+              <p className="text-white/70 text-xs font-semibold">What is a Politically Exposed Person (PEP)?</p>
+              <p className="text-white/35 text-xs leading-relaxed">
+                A PEP is someone who holds or has held a prominent public position — such as a government official,
+                senior executive of a state-owned enterprise, senior military officer, or a close family member
+                or associate of such a person. This is a standard regulatory requirement.
+              </p>
+            </div>
+          </div>
+
+          {/* Yes / No toggle */}
+          <Field label="Are you, or are you closely associated with, a Politically Exposed Person?" required error={errors.is_pep}>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { value: false, label: "No", sub: "I have no PEP connection" },
+                { value: true,  label: "Yes", sub: "I or someone close to me is a PEP" },
+              ].map(opt => (
+                <button
+                  key={String(opt.value)}
+                  type="button"
+                  onClick={() => handlePepToggle(opt.value)}
+                  className={[
+                    "flex flex-col items-start gap-0.5 rounded-xl border px-4 py-3.5 text-left transition-all",
+                    form.is_pep === opt.value
+                      ? opt.value
+                        ? "border-red-500/50 bg-red-500/10 ring-2 ring-red-500/20"
+                        : "border-amber-500/50 bg-amber-500/10 ring-2 ring-amber-500/20"
+                      : "border-white/10 bg-white/5 hover:border-white/20",
+                  ].join(" ")}
+                >
+                  <span className={[
+                    "text-sm font-bold",
+                    form.is_pep === opt.value
+                      ? opt.value ? "text-red-400" : "text-amber-400"
+                      : "text-white/60",
+                  ].join(" ")}>
+                    {opt.label}
+                  </span>
+                  <span className="text-white/30 text-xs">{opt.sub}</span>
+                </button>
+              ))}
+            </div>
+          </Field>
+
+          {/* Sub-fields — only shown when is_pep is true */}
+          <AnimatePresence>
+            {form.is_pep === true && (
+              <motion.div
+                key="pep-fields"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-5"
+              >
+                {/* Relationship */}
+                <Field label="PEP Relationship" required error={errors.pep_relationship}>
+                  <div className="space-y-2.5">
+                    {PEP_RELATIONSHIPS.map(opt => (
+                      <label
+                        key={opt.value}
+                        className={[
+                          "flex items-start gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-all",
+                          form.pep_relationship === opt.value
+                            ? "border-amber-500/50 bg-amber-500/10"
+                            : "border-white/10 bg-white/5 hover:border-white/20",
+                        ].join(" ")}
+                      >
+                        {/* Custom radio */}
+                        <span className={[
+                          "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-all",
+                          form.pep_relationship === opt.value
+                            ? "border-amber-500 bg-amber-500"
+                            : "border-white/20",
+                        ].join(" ")}>
+                          {form.pep_relationship === opt.value && (
+                            <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                          )}
+                        </span>
+                        <input
+                          type="radio"
+                          className="sr-only"
+                          name="pep_relationship"
+                          value={opt.value}
+                          checked={form.pep_relationship === opt.value}
+                          onChange={() => setField("pep_relationship", opt.value)}
+                        />
+                        <span className="text-white/60 text-xs leading-relaxed">{opt.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </Field>
+
+                {/* Role */}
+                <Field label="Public Role / Position" required error={errors.pep_role}>
+                  <input
+                    className={inputCls}
+                    placeholder="e.g. Senator, Minister of Finance, Central Bank Governor"
+                    value={form.pep_role}
+                    onChange={e => setField("pep_role", e.target.value)}
+                  />
+                </Field>
+
+                {/* Country */}
+                <Field label="Country of Public Role" required error={errors.pep_country}>
+                  <input
+                    className={inputCls}
+                    placeholder="2-letter country code e.g. NG, US, GB"
+                    maxLength={2}
+                    value={form.pep_country}
+                    onChange={e => setField("pep_country", e.target.value.toUpperCase().replace(/[^A-Z]/g, ""))}
+                  />
+                </Field>
+
+                {/* Details */}
+                <Field label="Additional Details" required error={errors.pep_details}>
+                  <textarea
+                    className={inputCls + " resize-none"}
+                    style={{ height: "96px" }}
+                    placeholder="Briefly describe the public role and any relevant context"
+                    maxLength={500}
+                    value={form.pep_details}
+                    onChange={e => setField("pep_details", e.target.value)}
+                  />
+                  <p className="text-right text-white/20 text-xs mt-1 tabular-nums">
+                    {(form.pep_details || "").length}/500
+                  </p>
+                </Field>
+
+                {/* Warning */}
+                <div className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/5 p-3.5">
+                  <AlertCircle size={13} className="text-red-400 mt-0.5 shrink-0" />
+                  <p className="text-red-400/70 text-xs leading-relaxed">
+                    Your account will be flagged for manual review. This is standard regulatory procedure
+                    and does not affect your ability to use the platform.
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+        </motion.div>
+      )}
+
+      {/* ── Step 6: Review ── */}
+      {step === 6 && (
+        <motion.div key="s6" {...stepAnim} className="space-y-4">
           {[
             {
               heading: "Personal",
@@ -260,13 +426,28 @@ export default function KycSteps({
                 ["Liveness Photo", form.selfie ? "✓ Captured" : "—"],
               ],
             },
+            {
+              heading: "PEP Declaration",
+              icon: <Shield size={12} />,
+              rows: form.is_pep === true
+                ? [
+                    ["PEP Status",    "Yes — Politically Exposed"],
+                    ["Relationship",  PEP_RELATIONSHIPS.find(r => r.value === form.pep_relationship)?.label ?? form.pep_relationship],
+                    ["Role",          form.pep_role],
+                    ["Country",       form.pep_country],
+                    ["Details",       form.pep_details],
+                  ]
+                : [
+                    ["PEP Status", "No — Not a Politically Exposed Person"],
+                  ],
+            },
           ].map(({ heading, icon, rows }) => (
             <div key={heading} className="rounded-xl border border-white/10 overflow-hidden">
               <div className="flex items-center gap-2 px-4 py-2.5 bg-white/5 border-b border-white/5">
                 <span className="text-amber-500">{icon}</span>
                 <p className="text-xs font-bold text-white/30 uppercase tracking-widest">{heading}</p>
               </div>
-              <div className="px-4 divide-y divide-white/[0.03]">
+              <div className="px-4 divide-y divide-white/3">
                 {rows.map(([l, v]) => <ReviewRow key={l} label={l} value={v} />)}
               </div>
             </div>

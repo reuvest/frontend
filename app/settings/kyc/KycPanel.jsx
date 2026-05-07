@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
-  CheckCircle, Camera, CreditCard, ImageIcon, MapPin, User,
+  CheckCircle, Camera, CreditCard, ImageIcon, MapPin, User, Shield
 } from "lucide-react";
 import api from "../../../utils/api";
 
@@ -18,6 +18,7 @@ const STEP_META = [
   { icon: <CreditCard size={16} />,  title: "Identity Document",    subtitle: "Your government-issued ID"      },
   { icon: <ImageIcon size={16} />,   title: "Upload Documents",     subtitle: "Photos of your ID"              },
   { icon: <Camera size={16} />,      title: "Liveness Check",       subtitle: "Confirm you're physically present" },
+  { icon: <Shield size={16} />,      title: "PEP Declaration",      subtitle: "Politically Exposed Person check" },
   { icon: <CheckCircle size={16} />, title: "Review & Submit",      subtitle: "Confirm your details"           },
 ];
 
@@ -26,6 +27,7 @@ const EMPTY_FORM = {
   address: "", city: "", state: "", country: "Nigeria",
   id_type: "", id_number: "",
   id_front: null, id_back: null, selfie: null,
+  is_pep: false, pep_relationship: "", pep_role: "", pep_country: "", pep_details: "",
 };
 
 export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKycStatusProp }) {
@@ -119,6 +121,19 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
     if (step === 4 && !form.selfie)
       e.selfie = "Please complete the liveness check";
 
+    if (step === 5) {
+    if (form.is_pep === null || form.is_pep === undefined)
+      e.is_pep = "Please answer this question";
+
+    if (form.is_pep === true) {
+      if (!form.pep_relationship) e.pep_relationship = "Please select your relationship";
+      if (!form.pep_role?.trim()) e.pep_role          = "Role is required";
+      if (!form.pep_country?.trim() || form.pep_country.length !== 2)
+                                  e.pep_country       = "Enter a valid 2-letter country code";
+      if (!form.pep_details?.trim()) e.pep_details    = "Please provide some details";
+    }
+  }
+
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -149,6 +164,13 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
       fd.append("country",       form.country);
       fd.append("id_type",       form.id_type);
       fd.append("id_number",     form.id_number.trim());
+      fd.append("is_pep", form.is_pep ? "1" : "0");
+      if (form.is_pep) {
+        fd.append("pep_relationship", form.pep_relationship);
+        fd.append("pep_role",         form.pep_role.trim());
+        fd.append("pep_country",      form.pep_country.trim().toUpperCase());
+        fd.append("pep_details",      form.pep_details.trim());
+      }
       if (form.id_front) fd.append("id_front", form.id_front);
       if (form.id_back)  fd.append("id_back",  form.id_back);
       if (form.selfie)   fd.append("selfie",   form.selfie);

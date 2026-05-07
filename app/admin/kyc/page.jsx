@@ -6,7 +6,7 @@ import api from "../../../utils/api";
 import toast from "react-hot-toast";
 import { AuthImage } from "../../components/AuthImage";
 import {
-  ShieldCheck, Clock, RefreshCw,
+  ShieldCheck, Clock, RefreshCw, Shield,
   X, CheckCircle, XCircle, Eye, User,
   MapPin, Phone, Calendar, CreditCard, AlertTriangle,
   ArrowLeft,
@@ -331,6 +331,78 @@ export default function AdminKycManagement() {
                     <p className="text-sm font-semibold text-white font-mono break-all">{selectedKyc.id_number}</p>
                   </div>
                 </div>
+              </section>
+
+              {/* ── PEP Declaration section */}
+
+              <section>
+                <div className="flex items-center gap-2 mb-3">
+                  <Shield size={14} className={selectedKyc.is_pep ? "text-red-400" : "text-amber-500"} />
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-white/50">PEP Declaration</h3>
+                  {selectedKyc.is_pep && (
+                    <span className="ml-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border text-red-400 bg-red-500/10 border-red-500/20">
+                      <AlertTriangle size={10} /> Flagged for Review
+                    </span>
+                  )}
+                </div>
+
+                {selectedKyc.is_pep ? (
+                  <div className="space-y-2 sm:space-y-3">
+                    {/* Warning banner */}
+                    <div className="flex items-start gap-3 p-3.5 rounded-xl border border-red-500/20 bg-red-500/5">
+                      <AlertTriangle size={14} className="text-red-400 shrink-0 mt-0.5" />
+                      <p className="text-xs text-red-400/80 leading-relaxed">
+                        This user self-declared as a Politically Exposed Person. Manual compliance review is required before approval.
+                      </p>
+                    </div>
+
+                    {/* PEP detail cards */}
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                      <div className="bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5">
+                        <p className="text-xs text-white/30 mb-1">Relationship</p>
+                        <p className="text-sm font-semibold text-white capitalize">
+                          {selectedKyc.pep_relationship === "self"
+                            ? "Self — Direct PEP"
+                            : selectedKyc.pep_relationship === "family"
+                            ? "Family Member"
+                            : selectedKyc.pep_relationship === "associate"
+                            ? "Business Associate"
+                            : selectedKyc.pep_relationship ?? "—"}
+                        </p>
+                      </div>
+
+                      <div className="bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5">
+                        <p className="text-xs text-white/30 mb-1">Country</p>
+                        <p className="text-sm font-semibold text-white font-mono">
+                          {selectedKyc.pep_country ?? "—"}
+                        </p>
+                      </div>
+
+                      <div className="sm:col-span-2 bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5">
+                        <p className="text-xs text-white/30 mb-1">Public Role / Position</p>
+                        <p className="text-sm font-semibold text-white">
+                          {selectedKyc.pep_role ?? "—"}
+                        </p>
+                      </div>
+
+                      {selectedKyc.pep_details && (
+                        <div className="sm:col-span-2 bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5">
+                          <p className="text-xs text-white/30 mb-1">Additional Details</p>
+                          <p className="text-sm text-white/70 leading-relaxed">
+                            {selectedKyc.pep_details}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 p-3.5 rounded-xl border border-white/5 bg-white/5">
+                    <CheckCircle size={14} className="text-emerald-400 shrink-0" />
+                    <p className="text-xs text-white/50">
+                      User declared they are <span className="text-white/70 font-semibold">not</span> a Politically Exposed Person.
+                    </p>
+                  </div>
+                )}
               </section>
 
               {/* Documents */}

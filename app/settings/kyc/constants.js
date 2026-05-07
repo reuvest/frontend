@@ -1,5 +1,5 @@
 // ─── Step labels ──────────────────────────────────────────────────────────────
-export const STEPS = ["Personal", "Address", "Identity", "Docs", "Liveness", "Review"];
+export const STEPS = ["Personal", "Address", "Identity", "Docs", "Liveness", "PEP", "Review"];
 
 // ─── ID types ─────────────────────────────────────────────────────────────────
 export const ID_TYPES = [

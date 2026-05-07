@@ -8,7 +8,7 @@ import {
   MapPin, ShieldCheck, Gift, Wallet, FileText,
   ArrowRight, TrendingUp, Clock, CheckCircle,
   XCircle, Plus, Eye, MessageSquare, AlertCircle, Users,
-  LucideWalletCards, HeadphonesIcon,
+  LucideWalletCards, HeadphonesIcon, Shield, Ban 
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -21,6 +21,8 @@ export default function AdminDashboard() {
     withdrawals: { pending: 0, processing: 0 },
     blog:        { total: 0, published: 0, draft: 0 },
     liveChat:    { queued: 0, active: 0 },
+    compliance: { pendingReview: 0, blocked: 0, flagged: 0 },
+
   });
   const [loading, setLoading] = useState(true);
 
@@ -46,6 +48,7 @@ export default function AdminDashboard() {
       api.get("/admin/withdrawals?status=pending&per_page=1"),
       api.get("/admin/withdrawals?status=processing&per_page=1"),
       api.get("/admin/live-chat/queue"),
+      api.get("/admin/compliance/stats"),
     ]);
 
     // Helper: safely get response data or null if request failed
@@ -60,7 +63,7 @@ export default function AdminDashboard() {
       usersAllRes, usersSuspendedRes, usersAdminRes,
       blogAllRes, blogPublishedRes, blogDraftRes,
       withdrawalsPendingRes, withdrawalsProcessingRes,
-      liveChatQueueRes,
+      liveChatQueueRes, complianceRes,
     ] = results.map((_, i) => get(i));
 
     // Log any failed requests so you can see which ones in the console
@@ -76,6 +79,7 @@ export default function AdminDashboard() {
     const kycTotal    = kycAllRes?.data?.data?.total      ?? 0;
     const kycPending  = kycPendingRes?.data?.data?.total  ?? 0;
     const kycApproved = kycApprovedRes?.data?.data?.total ?? 0;
+    const compliance = complianceRes?.data?.data ?? {};
 
     const ref = referralsRes?.data?.data ?? {};
 
@@ -111,6 +115,7 @@ export default function AdminDashboard() {
       blog:        { total: blogTotal, published: blogPublished, draft: blogDraft },
       withdrawals: { pending: wPending, processing: wProcessing },
       liveChat:    { queued: lcQueued, active: lcActive },
+      compliance: {  pendingReview: compliance.pending_review ?? 0,  blocked: compliance.blocked_users  ?? 0, flagged:  compliance.flagged_users  ?? 0},
     });
   } catch (err) {
     console.error("Dashboard stats error:", err);
@@ -222,6 +227,17 @@ export default function AdminDashboard() {
         { label: "Active",   value: stats.liveChat.active, color: "text-emerald-400" },
       ],
     },
+    {
+    label: "Compliance",
+    value: stats.compliance.pendingReview,
+    icon: <Shield size={22} />,
+    accent: "#EF4444",
+    href: "/admin/compliance",
+    sub: [
+      { label: "Flagged", value: stats.compliance.flagged, color: "text-amber-400" },
+      { label: "Blocked", value: stats.compliance.blocked, color: "text-red-400"   },
+    ],
+  },
   ];
 
   return (
@@ -445,6 +461,42 @@ export default function AdminDashboard() {
             </div>
           </div>
 
+          {/* Compliance */}
+          <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+            <div className="flex items-center justify-between px-5 sm:px-6 py-5 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-red-500/15 flex items-center justify-center">
+                  <Shield size={18} className="text-red-400" />
+                </div>
+                <h2 className="font-bold text-white text-base sm:text-lg"
+                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  Compliance
+                </h2>
+              </div>
+              {stats.compliance.pendingReview > 0 && (
+                <span className="text-xs text-red-400 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">
+                  {stats.compliance.pendingReview} pending
+                </span>
+              )}
+            </div>
+            <div className="p-4 space-y-2">
+              <ManagementRow
+                href="/admin/compliance"
+                icon={<Shield size={15} />}
+                title="Sanctions & PEP Review"
+                subtitle={`${stats.compliance.pendingReview} awaiting review`}
+                accent="#EF4444"
+                highlight={stats.compliance.pendingReview > 0}
+              />
+              <ManagementRow
+                href="/admin/compliance"
+                icon={<Ban size={15} />}
+                title="Blocked Users"
+                subtitle={`${stats.compliance.blocked} users blocked`}
+                accent="#F97316"
+              />
+            </div>
+          </div>
           {/* ── Live Support (new) ── */}
           <div className="rounded-2xl border border-emerald-500/20 bg-white/5 overflow-hidden">
             <div className="flex items-center justify-between px-5 sm:px-6 py-5 border-b border-white/10">
@@ -500,7 +552,7 @@ export default function AdminDashboard() {
               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
               Quick Actions
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-3">
               {[
                 { href: "/admin/lands/create",               icon: <Plus            size={20} />, label: "Add Land",     accent: "#C8873A" },
                 { href: "/admin/kyc?status=pending",         icon: <ShieldCheck     size={20} />, label: "Review KYC",   accent: "#8B5CF6" },
@@ -508,6 +560,7 @@ export default function AdminDashboard() {
                 { href: "/admin/support?status=open",        icon: <MessageSquare   size={20} />, label: "Open Tickets", accent: "#2D7A55" },
                 { href: "/admin/withdrawals?status=pending", icon: <Wallet          size={20} />, label: "Withdrawals",  accent: "#2D7A55" },
                 { href: "/admin/live-chat",                  icon: <HeadphonesIcon  size={20} />, label: "Live Chat",    accent: "#10B981" },
+                { href: "/admin/compliance",                 icon: <Shield          size={20} />, label: "Compliance",   accent: "#EF4444" },
               ].map((action) => (
                 <Link key={action.label} href={action.href}
                   className="flex flex-col items-center gap-2.5 p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:-translate-y-1 transition-all text-center group">
