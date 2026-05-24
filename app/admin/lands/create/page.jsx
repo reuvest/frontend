@@ -35,9 +35,10 @@ function emptyDetail() {
     hydrology: "", vegetation: "",
     road_type: "", road_category: "", road_condition: "",
     electricity: "", water_supply: "", sewage: "", other_facilities: "",
-    comm_lines: [],        // [{ network, strength }]
+    comm_lines: [],               // [{ network, strength }]
+    neighbouring_transactions: [], // [{ plot_size, year, value, distance_m }]
     overall_value: "", current_land_value: "", rental_pm: "", rental_pa: "",
-    valuation_history: [], // [{ year, month, value }]
+    valuation_history: [],        // [{ year, month, value }]
   };
 }
 
@@ -175,6 +176,69 @@ function ValuationHistoryEditor({ value = [], onChange }) {
   );
 }
 
+/**
+ * Editor for neighbouring_transactions.
+ * Each row: { plot_size, year, value, distance_m }
+ * Sent as array of objects matching controller validation:
+ *   neighbouring_transactions.*.plot_size, .year, .value, .distance_m
+ */
+function NeighbouringTransactionsEditor({ value = [], onChange }) {
+  const emptyRow = () => ({ plot_size: "", year: CURRENT_YEAR, value: "", distance_m: "" });
+  const add    = () => onChange([...value, emptyRow()]);
+  const update = (i, field, v) => { const a = [...value]; a[i] = { ...a[i], [field]: v }; onChange(a); };
+  const remove = (i) => onChange(value.filter((_, idx) => idx !== i));
+
+  return (
+    <div className="space-y-2">
+      {value.length > 0 && (
+        <div className="grid grid-cols-[1fr_80px_1fr_100px_40px] gap-2 px-1">
+          {["Plot Size (m²)", "Year", "Value (₦)", "Distance (m)", ""].map((h, i) => (
+            <span key={i} className="text-[10px] font-black uppercase tracking-widest text-white/25">{h}</span>
+          ))}
+        </div>
+      )}
+      {value.map((row, i) => (
+        <div key={i} className="grid grid-cols-[1fr_80px_1fr_100px_40px] gap-2 items-center">
+          <DarkInput
+            type="number" min={0}
+            value={row.plot_size}
+            onChange={(e) => update(i, "plot_size", e.target.value)}
+            placeholder="e.g. 500"
+          />
+          <DarkSelect
+            value={row.year}
+            onChange={(e) => update(i, "year", Number(e.target.value))}
+          >
+            {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
+          </DarkSelect>
+          <DarkInput
+            type="number" min={0}
+            value={row.value}
+            onChange={(e) => update(i, "value", e.target.value)}
+            placeholder="0.00"
+          />
+          <DarkInput
+            type="number" min={0}
+            value={row.distance_m}
+            onChange={(e) => update(i, "distance_m", e.target.value)}
+            placeholder="metres"
+          />
+          <button
+            type="button" onClick={() => remove(i)}
+            className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center hover:bg-red-500/20 transition-all"
+          >
+            <Trash2 size={13} />
+          </button>
+        </div>
+      ))}
+      <button type="button" onClick={add}
+        className="flex items-center gap-1.5 text-xs font-bold text-amber-500 hover:text-amber-400 transition-colors">
+        <Plus size={12} /> Add transaction
+      </button>
+    </div>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function CreateLand() {
@@ -258,6 +322,16 @@ export default function CreateLand() {
       .filter((r) => r.value !== "" && r.value !== null)
       .map((r) => [Number(r.year), Number(r.month), parseFloat(r.value)]);
 
+    // neighbouring_transactions — array of objects
+    const neighbouringFiltered = detail.neighbouring_transactions
+      .filter((r) => r.value !== "" && r.value !== null)
+      .map((r) => ({
+        plot_size:  r.plot_size  !== "" ? parseFloat(r.plot_size)  : null,
+        year:       Number(r.year),
+        value:      parseFloat(r.value),
+        distance_m: r.distance_m !== "" ? parseFloat(r.distance_m) : null,
+      }));
+
     const formData = new FormData();
 
     // ── Core fields ────────────────────────────────────────────────────────
@@ -267,12 +341,7 @@ export default function CreateLand() {
     formData.append("price_per_unit_kobo", parseInt(form.price_per_unit_kobo) || 0);
     formData.append("total_units",         parseInt(form.total_units) || 0);
     formData.append("description",         form.description ?? "");
-
-    // FIX: send geometry as a JSON string so decodeJsonStrings() can decode it
-    // (same pattern as the edit form). The old appendGeometry() bracket-notation
-    // approach caused Point coordinates to arrive as an associative array
-    // {"0": lng, "1": lat} instead of [lng, lat], breaking resolveGeometry().
-    formData.append("geometry", JSON.stringify(geometry));
+    formData.append("geometry",            JSON.stringify(geometry));
 
     images.forEach((img) => formData.append("images[]", img));
 
@@ -295,9 +364,6 @@ export default function CreateLand() {
     });
 
     // ── Detail — JSON array fields ─────────────────────────────────────────
-    // Always append these (even as "[]") so the controller's decodeJsonStrings
-    // can reliably find and decode them. Skipping empty arrays is fine here
-    // since the controller treats missing fields as null.
     if (detail.allocation_records.length)
       formData.append("allocation_records",      JSON.stringify(detail.allocation_records));
     if (detail.land_titles.length)
@@ -308,6 +374,8 @@ export default function CreateLand() {
       formData.append("comm_lines",              JSON.stringify(commLinesTuples));
     if (valuationTuples.length)
       formData.append("valuation_history",       JSON.stringify(valuationTuples));
+    if (neighbouringFiltered.length)
+      formData.append("neighbouring_transactions", JSON.stringify(neighbouringFiltered));
 
     try {
       setLoading(true);
@@ -578,6 +646,16 @@ export default function CreateLand() {
               <ValuationHistoryEditor
                 value={detail.valuation_history}
                 onChange={(v) => setDetailField("valuation_history", v)}
+              />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/25 mb-3 pt-2">
+                Neighbouring Transactions
+                <span className="normal-case font-normal text-white/20 ml-2">— comparable sales in the area</span>
+              </p>
+              <NeighbouringTransactionsEditor
+                value={detail.neighbouring_transactions}
+                onChange={(v) => setDetailField("neighbouring_transactions", v)}
               />
             </div>
           </FormSection>

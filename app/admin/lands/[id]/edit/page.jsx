@@ -20,7 +20,7 @@ const PolygonMapEditor = dynamic(() => import("../../PolygonMapEditor"), { ssr: 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: CURRENT_YEAR - 1900 + 2 }, (_, i) => 1900 + i).reverse();
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function emptyDetail() {
   return {
@@ -34,6 +34,7 @@ function emptyDetail() {
     road_type: "", road_category: "", road_condition: "",
     electricity: "", water_supply: "", sewage: "", other_facilities: "",
     comm_lines: [],
+    neighbouring_transactions: [],
     overall_value: "", current_land_value: "", rental_pm: "", rental_pa: "",
     valuation_history: [],
   };
@@ -48,13 +49,7 @@ function arrayField(land, key) {
 
 /**
  * Extract a GeoJSON Polygon from the API response.
- *
- * Priority:
- *  1. land.geometry_geojson  — the ST_AsGeoJSON() appended accessor (object)
- *  2. land.geometry          — some endpoints return this as an object/string
- *
- * land.coordinates is intentionally SKIPPED — it contains raw WKB hex which
- * cannot be JSON-parsed and is meaningless on the frontend.
+ * Priority: geometry_geojson → geometry
  */
 function extractPolygon(land) {
   const candidates = [land.geometry_geojson, land.geometry];
@@ -73,13 +68,12 @@ function extractPolygon(land) {
 /**
  * Build a FormData from a flat payload object.
  * - geometry     → JSON.stringify
- * - array fields → JSON.stringify  (controller runs decodeJsonStrings on them)
- * - everything else → string / ""
+ * - array fields → JSON.stringify
  */
 function buildFormData(payload, newImages = [], removeImages = []) {
   const ARRAY_KEYS = [
     "allocation_records", "land_titles", "historical_transactions",
-    "comm_lines", "valuation_history",
+    "comm_lines", "valuation_history", "neighbouring_transactions",
   ];
 
   const fd = new FormData();
@@ -235,6 +229,68 @@ function ValuationHistoryEditor({ value = [], onChange }) {
   );
 }
 
+/**
+ * Editor for neighbouring_transactions.
+ * Each row: { plot_size, year, value, distance_m }
+ * Serialised as array of objects — the controller validates neighbouring_transactions.*.plot_size etc.
+ */
+function NeighbouringTransactionsEditor({ value = [], onChange }) {
+  const emptyRow = () => ({ plot_size: "", year: CURRENT_YEAR, value: "", distance_m: "" });
+  const add    = () => onChange([...value, emptyRow()]);
+  const update = (i, field, v) => { const a = [...value]; a[i] = { ...a[i], [field]: v }; onChange(a); };
+  const remove = (i) => onChange(value.filter((_, idx) => idx !== i));
+
+  return (
+    <div className="space-y-2">
+      {value.length > 0 && (
+        <div className="grid grid-cols-[1fr_80px_1fr_100px_40px] gap-2 px-1">
+          {["Plot Size (m²)", "Year", "Value (₦)", "Distance (m)", ""].map((h, i) => (
+            <span key={i} className="text-[10px] font-black uppercase tracking-widest text-white/25">{h}</span>
+          ))}
+        </div>
+      )}
+      {value.map((row, i) => (
+        <div key={i} className="grid grid-cols-[1fr_80px_1fr_100px_40px] gap-2 items-center">
+          <DarkInput
+            type="number" min={0}
+            value={row.plot_size}
+            onChange={(e) => update(i, "plot_size", e.target.value)}
+            placeholder="e.g. 500"
+          />
+          <DarkSelect
+            value={row.year}
+            onChange={(e) => update(i, "year", Number(e.target.value))}
+          >
+            {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
+          </DarkSelect>
+          <DarkInput
+            type="number" min={0}
+            value={row.value}
+            onChange={(e) => update(i, "value", e.target.value)}
+            placeholder="0.00"
+          />
+          <DarkInput
+            type="number" min={0}
+            value={row.distance_m}
+            onChange={(e) => update(i, "distance_m", e.target.value)}
+            placeholder="metres"
+          />
+          <button
+            type="button" onClick={() => remove(i)}
+            className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center hover:bg-red-500/20 transition-all"
+          >
+            <Trash2 size={13} />
+          </button>
+        </div>
+      ))}
+      <button type="button" onClick={add}
+        className="flex items-center gap-1.5 text-xs font-bold text-amber-500 hover:text-amber-400 transition-colors">
+        <Plus size={12} /> Add transaction
+      </button>
+    </div>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function EditLand() {
@@ -246,6 +302,9 @@ export default function EditLand() {
     total_units: "", is_available: true, polygon: null, lat: "", lng: "",
   });
   const [detail, setDetail] = useState(emptyDetail());
+
+  const [currentPriceKobo, setCurrentPriceKobo]   = useState(""); // loaded value
+  const [priceKobo, setPriceKobo]                 = useState(""); // editable value
 
   const [existingImages, setExistingImages]     = useState([]);
   const [newImages, setNewImages]               = useState([]);
@@ -264,9 +323,7 @@ export default function EditLand() {
         const res  = await api.get(`/admin/lands/${id}`);
         const land = res.data.data;
 
-        // geometry_geojson is the ST_AsGeoJSON() accessor appended by the model.
-        // land.coordinates holds raw WKB hex — unusable on the frontend, ignored.
-        const polygon = extractPolygon(land);
+        const polygon    = extractPolygon(land);
         const hasPolygon = !!polygon;
         setInitialHasPolygon(hasPolygon);
         setUsePolygon(hasPolygon);
@@ -277,12 +334,20 @@ export default function EditLand() {
           description:  land.description  || "",
           size:         land.size?.toString()        || "",
           total_units:  land.total_units?.toString() || "",
-          // Only populate lat/lng when not using polygon
           lat:  hasPolygon ? "" : (land.lat?.toString() || ""),
           lng:  hasPolygon ? "" : (land.lng?.toString() || ""),
           is_available: land.is_available ?? true,
           polygon,
         });
+
+        // Price — prefer latestPrice relationship, fall back to appended accessor
+        const loadedPrice = (
+          land.latest_price?.price_per_unit_kobo ??
+          land.current_price_per_unit_kobo ??
+          0
+        ).toString();
+        setCurrentPriceKobo(loadedPrice);
+        setPriceKobo(loadedPrice);
 
         setSoldUnits(land.units_sold ?? (land.total_units - land.available_units));
         setExistingImages(land.images || []);
@@ -301,6 +366,19 @@ export default function EditLand() {
           Array.isArray(r)
             ? { network: r[0] ?? "", strength: r[1] ?? "" }
             : { network: r.network ?? "", strength: r.strength ?? "" }
+        );
+
+        // Normalise neighbouring_transactions (array of objects)
+        const rawNeighbouring = arrayField(land, "neighbouring_transactions");
+        const neighbouringTransactions = rawNeighbouring.map((r) =>
+          Array.isArray(r)
+            ? { plot_size: r[0] ?? "", year: r[1] ?? CURRENT_YEAR, value: r[2] ?? "", distance_m: r[3] ?? "" }
+            : {
+                plot_size:  r.plot_size  ?? "",
+                year:       Number(r.year ?? CURRENT_YEAR),
+                value:      r.value      ?? "",
+                distance_m: r.distance_m ?? "",
+              }
         );
 
         setDetail({
@@ -334,6 +412,7 @@ export default function EditLand() {
           sewage:                  land.sewage              || "",
           other_facilities:        land.other_facilities    || "",
           comm_lines:              commLines,
+          neighbouring_transactions: neighbouringTransactions,
           overall_value:           land.overall_value?.toString()      || "",
           current_land_value:      land.current_land_value?.toString() || "",
           rental_pm:               land.rental_pm?.toString()          || "",
@@ -358,6 +437,12 @@ export default function EditLand() {
       return;
     }
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
+  };
+
+  const handlePriceChange = (e) => {
+    const v = e.target.value;
+    if (!/^\d*$/.test(v)) return;
+    setPriceKobo(v);
   };
 
   const setDetailField = (name, value) => setDetail((d) => ({ ...d, [name]: value }));
@@ -449,6 +534,15 @@ export default function EditLand() {
       comm_lines: detail.comm_lines
         .filter((r) => r.network)
         .map((r) => [r.network, Number(r.strength) || 0]),
+      // neighbouring_transactions — send as array of objects
+      neighbouring_transactions: detail.neighbouring_transactions
+        .filter((r) => r.value !== "" && r.value !== null)
+        .map((r) => ({
+          plot_size:  r.plot_size  !== "" ? parseFloat(r.plot_size)  : null,
+          year:       Number(r.year),
+          value:      parseFloat(r.value),
+          distance_m: r.distance_m !== "" ? parseFloat(r.distance_m) : null,
+        })),
       // Valuation & fiscal
       overall_value:      detail.overall_value,
       current_land_value: detail.current_land_value,
@@ -462,7 +556,15 @@ export default function EditLand() {
 
     try {
       setLoading(true);
+
       await api.post(`/admin/lands/${id}`, buildFormData(payload, newImages, removeImages));
+
+      const newPrice = parseInt(priceKobo) || 0;
+      const oldPrice = parseInt(currentPriceKobo) || 0;
+      if (newPrice !== oldPrice && newPrice > 0) {
+        await api.patch(`/admin/lands/${id}/price`, { price_per_unit_kobo: newPrice });
+      }
+
       toast.success("Land updated successfully");
       router.push("/admin/lands");
     } catch (err) {
@@ -520,8 +622,8 @@ export default function EditLand() {
             </FormField>
           </FormSection>
 
-          {/* ── Units & Availability ───────────────────────────────────────── */}
-          <FormSection title="Units & Availability" icon={<DollarSign size={15} className="text-amber-500" />}>
+          {/* ── Units, Pricing & Availability ─────────────────────────────── */}
+          <FormSection title="Units, Pricing & Availability" icon={<DollarSign size={15} className="text-amber-500" />}>
             <div className="grid grid-cols-2 gap-4">
               <FormField label="Size (sqm)">
                 <DarkInput name="size" value={form.size} onChange={handleChange} required />
@@ -531,6 +633,28 @@ export default function EditLand() {
                 <p className="text-xs text-white/25 mt-1">Sold: {soldUnits}</p>
               </FormField>
             </div>
+
+            {/* Price per unit — calls PATCH /price on submit if changed */}
+            <FormField label="Price per Unit (Kobo)">
+              <DarkInput
+                type="text"
+                inputMode="numeric"
+                value={priceKobo}
+                onChange={handlePriceChange}
+                placeholder="e.g. 50000000"
+              />
+              <div className="flex items-center justify-between mt-1">
+                {priceKobo ? (
+                  <p className="text-xs text-white/30">= ₦{(Number(priceKobo) / 100).toLocaleString()}</p>
+                ) : <span />}
+                {priceKobo !== currentPriceKobo && (
+                  <p className="text-xs text-amber-400/70">
+                    Changed from ₦{(Number(currentPriceKobo) / 100).toLocaleString()} — will update price history
+                  </p>
+                )}
+              </div>
+            </FormField>
+
             <div className="flex items-center gap-3">
               <button type="button" onClick={() => setForm({ ...form, is_available: !form.is_available })}
                 className={`relative w-11 h-6 rounded-full transition-all ${form.is_available ? "bg-emerald-500" : "bg-white/10"}`}>
@@ -679,6 +803,16 @@ export default function EditLand() {
                 <span className="normal-case font-normal text-white/20 ml-2">— newest entry auto-updates Current Land Value</span>
               </p>
               <ValuationHistoryEditor value={detail.valuation_history} onChange={(v) => setDetailField("valuation_history", v)} />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/25 mb-3 pt-2">
+                Neighbouring Transactions
+                <span className="normal-case font-normal text-white/20 ml-2">— comparable sales in the area</span>
+              </p>
+              <NeighbouringTransactionsEditor
+                value={detail.neighbouring_transactions}
+                onChange={(v) => setDetailField("neighbouring_transactions", v)}
+              />
             </div>
           </FormSection>
 
