@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { compressImage } from "../../../../../utils/compressImage";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -310,8 +311,9 @@ export default function EditLand() {
   const [newImages, setNewImages]               = useState([]);
   const [newImagePreviews, setNewImagePreviews] = useState([]);
   const [removeImages, setRemoveImages]         = useState([]);
-  const [loading, setLoading]     = useState(false);
-  const [fetching, setFetching]   = useState(true);
+  const [loading, setLoading]         = useState(false);
+  const [compressing, setCompressing] = useState(false);
+  const [fetching, setFetching]       = useState(true);
   const [soldUnits, setSoldUnits] = useState(0);
   const [usePolygon, setUsePolygon]               = useState(false);
   const [initialHasPolygon, setInitialHasPolygon] = useState(false);
@@ -457,10 +459,19 @@ export default function EditLand() {
     setUsePolygon((v) => !v);
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const files = [...e.target.files];
-    setNewImages(files);
-    setNewImagePreviews(files.map((f) => URL.createObjectURL(f)));
+    if (!files.length) return;
+    setCompressing(true);
+    try {
+      const compressed = await Promise.all(
+        files.map((f) => compressImage(f, { maxPx: 1280, maxBytes: 500 * 1024, quality: 0.82 }))
+      );
+      setNewImages(compressed);
+      setNewImagePreviews(compressed.map((f) => URL.createObjectURL(f)));
+    } finally {
+      setCompressing(false);
+    }
   };
 
   const removeExistingImage = (imgId) => {
@@ -557,8 +568,10 @@ export default function EditLand() {
     try {
       setLoading(true);
 
+      // 1. Update land details
       await api.post(`/admin/lands/${id}`, buildFormData(payload, newImages, removeImages));
 
+      // 2. Update price only if it changed
       const newPrice = parseInt(priceKobo) || 0;
       const oldPrice = parseInt(currentPriceKobo) || 0;
       if (newPrice !== oldPrice && newPrice > 0) {
@@ -834,8 +847,15 @@ export default function EditLand() {
                 </div>
               </div>
             )}
-            <label className="flex flex-col items-center justify-center w-full h-24 rounded-xl border-2 border-dashed border-white/15 hover:border-amber-500/40 bg-white/5 cursor-pointer transition-all">
-              <span className="text-xs text-white/30">+ Add more images</span>
+            <label className={`flex flex-col items-center justify-center w-full h-24 rounded-xl border-2 border-dashed bg-white/5 cursor-pointer transition-all ${compressing ? "border-amber-500/60 animate-pulse" : "border-white/15 hover:border-amber-500/40"}`}>
+              {compressing ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-amber-500/50 border-t-amber-500 rounded-full animate-spin mb-1" />
+                  <span className="text-xs text-amber-500/70">Compressing…</span>
+                </>
+              ) : (
+                <span className="text-xs text-white/30">+ Add more images</span>
+              )}
               <input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" />
             </label>
             {newImagePreviews.length > 0 && (
@@ -855,10 +875,12 @@ export default function EditLand() {
           </FormSection>
 
           {/* ── Submit ────────────────────────────────────────────────────── */}
-          <button type="submit" disabled={loading}
+          <button type="submit" disabled={loading || compressing}
             className="w-full py-4 rounded-xl font-bold text-[#0D1F1A] flex items-center justify-center gap-2 transition-all hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" }}>
-            {loading
+            {compressing
+              ? <><div className="w-4 h-4 border-2 border-[#0D1F1A]/40 border-t-[#0D1F1A] rounded-full animate-spin" />Compressing...</>
+              : loading
               ? <><div className="w-4 h-4 border-2 border-[#0D1F1A]/40 border-t-[#0D1F1A] rounded-full animate-spin" />Saving...</>
               : <><Save size={15} /> Update Land</>}
           </button>

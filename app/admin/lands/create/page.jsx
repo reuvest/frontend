@@ -10,6 +10,7 @@ import {
   Building2, ShieldCheck, Activity, Zap, BarChart3, Trash2,
 } from "lucide-react";
 import dynamic from "next/dynamic";
+import { compressImage } from "../../../../utils/compressImage";
 
 const PolygonMapEditor = dynamic(() => import("../PolygonMapEditor"), { ssr: false });
 
@@ -243,8 +244,9 @@ function NeighbouringTransactionsEditor({ value = [], onChange }) {
 
 export default function CreateLand() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [images, setImages]   = useState([]);
+  const [loading, setLoading]         = useState(false);
+  const [compressing, setCompressing] = useState(false);
+  const [images, setImages]           = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [usePolygon, setUsePolygon] = useState(false);
 
@@ -268,10 +270,19 @@ export default function CreateLand() {
 
   const setDetailField = (name, value) => setDetail((d) => ({ ...d, [name]: value }));
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const files = [...e.target.files];
-    setImages(files);
-    setImagePreviews(files.map((f) => URL.createObjectURL(f)));
+    if (!files.length) return;
+    setCompressing(true);
+    try {
+      const compressed = await Promise.all(
+        files.map((f) => compressImage(f, { maxPx: 1280, maxBytes: 500 * 1024, quality: 0.82 }))
+      );
+      setImages(compressed);
+      setImagePreviews(compressed.map((f) => URL.createObjectURL(f)));
+    } finally {
+      setCompressing(false);
+    }
   };
 
   const removeImage = (i) => {
@@ -662,9 +673,18 @@ export default function CreateLand() {
 
           {/* ── Images ────────────────────────────────────────────────────── */}
           <FormSection title="Land Images" icon={<Image size={15} className="text-amber-500" />}>
-            <label className="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed border-white/15 hover:border-amber-500/40 bg-white/5 hover:bg-white/[0.07] cursor-pointer transition-all">
-              <Plus size={20} className="text-white/20 mb-1" />
-              <span className="text-xs text-white/30">Click to select images</span>
+            <label className={`flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed bg-white/5 cursor-pointer transition-all ${compressing ? "border-amber-500/60 animate-pulse" : "border-white/15 hover:border-amber-500/40 hover:bg-white/[0.07]"}`}>
+              {compressing ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-amber-500/50 border-t-amber-500 rounded-full animate-spin mb-1" />
+                  <span className="text-xs text-amber-500/70">Compressing…</span>
+                </>
+              ) : (
+                <>
+                  <Plus size={20} className="text-white/20 mb-1" />
+                  <span className="text-xs text-white/30">Click to select images</span>
+                </>
+              )}
               <input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" />
             </label>
             {imagePreviews.length > 0 && (
@@ -683,10 +703,12 @@ export default function CreateLand() {
           </FormSection>
 
           {/* ── Submit ────────────────────────────────────────────────────── */}
-          <button type="submit" disabled={loading}
+          <button type="submit" disabled={loading || compressing}
             className="w-full py-4 rounded-xl font-bold text-[#0D1F1A] flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" }}>
-            {loading ? (
+            {compressing ? (
+              <><div className="w-4 h-4 border-2 border-[#0D1F1A]/40 border-t-[#0D1F1A] rounded-full animate-spin" />Compressing...</>
+            ) : loading ? (
               <><div className="w-4 h-4 border-2 border-[#0D1F1A]/40 border-t-[#0D1F1A] rounded-full animate-spin" />Creating...</>
             ) : (
               <><Plus size={16} /> Create Land</>
