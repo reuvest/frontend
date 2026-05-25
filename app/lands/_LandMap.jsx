@@ -88,8 +88,17 @@ function decodeEWKB(hex) {
  * Priority: coordinates (EWKB hex) → polygon field → GeoJSON → WKT → array
  */
 function parsePolygon(land) {
-  // 1. PostGIS EWKB hex in `coordinates` field (primary format)
-  if (land.coordinates && typeof land.coordinates === "string") {
+
+  const geo = land.geometry_geojson;
+  if (geo?.type === "Polygon" && Array.isArray(geo.coordinates)) {
+    return geo.coordinates[0].map(([lng, lat]) => [lat, lng]);
+  }
+
+  if (
+    geo?.type === "Polygon" &&
+    land.coordinates &&
+    typeof land.coordinates === "string"
+  ) {
     const decoded = decodeEWKB(land.coordinates);
     if (decoded) return decoded;
   }
@@ -97,12 +106,9 @@ function parsePolygon(land) {
   const raw = land.polygon;
   if (!raw) return null;
 
-  // 2. GeoJSON geometry object
-  if (raw?.type === "Polygon" && Array.isArray(raw.coordinates)) {
+  if (raw?.type === "Polygon" && Array.isArray(raw.coordinates))
     return raw.coordinates[0].map(([lng, lat]) => [lat, lng]);
-  }
 
-  // 3. WKT string
   if (typeof raw === "string") {
     const inner = raw.match(/POLYGON\s*\(\(([^)]+)\)/i)?.[1];
     if (!inner) return null;
@@ -112,11 +118,10 @@ function parsePolygon(land) {
     });
   }
 
-  // 4. Array of objects or pairs
   if (Array.isArray(raw) && raw.length > 0) {
     const first = raw[0];
-    if (Array.isArray(first))   return raw.map(([lat, lng]) => [lat, lng]);
-    if (first?.lat != null)     return raw.map((p) => [+p.lat, +p.lng]);
+    if (Array.isArray(first))    return raw.map(([lat, lng]) => [lat, lng]);
+    if (first?.lat != null)      return raw.map((p) => [+p.lat, +p.lng]);
     if (first?.latitude != null) return raw.map((p) => [+p.latitude, +p.longitude]);
   }
 

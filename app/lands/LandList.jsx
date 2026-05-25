@@ -33,7 +33,9 @@ function getLandPrice(land) {
 }
 
 function hasPolygon(land) {
-  if (land.coordinates && typeof land.coordinates === "string" && land.coordinates.length > 10) return true;
+  if (land.geometry_geojson?.type === "Polygon") return true;
+
+  // Fallback for any legacy shape
   const p = land.polygon;
   if (!p) return false;
   if (typeof p === "string") return p.toUpperCase().includes("POLYGON");
