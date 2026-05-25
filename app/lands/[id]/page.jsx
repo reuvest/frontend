@@ -736,6 +736,7 @@ export default function LandDetails() {
   const historicalTx      = land.historical_transactions ?? [];
   const commLines         = land.comm_lines              ?? [];
   const valuations        = land.valuations              ?? [];
+  const neighbouringTx = land.neighbouring_transactions ?? [];
 
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
@@ -878,6 +879,36 @@ export default function LandDetails() {
                 value={`₦${Number(land.rental_pa).toLocaleString("en-NG")}`} />
             )}
           </Section>
+
+          {/* Neighbouring Property Transactions */}
+          {neighbouringTx.length > 0 && (
+            <Section title="Neighbouring Property Transactions" icon={<BarChart3 size={14} />} accent="emerald">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/20 mb-3">
+                Market Values &amp; Comparable Sales
+              </p>
+              <div className="grid grid-cols-4 gap-2 mb-2 px-1">
+                {["Plot Size", "Year", "Value", "Distance"].map((h) => (
+                  <span key={h} className="text-[9px] font-black uppercase tracking-widest text-white/20">{h}</span>
+                ))}
+              </div>
+              <div className="space-y-1.5">
+                {land.neighbouringTx.map((tx, i) => (
+                  <div key={i} className="grid grid-cols-4 gap-2 items-center px-3 py-2.5 rounded-xl bg-white/3 border border-white/5">
+                    <span className="text-xs text-white/60">
+                      {tx.plot_size ? `${Number(tx.plot_size).toLocaleString()} m²` : "—"}
+                    </span>
+                    <span className="text-xs text-white/60">{tx.year ?? "—"}</span>
+                    <span className="text-xs font-bold text-emerald-400">
+                      {tx.value ? `₦${Number(tx.value).toLocaleString("en-NG")}` : "—"}
+                    </span>
+                    <span className="text-xs text-white/50">
+                      {tx.distance_m ? `${Number(tx.distance_m).toLocaleString()}m` : "—"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
 
           <Section title="Administrative Information" icon={<Building2 size={14} />} accent="blue">
             <DataRow label="Plot Identifier" value={land.plot_identifier} mono />
