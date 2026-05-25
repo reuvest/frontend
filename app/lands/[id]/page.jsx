@@ -892,7 +892,7 @@ export default function LandDetails() {
                 ))}
               </div>
               <div className="space-y-1.5">
-                {land.neighbouringTx.map((tx, i) => (
+                {neighbouringTx.map((tx, i) => (
                   <div key={i} className="grid grid-cols-4 gap-2 items-center px-3 py-2.5 rounded-xl bg-white/3 border border-white/5">
                     <span className="text-xs text-white/60">
                       {tx.plot_size ? `${Number(tx.plot_size).toLocaleString()} m²` : "—"}
