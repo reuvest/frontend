@@ -163,14 +163,17 @@ function StringListEditor({ value = [], onChange, placeholder }) {
 }
 
 function CommLinesEditor({ value = [], onChange }) {
-  const add    = () => onChange([...value, { network: "", strength: "" }]);
+  const NETWORKS = ["MTN", "GLO", "Airtel", "Etisalat"];
+  const add    = () => onChange([...value, { network: "MTN", strength: "" }]);
   const update = (i, field, v) => { const a = [...value]; a[i] = { ...a[i], [field]: v }; onChange(a); };
   const remove = (i) => onChange(value.filter((_, idx) => idx !== i));
   return (
     <div className="space-y-2">
       {value.map((row, i) => (
-        <div key={i} className="grid grid-cols-[1fr_100px_40px] gap-2 items-center">
-          <DarkInput value={row.network} onChange={(e) => update(i, "network", e.target.value)} placeholder="Network name" />
+        <div key={i} className="grid grid-cols-[140px_1fr_40px] gap-2 items-center">
+          <DarkSelect value={row.network} onChange={(e) => update(i, "network", e.target.value)}>
+            {NETWORKS.map((n) => <option key={n} value={n}>{n}</option>)}
+          </DarkSelect>
           <DarkInput type="number" min={0} max={100} value={row.strength} onChange={(e) => update(i, "strength", e.target.value)} placeholder="Signal %" />
           <button type="button" onClick={() => remove(i)}
             className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center hover:bg-red-500/20 transition-all">
@@ -799,7 +802,7 @@ export default function EditLand() {
                 <DarkInput type="number" min={0} value={detail.overall_value} onChange={(e) => setDetailField("overall_value", e.target.value)} placeholder="0" />
               </FormField>
               <FormField label="Current Land Value (₦)">
-                <DarkInput type="number" min={0} value={detail.current_land_value} onChange={(e) => setDetailField("current_land_value", e.target.value)} placeholder="Auto-synced from history" />
+                <DarkInput type="number" min={0} value={detail.current_land_value} onChange={(e) => setDetailField("current_land_value", e.target.value)} placeholder="0"/>
               </FormField>
             </div>
             <div className="grid grid-cols-2 gap-4">
