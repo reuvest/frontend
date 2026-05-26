@@ -149,6 +149,54 @@ function SignalBar({ strength }) {
   );
 }
 
+function PromoPriceTable({ land }) {
+  const TIERS = [
+    { key: "pre_launch_price_kobo", label: "Pre-Launch Price"  },
+    { key: "launch_price_kobo",     label: "Launch Price"      },
+    { key: "_current",              label: "Current Price"     }, // always shown
+  ];
+
+  const currentKobo = getLandPrice(land);
+
+  const rows = TIERS.map(({ key, label }) => ({
+    label,
+    kobo: key === "_current" ? currentKobo : land[key],
+    isCurrent: key === "_current",
+  })).filter((r) => r.kobo);
+
+  if (rows.length <= 1) return null; // only show if there are promo tiers set
+
+  return (
+    <div className="mb-10 rounded-2xl border border-white/[0.07] overflow-hidden">
+      <div className="px-5 py-4 border-b border-white/5 bg-white/3">
+        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/40">
+          Price Journey
+        </p>
+      </div>
+      <div className="divide-y divide-white/5">
+        {rows.map(({ label, kobo, isCurrent }) => (
+          <div
+            key={label}
+            className={`flex items-center justify-between px-5 py-3.5 ${isCurrent ? "bg-amber-500/5" : ""}`}
+          >
+            <span className={`text-sm ${isCurrent ? "font-bold text-white" : "text-white/40"}`}>
+              {label}
+            </span>
+            <span className={`text-sm font-bold tabular-nums ${isCurrent ? "text-amber-400" : "text-white/30"}`}
+              style={isCurrent ? { fontFamily: "'Playfair Display', Georgia, serif" } : {}}>
+              ₦{(kobo / 100).toLocaleString()}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="px-5 py-3 bg-white/2 border-t border-white/5">
+        <p className="text-[10px] text-white/20">
+          Promotional prices are for reference only. Purchase price is the current price.
+        </p>
+      </div>
+    </div>
+  );
+}
 /* ─── Price Trend Panel ─────────────────────────────────────────────────── */
 function PriceTrendPanel({ valuations = [] }) {
   const [tooltip, setTooltip]   = useState(null);
@@ -839,7 +887,8 @@ export default function LandDetails() {
             </button>
           )}
         </div>
-
+        
+        <PromoPriceTable land={land} />
         {/* Price Trend Chart */}
         {valuations.length > 0 && (
           <PriceTrendPanel valuations={valuations} />

@@ -39,6 +39,7 @@ function emptyDetail() {
     comm_lines: [],               // [{ network, strength }]
     neighbouring_transactions: [], // [{ plot_size, year, value, distance_m }]
     overall_value: "", current_land_value: "", rental_pm: "", rental_pa: "",
+    pre_launch_price_kobo: "", launch_price_kobo:     "",
     valuation_history: [],        // [{ year, month, value }]
   };
 }
@@ -370,6 +371,7 @@ export default function CreateLand() {
       "road_type", "road_category", "road_condition",
       "electricity", "water_supply", "sewage", "other_facilities",
       "overall_value", "current_land_value", "rental_pm", "rental_pa",
+      "pre_launch_price_kobo", "launch_price_kobo",
     ];
     plainFields.forEach((f) => {
       if (detail[f] !== "" && detail[f] !== null && detail[f] !== undefined) {
@@ -466,6 +468,41 @@ export default function CreateLand() {
             </div>
           </FormSection>
 
+          {/* Promo Price Tiers */}
+            <div className="pt-3 border-t border-white/5">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/25 mb-3">
+                Promotional Prices
+                <span className="normal-case font-normal text-white/15 ml-2">— display only</span>
+              </p>
+              <div className="space-y-3">
+                {[
+                  { key: "pre_launch_price_kobo", label: "Pre-Launch Price" },
+                  { key: "launch_price_kobo",     label: "Launch Price"     },
+                ].map(({ key, label }) => (
+                  <div key={key} className="grid grid-cols-[140px_1fr] gap-3 items-center">
+                    <span className="text-xs text-white/40">{label}</span>
+                    <div>
+                      <DarkInput
+                        type="text"
+                        inputMode="numeric"
+                        value={detail[key]}
+                        onChange={(e) => {
+                          if (!/^\d*$/.test(e.target.value)) return;
+                          setDetailField(key, e.target.value);
+                        }}
+                        placeholder="Kobo e.g. 150000"
+                      />
+                      {detail[key] && (
+                        <p className="text-xs text-white/25 mt-1">
+                          = ₦{(Number(detail[key]) / 100).toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          
           {/* ── Coordinates ────────────────────────────────────────────────── */}
           <FormSection title="Location Coordinates" icon={<Layers size={15} className="text-amber-500" />}>
             <div className="flex items-center justify-between mb-4">

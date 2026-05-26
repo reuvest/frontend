@@ -591,23 +591,33 @@ export default function LandList() {
                     </div>
 
                     {/* Price / units row */}
-                    <div className="flex items-end justify-between mb-5">
-                      <div>
-                        <p className="text-xs text-white/30 uppercase tracking-wider mb-0.5">Per Unit</p>
-                        <p className="text-xl font-bold text-amber-400">
-                          {priceKobo > 0
-                            ? `₦${koboToNaira(priceKobo).toLocaleString()}`
-                            : <span className="text-white/20 text-sm font-normal">—</span>}
-                        </p>
+                      <div className="flex items-end justify-between mb-5">
+                        <div>
+                          <p className="text-xs text-white/30 uppercase tracking-wider mb-0.5">Per Unit</p>
+                          <p className="text-xl font-bold text-amber-400">
+                            {priceKobo > 0
+                              ? `₦${koboToNaira(priceKobo).toLocaleString()}`
+                              : <span className="text-white/20 text-sm font-normal">—</span>}
+                          </p>
+                          {(() => {
+                            const launch = land.launch_price_kobo;
+                            if (!launch || launch <= priceKobo) return null;
+                            return (
+                              <p className="text-xs text-emerald-400/80 mt-0.5 flex items-center gap-1">
+                                <TrendingUp size={10} />
+                                Increases to ₦{koboToNaira(launch).toLocaleString()}
+                              </p>
+                            );
+                          })()}
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-white/30 uppercase tracking-wider mb-0.5">Available</p>
+                          <p className="text-lg font-bold text-white">
+                            {land.available_units?.toLocaleString() ?? "—"}
+                            <span className="text-xs text-white/30 font-normal"> units</span>
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-xs text-white/30 uppercase tracking-wider mb-0.5">Available</p>
-                        <p className="text-lg font-bold text-white">
-                          {land.available_units?.toLocaleString() ?? "—"}
-                          <span className="text-xs text-white/30 font-normal"> units</span>
-                        </p>
-                      </div>
-                    </div>
 
                     {/* Actions */}
                     <div className="flex gap-2">

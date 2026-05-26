@@ -37,6 +37,7 @@ function emptyDetail() {
     comm_lines: [],
     neighbouring_transactions: [],
     overall_value: "", current_land_value: "", rental_pm: "", rental_pa: "",
+    pre_launch_price_kobo: "", launch_price_kobo:     "",
     valuation_history: [],
   };
 }
@@ -422,6 +423,8 @@ export default function EditLand() {
           current_land_value:      land.current_land_value?.toString() || "",
           rental_pm:               land.rental_pm?.toString()          || "",
           rental_pa:               land.rental_pa?.toString()          || "",
+          pre_launch_price_kobo: land.pre_launch_price_kobo?.toString() || "",
+          launch_price_kobo:     land.launch_price_kobo?.toString()     || "",
           valuation_history:       valuationHistory,
         });
       } catch {
@@ -562,6 +565,8 @@ export default function EditLand() {
       current_land_value: detail.current_land_value,
       rental_pm:          detail.rental_pm,
       rental_pa:          detail.rental_pa,
+      pre_launch_price_kobo: detail.pre_launch_price_kobo ? parseInt(detail.pre_launch_price_kobo) : null,
+      launch_price_kobo:     detail.launch_price_kobo     ? parseInt(detail.launch_price_kobo)     : null,
       // Serialise valuation_history → [[year, month, value], ...]
       valuation_history: detail.valuation_history
         .filter((r) => r.value !== "" && r.value !== null)
@@ -670,7 +675,41 @@ export default function EditLand() {
                 )}
               </div>
             </FormField>
-
+            
+            {/* Promo Price Tiers */}
+            <div className="pt-2 border-t border-white/5">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/25 mb-3">
+                Promotional Prices
+                <span className="normal-case font-normal text-white/15 ml-2">— display only, does not affect purchase price</span>
+              </p>
+              <div className="space-y-3">
+                {[
+                  { key: "pre_launch_price_kobo",  label: "Pre-Launch Price"  },
+                  { key: "launch_price_kobo",      label: "Launch Price"      },
+                ].map(({ key, label }) => (
+                  <div key={key} className="grid grid-cols-[140px_1fr] gap-3 items-center">
+                    <span className="text-xs text-white/40">{label}</span>
+                    <div>
+                      <DarkInput
+                        type="text"
+                        inputMode="numeric"
+                        value={detail[key] ?? ""}
+                        onChange={(e) => {
+                          if (!/^\d*$/.test(e.target.value)) return;
+                          setDetailField(key, e.target.value);
+                        }}
+                        placeholder="Kobo e.g. 150000"
+                      />
+                      {detail[key] ? (
+                        <p className="text-xs text-white/25 mt-1">
+                          = ₦{(Number(detail[key]) / 100).toLocaleString()}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
             <div className="flex items-center gap-3">
               <button type="button" onClick={() => setForm({ ...form, is_available: !form.is_available })}
                 className={`relative w-11 h-6 rounded-full transition-all ${form.is_available ? "bg-emerald-500" : "bg-white/10"}`}>
