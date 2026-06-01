@@ -17,44 +17,44 @@ const QUICK_AMOUNTS = [1000, 5000, 10000, 50000];
 
 const GATEWAYS = [
    {
-    id: "opay",
-    label: "OPay",
-    description: "OPay wallet & card",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" aria-hidden>
-        <circle cx="12" cy="12" r="10" fill="currentColor" opacity=".15" />
-        <path
-          d="M12 7a5 5 0 100 10A5 5 0 0012 7zm0 2a3 3 0 110 6 3 3 0 010-6z"
-          fill="currentColor" opacity=".7"
-        />
-        <circle cx="12" cy="12" r="1.2" fill="currentColor" />
-      </svg>
-    ),
-  },
-  {
-    id: "paystack",
-    label: "Paystack",
-    description: "Card & bank payments",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" aria-hidden>
-        <circle cx="12" cy="12" r="10" fill="currentColor" opacity=".15" />
-        <path d="M7 12h10M7 8.5h6M7 15.5h8" stroke="currentColor" strokeWidth="1.8"
-          strokeLinecap="round" opacity=".8" />
-      </svg>
-    ),
-  }, 
-  {
-    id: "monnify",
-    label: "Monnify",
-    description: "Bank transfer & USSD",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" aria-hidden>
-        <rect x="2" y="5" width="20" height="14" rx="3" fill="currentColor" opacity=".15" />
-        <rect x="2" y="9" width="20" height="3" fill="currentColor" opacity=".4" />
-        <rect x="5" y="15" width="4" height="2" rx="1" fill="currentColor" opacity=".6" />
-      </svg>
-    ),
-  },
+     id: "paystack",
+      label: "Paystack",
+      description: "Card & bank payments",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" aria-hidden>
+          <circle cx="12" cy="12" r="10" fill="currentColor" opacity=".15" />
+          <path d="M7 12h10M7 8.5h6M7 15.5h8" stroke="currentColor" strokeWidth="1.8"
+            strokeLinecap="round" opacity=".8" />
+        </svg>
+      ),
+    }, 
+  //   {
+  //   id: "opay",
+  //   label: "OPay",
+  //   description: "OPay wallet & card",
+  //   icon: (
+  //     <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" aria-hidden>
+  //       <circle cx="12" cy="12" r="10" fill="currentColor" opacity=".15" />
+  //       <path
+  //         d="M12 7a5 5 0 100 10A5 5 0 0012 7zm0 2a3 3 0 110 6 3 3 0 010-6z"
+  //         fill="currentColor" opacity=".7"
+  //       />
+  //       <circle cx="12" cy="12" r="1.2" fill="currentColor" />
+  //     </svg>
+  //   ),
+  // },
+  // {
+  //   id: "monnify",
+  //   label: "Monnify",
+  //   description: "Bank transfer & USSD",
+  //   icon: (
+  //     <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" aria-hidden>
+  //       <rect x="2" y="5" width="20" height="14" rx="3" fill="currentColor" opacity=".15" />
+  //       <rect x="2" y="9" width="20" height="3" fill="currentColor" opacity=".4" />
+  //       <rect x="5" y="15" width="4" height="2" rx="1" fill="currentColor" opacity=".6" />
+  //     </svg>
+  //   ),
+  // },
 ];
 
 export default function WalletPage() {
@@ -64,7 +64,7 @@ export default function WalletPage() {
   const [pin, setPin]                       = useState("");
   const [loading, setLoading]               = useState(null);
   const [transactions, setTransactions]     = useState([]);
-  const [gateway, setGateway]               = useState("opay");
+  const [gateway, setGateway]               = useState("paystack");
   const [feePreview, setFeePreview]         = useState(0);
   const [totalPreview, setTotalPreview]     = useState(0);
   const [activeTab, setActiveTab]           = useState("deposit");
