@@ -111,6 +111,7 @@ function RegisterForm() {
   const [showReferral, setShowReferral]     = useState(false);
   const [referralLocked, setReferralLocked] = useState(false);
   const [step, setStep]                     = useState(1);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const router = useRouter();
 
@@ -134,7 +135,7 @@ function RegisterForm() {
 
   const step1Valid  = form.first_name.trim() && form.last_name.trim() && form.email.trim();
   const step2Valid  = passedChecks === PASSWORD_CHECKS.length && passwordsMatch;
-  const isFormValid = step1Valid && step2Valid;
+  const isFormValid = step1Valid && step2Valid && acceptedTerms;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -442,7 +443,49 @@ function RegisterForm() {
                       <p className="text-xs text-red-400 mt-1.5">Passwords do not match</p>
                     )}
                   </Field>
-
+                  
+                   {/* Terms checkbox — sits above the Back/Submit buttons in Step 2 */}
+                    <label className="flex items-start gap-3 cursor-pointer group mt-1">
+                      <div className="relative mt-0.5 shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={acceptedTerms}
+                          onChange={e => setAcceptedTerms(e.target.checked)}
+                          className="sr-only"
+                        />
+                        <div
+                          className="w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-200"
+                          style={{
+                            background: acceptedTerms
+                              ? "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)"
+                              : "rgba(255,255,255,0.04)",
+                            borderColor: acceptedTerms
+                              ? "#C8873A"
+                              : "rgba(255,255,255,0.12)",
+                            boxShadow: acceptedTerms
+                              ? "0 0 0 3px rgba(200,135,58,0.15)"
+                              : "none",
+                          }}
+                        >
+                          {acceptedTerms && (
+                            <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                              <path d="M1 4L3.5 6.5L9 1" stroke="#071410" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                      <span className="text-[12px] leading-relaxed text-white/30 group-hover:text-white/45 transition-colors select-none">
+                        I agree to the{" "}
+                        <Link href="/terms" className="text-amber-500/70 hover:text-amber-400 underline underline-offset-2 transition-colors">
+                          Terms of Service
+                        </Link>
+                        {" "}and{" "}
+                        <Link href="/privacy" className="text-amber-500/70 hover:text-amber-400 underline underline-offset-2 transition-colors">
+                          Privacy Policy
+                        </Link>
+                      </span>
+                    </label>
+            
                   <div className="flex gap-3 mt-2">
                     <button type="button" onClick={() => setStep(1)}
                       className="px-5 py-4 rounded-2xl text-sm font-semibold text-white/40 hover:text-white/70 border border-white/8 hover:border-white/18 transition-all">
@@ -484,13 +527,7 @@ function RegisterForm() {
             </Link>
           </p>
 
-          <p className="text-center text-[11px] text-white/18 mt-5 leading-relaxed">
-            By creating an account you agree to our{" "}
-            <Link href="/terms" className="underline underline-offset-2 hover:text-white/35 transition-colors">Terms</Link>
-            {" "}and{" "}
-            <Link href="/privacy" className="underline underline-offset-2 hover:text-white/35 transition-colors">Privacy Policy</Link>
-          </p>
-        </div>
+      </div>
       </div>
     </div>
   );
