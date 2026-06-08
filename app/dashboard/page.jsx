@@ -10,6 +10,7 @@ import {
   TrendingUp, Wallet, MapPin, Activity,
   ArrowUpRight, LayoutGrid, ChevronRight,
   ArrowDownLeft, Sparkles, RefreshCw, Star,
+  WifiOff,
 } from "lucide-react";
 
 /* ── Helpers ──────────────────────────────────────────────────────────────── */
@@ -47,6 +48,9 @@ const greeting = () => {
   return "Good evening";
 };
 
+// ── Founding member helper ─────────────────────────────────────────────────
+const isFoundingMember = (user) => user?.id && Number(user.id) <= 50;
+
 // ── Animated counter ──────────────────────────────────────────────────────────
 function useCountUp(target, duration = 1100, enabled = true) {
   const [value, setValue] = useState(0);
@@ -67,27 +71,22 @@ function useCountUp(target, duration = 1100, enabled = true) {
 
   return value;
 }
-    // ── Founding member helper ─────────────────────────────────────────────────
-  const isFoundingMember = (user) => {
-    return user?.id && Number(user.id) <= 50;
-  };
 
 /* ── Data hook ────────────────────────────────────────────────────────────── */
 function useDashboardData(enabled) {
-  const [stats, setStats]               = useState(null);
-  const [transactions, setTransactions] = useState([]);
-  const [loadingStats, setLoadingStats] = useState(true);
-  const [loadingTx, setLoadingTx]       = useState(true);
+  const [stats, setStats]           = useState(null);
+  const [statsError, setStatsError] = useState(false);
+  const [transactions, setTransactions]   = useState([]);
+  const [txError, setTxError]             = useState(false);
+  const [loadingStats, setLoadingStats]   = useState(true);
+  const [loadingTx, setLoadingTx]         = useState(true);
 
-  const loadData = useCallback(async () => {
-    if (!enabled) return;
+  const fetchStats = useCallback(async (signal) => {
+    setLoadingStats(true);
+    setStatsError(false);
     try {
-      const [statsRes, txRes] = await Promise.all([
-        api.get("/user/stats"),
-        api.get("/transactions/user"),
-      ]);
-
-      const s = statsRes.data?.data ?? {};
+      const res = await api.get("/user/stats", { signal });
+      const s   = res.data?.data ?? {};
       setStats({
         balance:                 (s.balance_kobo                ?? 0) / 100,
         current_portfolio_value: (s.current_portfolio_value_kobo ?? 0) / 100,
@@ -97,27 +96,61 @@ function useDashboardData(enabled) {
         total_withdrawn:         (s.total_withdrawn_kobo          ?? 0) / 100,
         pending_withdrawals:      s.pending_withdrawals,
       });
-
-      const txList = txRes.data?.data ?? [];
-      setTransactions(Array.isArray(txList) ? txList : []);
     } catch (err) {
-      if (err.response?.status !== 401) toast.error("Failed to load dashboard data.");
+      if (err.name === "CanceledError" || err.name === "AbortError") return;
+      if (err.response?.status !== 401) setStatsError(true);
     } finally {
       setLoadingStats(false);
+    }
+  }, []);
+
+  const fetchTransactions = useCallback(async (signal) => {
+    setLoadingTx(true);
+    setTxError(false);
+    try {
+      const res    = await api.get("/transactions/user", { signal });
+      const txList = res.data?.data ?? [];
+      setTransactions(Array.isArray(txList) ? txList : []);
+    } catch (err) {
+      if (err.name === "CanceledError" || err.name === "AbortError") return;
+      if (err.response?.status !== 401) setTxError(true);
+    } finally {
       setLoadingTx(false);
     }
-  }, [enabled]);
+  }, []);
 
-  // Reset loading state when enabled flips (e.g. user logs in)
+  const loadData = useCallback(() => {
+    if (!enabled) return () => {};
+
+    // Each request gets its own AbortController — 8-second timeout.
+    const statsCtrl = new AbortController();
+    const txCtrl    = new AbortController();
+    const statsTimer = setTimeout(() => statsCtrl.abort(), 8_000);
+    const txTimer    = setTimeout(() => txCtrl.abort(),    8_000);
+
+    fetchStats(statsCtrl.signal);
+    fetchTransactions(txCtrl.signal);
+
+    return () => {
+      clearTimeout(statsTimer);
+      clearTimeout(txTimer);
+      statsCtrl.abort();
+      txCtrl.abort();
+    };
+  }, [enabled, fetchStats, fetchTransactions]);
+
+  // Re-run whenever enabled flips (e.g. user logs in) or on manual refetch.
   useEffect(() => {
-    if (enabled) {
-      setLoadingStats(true);
-      setLoadingTx(true);
-    }
-    loadData();
-  }, [loadData, enabled]);
+    const cleanup = loadData();
+    return cleanup;
+  }, [loadData]);
 
-  return { stats, transactions, loadingStats, loadingTx, refetch: loadData };
+  // Manual refetch — abort any in-flight requests then restart.
+  const refetch = useCallback(() => {
+    loadData();
+  }, [loadData]);
+
+  return { stats, statsError, transactions, txError, loadingStats, loadingTx, refetch };
 }
 
 /* ── Page ─────────────────────────────────────────────────────────────────── */
@@ -126,19 +159,23 @@ export default function Dashboard() {
   const router = useRouter();
 
   const [mounted, setMounted]           = useState(false);
-  const [authTimedOut, setAuthTimedOut] = useState(false);
+  const [slowHint, setSlowHint]         = useState(false);  // shows "Still loading…" at 3s
+  const [authTimedOut, setAuthTimedOut] = useState(false);  // redirect at 8s
 
   useEffect(() => {
+    // Fire mount animation immediately — don't wait for data.
     requestAnimationFrame(() => setMounted(true));
 
-    // Safety net: if the auth context is still loading after 12 s (server
-    // unreachable), redirect to login rather than spinning forever.
-    const timer = setTimeout(() => setAuthTimedOut(true), 12_000);
-    return () => clearTimeout(timer);
+    const hintTimer    = setTimeout(() => setSlowHint(true),    3_000);
+    const timeoutTimer = setTimeout(() => setAuthTimedOut(true), 8_000);
+
+    return () => {
+      clearTimeout(hintTimer);
+      clearTimeout(timeoutTimer);
+    };
   }, []);
 
-  // Only fetch data once the context has resolved and a user exists.
-  const { stats, transactions, loadingStats, loadingTx, refetch } =
+  const { stats, statsError, transactions, txError, loadingStats, loadingTx, refetch } =
     useDashboardData(!!user);
 
   // ── Welcome toast (once per login session) ────────────────────────────────
@@ -152,12 +189,8 @@ export default function Dashboard() {
 
   // ── Redirect unauthenticated visitors ────────────────────────────────────
   useEffect(() => {
-    if (!loadingUser && !user) {
-      router.replace("/login");
-    }
-    if (authTimedOut && !user) {
-      router.replace("/login");
-    }
+    if (!loadingUser && !user) router.replace("/login");
+    if (authTimedOut && !user)  router.replace("/login");
   }, [loadingUser, user, router, authTimedOut]);
 
   // ── Loading spinner ───────────────────────────────────────────────────────
@@ -168,9 +201,9 @@ export default function Dashboard() {
           <div className="absolute inset-0 w-12 h-12 border-2 border-amber-500/15 rounded-full" />
           <div className="absolute inset-0 w-12 h-12 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
         </div>
-        {authTimedOut && (
+        {slowHint && (
           <p className="text-white/30 text-xs animate-pulse">
-            Loading....
+            Still loading… check your connection
           </p>
         )}
       </div>
@@ -210,8 +243,8 @@ export default function Dashboard() {
           className="transition-all duration-700"
           style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(10px)" }}
         >
-          <div className="flex items-start justify-between flex-wrap gap-4">
-            <div>
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+            <div className="min-w-0">
               <div className="flex items-center gap-2 mb-2.5">
                 <span className="text-[10px] font-black tracking-[0.28em] uppercase text-amber-500/60">
                   Dashboard
@@ -223,50 +256,56 @@ export default function Dashboard() {
                   })}
                 </span>
               </div>
-              <div className="flex items-center gap-2 min-w-0">
-                  <h1 className="text-2xl sm:text-4xl font-bold leading-tight whitespace-nowrap" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-                    <span className="text-white">{greeting()}, </span>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1
+                  className="text-2xl sm:text-4xl font-bold leading-tight"
+                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                >
+                  <span className="text-white">{greeting()}, </span>
+                  <span
+                    style={{
+                      background: "linear-gradient(135deg, #E8A850 0%, #C8873A 50%, #E8A850 100%)",
+                      backgroundSize: "200% auto",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    }}
+                  >
+                    {user?.name?.split(" ")[0] || "Investor"}
+                  </span>
+                </h1>
+
+                {isFoundingMember(user) && (
+                  <>
+                    {/* Mobile: star icon with tap-to-show tooltip */}
+                    <MobileFoundingBadge />
+
+                    {/* Desktop: full badge */}
                     <span
+                      className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border"
                       style={{
-                        background: "linear-gradient(135deg, #E8A850 0%, #C8873A 50%, #E8A850 100%)",
-                        backgroundSize: "200% auto",
-                        WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent",
-                        backgroundClip: "text",
+                        background: "linear-gradient(135deg, rgba(200,135,58,0.15), rgba(232,168,80,0.08))",
+                        borderColor: "rgba(200,135,58,0.35)",
+                        color: "#E8A850",
+                        fontFamily: "'DM Sans', sans-serif",
                       }}
                     >
-                      {user?.name?.split(" ")[0] || "Investor"}
+                      <Star size={10} className="fill-amber-400 text-amber-400" />
+                      Founding Investor
                     </span>
-                  </h1>
-                  {isFoundingMember(user) && (
-                    <>
-                      {/* Mobile: star icon with tap-to-show tooltip */}
-                      <MobileFoundingBadge />
+                  </>
+                )}
+              </div>
 
-                      {/* Desktop: full badge */}
-                      <span
-                        className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border"
-                        style={{
-                          background: "linear-gradient(135deg, rgba(200,135,58,0.15), rgba(232,168,80,0.08))",
-                          borderColor: "rgba(200,135,58,0.35)",
-                          color: "#E8A850",
-                          fontFamily: "'DM Sans', sans-serif",
-                        }}
-                      >
-                        <Star size={10} className="fill-amber-400 text-amber-400" />
-                        Founding Investor
-                      </span>
-                    </>
-                  )}
-                                
-                </div>        <p className="text-sm text-white/30 mt-1.5">
+              <p className="text-sm text-white/30 mt-1.5">
                 Here's how your investments are performing today.
               </p>
             </div>
 
             <button
               onClick={refetch}
-              className="group flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white/30 border border-white/10 hover:border-white/20 hover:text-white/55 hover:bg-white/5 transition-all"
+              className="group self-start flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white/30 border border-white/10 hover:border-white/20 hover:text-white/55 hover:bg-white/5 transition-all"
             >
               <RefreshCw size={12} className="group-hover:rotate-180 transition-transform duration-500" />
               Refresh
@@ -281,6 +320,8 @@ export default function Dashboard() {
         >
           {loadingStats ? (
             [1, 2, 3, 4].map((i) => <SkeletonCard key={i} />)
+          ) : statsError ? (
+            <StatErrorCard onRetry={() => refetch()} />
           ) : (
             <>
               <StatCard icon={<Wallet size={16} />}     label="Wallet Balance"  value={stats?.balance ?? 0}                  accent="amber"   href="/wallet"    mounted={mounted} />
@@ -293,12 +334,23 @@ export default function Dashboard() {
 
         {/* ── Quick Actions ── */}
         <section
-          className="grid grid-cols-3 gap-3 sm:gap-4 transition-all duration-700 delay-175"
+          className="transition-all duration-700 delay-175"
           style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)" }}
         >
-          <QuickCard title="Wallet"    desc="Fund & manage"     href="/wallet"    icon={<Wallet size={17} />}     accent="#C8873A" />
-          <QuickCard title="Portfolio" desc="Track investments" href="/portfolio" icon={<LayoutGrid size={17} />} accent="#2D7A55" />
-          <QuickCard title="Explore"   desc="New opportunities" href="/lands"     icon={<MapPin size={17} />}     accent="#8B5CF6" />
+          {/* Mobile: scrollable strip */}
+          <div className="flex sm:hidden gap-3 overflow-x-auto pb-1 snap-x snap-mandatory
+                          [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <QuickCard title="Wallet"    desc="Fund & manage"     href="/wallet"    icon={<Wallet size={17} />}     accent="#C8873A" mobile />
+            <QuickCard title="Portfolio" desc="Track investments" href="/portfolio" icon={<LayoutGrid size={17} />} accent="#2D7A55" mobile />
+            <QuickCard title="Explore"   desc="New opportunities" href="/lands"     icon={<MapPin size={17} />}     accent="#8B5CF6" mobile />
+          </div>
+
+          {/* Desktop: 3-col grid (unchanged) */}
+          <div className="hidden sm:grid grid-cols-3 gap-3 sm:gap-4">
+            <QuickCard title="Wallet"    desc="Fund & manage"     href="/wallet"    icon={<Wallet size={17} />}     accent="#C8873A" />
+            <QuickCard title="Portfolio" desc="Track investments" href="/portfolio" icon={<LayoutGrid size={17} />} accent="#2D7A55" />
+            <QuickCard title="Explore"   desc="New opportunities" href="/lands"     icon={<MapPin size={17} />}     accent="#8B5CF6" />
+          </div>
         </section>
 
         {/* ── Transactions ── */}
@@ -306,7 +358,12 @@ export default function Dashboard() {
           className="transition-all duration-700 delay-250"
           style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)" }}
         >
-          <TransactionsSection transactions={transactions} loading={loadingTx} />
+          <TransactionsSection
+            transactions={transactions}
+            loading={loadingTx}
+            error={txError}
+            onRetry={refetch}
+          />
         </section>
 
       </main>
@@ -314,12 +371,13 @@ export default function Dashboard() {
   );
 }
 
+/* ── MobileFoundingBadge ──────────────────────────────────────────────────── */
 function MobileFoundingBadge() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
     if (!show) return;
-    const t = setTimeout(() => setShow(false), 2000); // auto-hide after 2s
+    const t = setTimeout(() => setShow(false), 2000);
     return () => clearTimeout(t);
   }, [show]);
 
@@ -331,7 +389,7 @@ function MobileFoundingBadge() {
         onClick={() => setShow(v => !v)}
       />
       <span
-        className={`absolute left-1/2 -translate-x-1/2 bottom-6 z-50 whitespace-nowrap px-2 py-1 rounded-lg text-[10px] font-bold border pointer-events-none transition-opacity duration-200 ${
+        className={`absolute right-0 bottom-6 z-50 max-w-40 px-2 py-1 rounded-lg text-[10px] font-bold border pointer-events-none transition-opacity duration-200 ${
           show ? "opacity-100" : "opacity-0"
         }`}
         style={{
@@ -345,11 +403,28 @@ function MobileFoundingBadge() {
     </div>
   );
 }
+
 /* ── SkeletonCard ─────────────────────────────────────────────────────────── */
 function SkeletonCard() {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 h-32 overflow-hidden relative">
+    <div className="rounded-2xl border border-white/10 bg-white/5 min-h-32 overflow-hidden relative">
       <div className="absolute inset-0 animate-pulse bg-white/5" />
+    </div>
+  );
+}
+
+/* ── StatErrorCard ────────────────────────────────────────────────────────── */
+function StatErrorCard({ onRetry }) {
+  return (
+    <div className="col-span-2 lg:col-span-4 rounded-2xl border border-red-500/20 bg-red-500/5 min-h-32 flex flex-col items-center justify-center gap-3 p-5 text-center">
+      <WifiOff size={20} className="text-red-400/60" />
+      <p className="text-sm text-white/40">Couldn't load stats</p>
+      <button
+        onClick={onRetry}
+        className="px-4 py-1.5 rounded-xl text-xs font-bold border border-red-500/20 text-red-400/70 hover:bg-red-500/10 transition-all"
+      >
+        Retry
+      </button>
     </div>
   );
 }
@@ -370,7 +445,7 @@ function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
     : "₦" + animated.toLocaleString("en-NG");
 
   const inner = (
-    <div className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4 sm:p-5 hover:bg-white/5.5 hover:border-white/12 transition-all duration-300 overflow-hidden h-full flex flex-col">
+    <div className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4 sm:p-5 hover:bg-white/5.5 hover:border-white/12 transition-all duration-300 overflow-hidden min-h-32 flex flex-col">
       <div
         className="absolute -top-10 -right-10 w-28 h-28 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{ background: `radial-gradient(circle, ${a.glow}, transparent 70%)` }}
@@ -403,11 +478,13 @@ function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
 }
 
 /* ── QuickCard ────────────────────────────────────────────────────────────── */
-function QuickCard({ title, desc, href, icon, accent }) {
+function QuickCard({ title, desc, href, icon, accent, mobile = false }) {
   return (
     <Link
       href={href}
-      className="group relative rounded-2xl border border-white/[0.07] bg-white/3 hover:bg-white/5.5 hover:border-white/12 transition-all duration-300 overflow-hidden block"
+      className={`group relative rounded-2xl border border-white/[0.07] bg-white/3 hover:bg-white/5.5 hover:border-white/12 transition-all duration-300 overflow-hidden block shrink-0 ${
+        mobile ? "snap-start min-w-35" : ""
+      }`}
     >
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
@@ -436,7 +513,7 @@ function QuickCard({ title, desc, href, icon, accent }) {
 }
 
 /* ── TransactionsSection ──────────────────────────────────────────────────── */
-function TransactionsSection({ transactions, loading }) {
+function TransactionsSection({ transactions, loading, error, onRetry }) {
   if (loading) {
     return (
       <div className="rounded-2xl border border-white/[0.07] bg-white/3 overflow-hidden">
@@ -454,6 +531,23 @@ function TransactionsSection({ transactions, loading }) {
               <div className="h-4 rounded bg-white/5 animate-pulse w-20" />
             </div>
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-2xl border border-white/[0.07] bg-white/3 overflow-hidden">
+        <div className="flex flex-col items-center text-center px-5 py-10 gap-3">
+          <WifiOff size={20} className="text-white/20" />
+          <p className="text-sm text-white/40">Couldn't load transactions</p>
+          <button
+            onClick={onRetry}
+            className="px-4 py-1.5 rounded-xl text-xs font-bold border border-white/10 text-white/30 hover:bg-white/5 transition-all"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
