@@ -159,7 +159,7 @@ function AttachmentLink({ ticketId, message }) {
       {/* Inline image preview once loaded */}
       {fileType === "image" && blobUrl && (
         <div
-          className="mt-2 rounded-xl overflow-hidden cursor-zoom-in border border-white/10 max-w-[200px]"
+          className="mt-2 rounded-xl overflow-hidden cursor-zoom-in border border-white/10 max-w-50"
           onClick={() => setLightbox(true)}
         >
           <img src={blobUrl} alt="attachment" className="w-full h-auto object-cover" />
@@ -169,7 +169,7 @@ function AttachmentLink({ ticketId, message }) {
       {/* Attachment chip */}
       <div className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs bg-white/5 border-white/10 text-white/50">
         <FileIcon size={11} className="shrink-0" />
-        <span className="max-w-[140px] truncate">{fileName}</span>
+        <span className="max-w-35 truncate">{fileName}</span>
         {loading ? (
           <Loader2 size={11} className="animate-spin shrink-0" />
         ) : (
@@ -195,7 +195,7 @@ function AttachmentLink({ ticketId, message }) {
       {/* Lightbox */}
       {lightbox && blobUrl && (
         <div
-          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-60 flex items-center justify-center p-4"
           onClick={() => setLightbox(false)}
         >
           <button
@@ -260,15 +260,15 @@ export default function SupportPage() {
     <div className="min-h-screen relative" style={{ background: BG, fontFamily: "'DM Sans','Helvetica Neue',sans-serif" }}>
 
       {/* ── Atmospheric background ── */}
-      <div className="fixed inset-0 pointer-events-none" style={{
+      <div className="absolute inset-0 pointer-events-none" style={{
         backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.7) 1px, transparent 1px)",
         backgroundSize: "28px 28px", opacity: 0.025,
       }} />
-      <div className="fixed pointer-events-none" style={{
+      <div className="absolute pointer-events-none" style={{
         top: "-25%", right: "-15%", width: "55vw", height: "55vw",
         borderRadius: "50%", background: `radial-gradient(circle, ${AMBER} 0%, transparent 65%)`, opacity: 0.06,
       }} />
-      <div className="fixed pointer-events-none" style={{
+      <div className="absolute pointer-events-none" style={{
         bottom: "-30%", left: "-10%", width: "40vw", height: "40vw",
         borderRadius: "50%", background: "radial-gradient(circle, #1a5c3a 0%, transparent 65%)", opacity: 0.12,
       }} />
@@ -754,7 +754,7 @@ function TicketDetail({ id, onBack }) {
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white/50">
                     <Paperclip size={11} />
-                    <span className="max-w-[200px] truncate">{file.name}</span>
+                    <span className="max-w-50 truncate">{file.name}</span>
                     <span style={{ color: DIMMED }}>({(file.size / 1024).toFixed(0)} KB)</span>
                     <button
                       type="button"

@@ -77,7 +77,7 @@ export default function NotificationsPage() {
     <div className="min-h-screen bg-[#0D1F1A] relative"
       style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
 
-      <div className="fixed inset-0 pointer-events-none"
+      <div className="absolute inset-0 pointer-events-none"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px", opacity: 0.03 }} />
 
       <div className="relative max-w-2xl mx-auto px-4 py-8 sm:py-12">

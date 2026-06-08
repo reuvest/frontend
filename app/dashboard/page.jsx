@@ -217,7 +217,7 @@ export default function Dashboard() {
       style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
     >
       {/* ── Background ── */}
-      <div className="fixed inset-0 pointer-events-none select-none">
+      <div className="absolute inset-0 pointer-events-none select-none">
         <div
           className="absolute inset-0"
           style={{

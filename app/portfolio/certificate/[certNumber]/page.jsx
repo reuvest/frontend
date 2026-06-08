@@ -42,7 +42,7 @@ function Seal({ size = 96 }) {
 /* ─── Detail Row ────────────────────────────────────────────────────────── */
 function DetailRow({ label, value, mono = false, highlight = false }) {
   return (
-    <div className="flex items-start justify-between gap-4 py-2.5 border-b border-white/[0.05] last:border-0">
+    <div className="flex items-start justify-between gap-4 py-2.5 border-b border-white/5 last:border-0">
       <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white/30 shrink-0 w-40 mt-0.5">
         {label}
       </span>
@@ -151,12 +151,12 @@ export default function CertificatePage() {
       style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
 
       {/* Background dot grid */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.03]"
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
 
       {/* Ambient glow */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full"
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-150 h-100 rounded-full"
           style={{ background: "radial-gradient(ellipse, rgba(200,135,58,0.07) 0%, transparent 70%)" }} />
       </div>
 
@@ -202,17 +202,17 @@ export default function CertificatePage() {
         )}
 
         {/* ── Certificate card ── */}
-        <div className="rounded-3xl border border-white/[0.09] overflow-hidden"
+        <div className="rounded-3xl border border-white/9 overflow-hidden"
           style={{
             background: "linear-gradient(160deg, rgba(200,135,58,0.07) 0%, rgba(13,31,26,0.0) 50%)",
             boxShadow: "0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(200,135,58,0.12)",
           }}>
 
           {/* ── Header ── */}
-          <div className="relative px-8 pt-10 pb-8 text-center border-b border-white/[0.06]"
+          <div className="relative px-8 pt-10 pb-8 text-center border-b border-white/6"
             style={{ background: "rgba(0,0,0,0.15)" }}>
 
-            <div className="absolute top-0 left-0 right-0 h-[2px]"
+            <div className="absolute top-0 left-0 right-0 h-0.5"
               style={{ background: "linear-gradient(90deg, transparent, #C8873A 30%, #E8A850 50%, #C8873A 70%, transparent)" }} />
 
             <div className="flex justify-center mb-5">
@@ -293,7 +293,7 @@ export default function CertificatePage() {
               style={{ background: "linear-gradient(90deg, transparent, rgba(200,135,58,0.2), transparent)" }} />
 
             {/* Digital signature */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
               <div className="flex items-center gap-2 mb-3">
                 <ShieldCheck size={14} className="text-amber-500/70" />
                 <span className="text-[10px] font-black tracking-[0.2em] text-white/35 uppercase">
@@ -319,7 +319,7 @@ export default function CertificatePage() {
           </div>
 
           {/* ── Footer ── */}
-          <div className="px-8 py-5 border-t border-white/[0.05] text-center"
+          <div className="px-8 py-5 border-t border-white/5 text-center"
             style={{ background: "rgba(0,0,0,0.1)" }}>
             <p className="text-[9px] text-white/20 leading-relaxed">
               This certificate is digitally issued and verifiable at {appname}/verify

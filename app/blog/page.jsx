@@ -20,7 +20,7 @@ async function apiFetch(path) {
 function PostCard({ post }) {
   return (
     <Link href={`/blog/${post.slug}`} className="group block">
-      <article className="rounded-2xl border border-white/[0.07] bg-white/[0.025] overflow-hidden hover:border-white/[0.14] hover:bg-white/[0.04] transition-all duration-300 h-full flex flex-col">
+      <article className="rounded-2xl border border-white/[0.07] bg-white/2.5 overflow-hidden hover:border-white/[0.14] hover:bg-white/4 transition-all duration-300 h-full flex flex-col">
 
         {/* Cover image */}
         {post.cover_image_url ? (
@@ -65,7 +65,7 @@ function PostCard({ post }) {
           )}
 
           {/* Meta */}
-          <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/[0.05]">
+          <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/5">
             <div className="flex items-center gap-3 text-[11px] text-white/25">
               <span className="flex items-center gap-1">
                 <Clock size={10} /> {post.read_time_minutes}m read
@@ -85,7 +85,7 @@ function PostCard({ post }) {
 /* ─── Skeleton card ─────────────────────────────────────────────────────── */
 function SkeletonCard() {
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] overflow-hidden animate-pulse">
+    <div className="rounded-2xl border border-white/[0.07] bg-white/2.5 overflow-hidden animate-pulse">
       <div className="h-44 bg-white/5" />
       <div className="p-5 space-y-3">
         <div className="h-2.5 bg-white/5 rounded w-1/4" />
@@ -156,9 +156,9 @@ export default function BlogPage() {
       style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
 
       {/* Background */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.03]"
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] pointer-events-none"
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-175 h-75 pointer-events-none"
         style={{ background: "radial-gradient(ellipse, rgba(200,135,58,0.06) 0%, transparent 70%)" }} />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-14">

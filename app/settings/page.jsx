@@ -170,7 +170,7 @@ export default function Settings() {
     <div className="min-h-screen bg-[#0D1F1A] text-white" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
 
       {/* dot grid */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.03]"
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
 
       {/* amber top bar */}

@@ -96,7 +96,7 @@ function ResultCard({ result, onReset }) {
           )}
 
           {/* Owner */}
-          <div className="text-center mb-5 pb-5 border-b border-white/[0.05]">
+          <div className="text-center mb-5 pb-5 border-b border-white/5">
             <p className="text-xs text-white/30 italic mb-2">Issued to</p>
             <p
               className="text-xl font-bold text-white"
@@ -121,7 +121,7 @@ function ResultCard({ result, onReset }) {
             .map(([label, value, mono]) => (
               <div
                 key={label}
-                className="flex items-start justify-between gap-4 py-2.5 border-b border-white/[0.05] last:border-0"
+                className="flex items-start justify-between gap-4 py-2.5 border-b border-white/5 last:border-0"
               >
                 <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white/30 shrink-0 w-36 mt-0.5">
                   {label}
@@ -145,7 +145,7 @@ function ResultCard({ result, onReset }) {
       )}
 
       {/* Try another */}
-      <div className="px-6 py-4 border-t border-white/[0.05]" style={{ background: "rgba(0,0,0,0.1)" }}>
+      <div className="px-6 py-4 border-t border-white/5" style={{ background: "rgba(0,0,0,0.1)" }}>
         <button
           onClick={onReset}
           className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold border border-white/10 text-white/40 hover:bg-white/5 hover:text-white/60 transition-all"
@@ -226,15 +226,15 @@ function VerifyCertPageInner() {
     >
       {/* Background */}
       <div
-        className="fixed inset-0 pointer-events-none opacity-[0.03]"
+        className="absolute inset-0 pointer-events-none opacity-[0.03]"
         style={{
           backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
           backgroundSize: "28px 28px",
         }}
       />
-      <div className="fixed inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none">
         <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full"
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-125 h-75 rounded-full"
           style={{ background: "radial-gradient(ellipse, rgba(200,135,58,0.07) 0%, transparent 70%)" }}
         />
       </div>
@@ -262,7 +262,7 @@ function VerifyCertPageInner() {
 
         {/* Input form — hidden once result is shown */}
         {!result && (
-          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6 mb-5">
+          <div className="rounded-2xl border border-white/8 bg-white/2.5 p-6 mb-5">
             <label className="block text-[10px] font-black uppercase tracking-[0.22em] text-white/35 mb-2">
               Certificate Number
             </label>

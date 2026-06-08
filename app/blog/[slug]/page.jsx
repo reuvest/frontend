@@ -63,7 +63,7 @@ const isLoggedIn = !!user;
       style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
 
       {/* Background */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.03]"
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
 
       {/* Cover image — full-width hero */}
@@ -111,7 +111,7 @@ const isLoggedIn = !!user;
         )}
 
         {/* Meta strip */}
-        <div className="flex flex-wrap items-center gap-4 text-xs text-white/30 mb-8 pb-8 border-b border-white/[0.06]">
+        <div className="flex flex-wrap items-center gap-4 text-xs text-white/30 mb-8 pb-8 border-b border-white/6">
           <span className="flex items-center gap-1.5">
             <Calendar size={11} /> {fmtDate(post.published_at)}
           </span>
@@ -134,7 +134,7 @@ const isLoggedIn = !!user;
 
         {/* Tags */}
         {post.tags?.length > 0 && (
-          <div className="mt-10 pt-8 border-t border-white/[0.06]">
+          <div className="mt-10 pt-8 border-t border-white/6">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/25 mb-3">Tags</p>
             <div className="flex flex-wrap gap-2">
               {post.tags.map((t) => (
