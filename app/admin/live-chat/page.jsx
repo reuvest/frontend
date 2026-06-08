@@ -104,8 +104,8 @@ function QueueItem({ ticket, isActive, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left px-4 py-3.5 border-b border-white/[0.04] transition-all relative group ${
-        isActive ? "bg-white/[0.06]" : "hover:bg-white/[0.03]"
+      className={`w-full text-left px-4 py-3.5 border-b border-white/4 transition-all relative group ${
+        isActive ? "bg-white/6" : "hover:bg-white/3"
       }`}
     >
       {isActive && (
@@ -164,7 +164,7 @@ function MessageBubble({ message, isAgent }) {
           className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
             isAgent
               ? "rounded-tr-md text-[#0D1F1A] font-medium"
-              : "rounded-tl-md bg-white/[0.07] text-white/80 border border-white/[0.06]"
+              : "rounded-tl-md bg-white/[0.07] text-white/80 border border-white/6"
           }`}
           style={isAgent ? { background: "linear-gradient(135deg, #C8873A, #E8A850)" } : {}}
         >
@@ -183,7 +183,7 @@ function TypingIndicator({ name }) {
       <div className="w-7 h-7 rounded-xl bg-white/10 flex items-center justify-center text-xs font-bold text-white/60">
         {name?.[0] || "U"}
       </div>
-      <div className="px-4 py-3 rounded-2xl rounded-tl-md bg-white/[0.07] border border-white/[0.06] flex items-center gap-1">
+      <div className="px-4 py-3 rounded-2xl rounded-tl-md bg-white/[0.07] border border-white/6 flex items-center gap-1">
         {[0, 1, 2].map((i) => (
           <span key={i}
             className="w-1.5 h-1.5 rounded-full bg-white/30 animate-bounce"
@@ -422,11 +422,11 @@ export default function AgentChatPage() {
   };
 
   return (
-    <div className="h-[100dvh] bg-[#0A1A12] flex flex-col overflow-hidden"
+    <div className="h-dvh bg-[#0A1A12] flex flex-col overflow-hidden"
       style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
 
       {/* ── Top bar ── */}
-      <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-white/[0.06] bg-[#0D1F1A] shrink-0">
+      <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-white/6 bg-[#0D1F1A] shrink-0">
         <div className="flex items-center gap-3">
           {/* Mobile: back to queue when in chat panel */}
           {mobilePanel === "chat" && activeTicket ? (
@@ -498,9 +498,9 @@ export default function AgentChatPage() {
         <div className={`
           ${mobilePanel === "queue" ? "flex" : "hidden"}
           sm:flex
-          w-full sm:w-72 shrink-0 border-r border-white/[0.06] flex-col bg-[#0D1F1A] overflow-hidden
+          w-full sm:w-72 shrink-0 border-r border-white/6 flex-col bg-[#0D1F1A] overflow-hidden
         `}>
-          <div className="px-4 py-3.5 border-b border-white/[0.05]">
+          <div className="px-4 py-3.5 border-b border-white/5">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/25 flex items-center gap-2">
               <MessageSquare size={10} /> Queue
               {pendingCount > 0 && (
@@ -540,7 +540,7 @@ export default function AgentChatPage() {
 
                 {/* Active tickets */}
                 {queue.filter(t => !!t.agent_id).length > 0 && (
-                  <div className="px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500/50 border-t border-white/[0.04] mt-1">
+                  <div className="px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500/50 border-t border-white/4 mt-1">
                     Active Chats
                   </div>
                 )}
@@ -568,7 +568,7 @@ export default function AgentChatPage() {
           ) : (
             <>
               {/* Chat header — desktop only (mobile header is top bar) */}
-              <div className="hidden sm:flex px-6 py-4 border-b border-white/[0.06] bg-[#0D1F1A] items-center justify-between shrink-0">
+              <div className="hidden sm:flex px-6 py-4 border-b border-white/6 bg-[#0D1F1A] items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-sm font-bold text-white/60 shrink-0">
                     {activeTicket.user?.name?.[0] || "U"}
@@ -606,7 +606,7 @@ export default function AgentChatPage() {
               </div>
 
               {/* Mobile chat subheader — shows subject + category */}
-              <div className="sm:hidden px-4 py-2.5 border-b border-white/[0.05] bg-[#0D1F1A] flex items-center gap-2">
+              <div className="sm:hidden px-4 py-2.5 border-b border-white/5 bg-[#0D1F1A] flex items-center gap-2">
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0"
                   style={{
                     background: `${CATEGORY_COLORS[activeTicket.category] || "#6B7280"}20`,
@@ -622,11 +622,11 @@ export default function AgentChatPage() {
               <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5 space-y-4">
                 {messages.length > 0 && (
                   <div className="flex items-center gap-3">
-                    <div className="flex-1 h-px bg-white/[0.05]" />
+                    <div className="flex-1 h-px bg-white/5" />
                     <span className="text-[10px] text-white/20 font-medium">
                       {fmtDate(messages[0]?.created_at)}
                     </span>
-                    <div className="flex-1 h-px bg-white/[0.05]" />
+                    <div className="flex-1 h-px bg-white/5" />
                   </div>
                 )}
                 {messages.map((msg) => (
@@ -637,8 +637,8 @@ export default function AgentChatPage() {
               </div>
 
               {/* Input */}
-              <div className="px-3 sm:px-5 py-3 sm:py-4 border-t border-white/[0.06] bg-[#0D1F1A] shrink-0">
-                <div className="flex items-end gap-2 sm:gap-3 bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.14] focus-within:border-amber-500/30 focus-within:ring-2 focus-within:ring-amber-500/10 rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 transition-all">
+              <div className="px-3 sm:px-5 py-3 sm:py-4 border-t border-white/6 bg-[#0D1F1A] shrink-0">
+                <div className="flex items-end gap-2 sm:gap-3 bg-white/4 border border-white/8 hover:border-white/[0.14] focus-within:border-amber-500/30 focus-within:ring-2 focus-within:ring-amber-500/10 rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 transition-all">
                   <textarea
                     value={draft}
                     onChange={(e) => handleDraftChange(e.target.value)}

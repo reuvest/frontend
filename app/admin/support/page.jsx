@@ -99,7 +99,7 @@ function Attachment({ messageId, path, isAdmin }) {
       {/* Inline image preview */}
       {fileType === "image" && blobUrl && (
         <div
-          className="mt-2 rounded-xl overflow-hidden cursor-zoom-in border border-white/10 max-w-[220px]"
+          className="mt-2 rounded-xl overflow-hidden cursor-zoom-in border border-white/10 max-w-55"
           onClick={() => setLightbox(true)}
         >
           <img src={blobUrl} alt="attachment" className="w-full h-auto object-cover"/>
@@ -114,7 +114,7 @@ function Attachment({ messageId, path, isAdmin }) {
         }`}
       >
         <FileIcon size={12} className="shrink-0"/>
-        <span className="max-w-[120px] truncate">{fileName}</span>
+        <span className="max-w-30 truncate">{fileName}</span>
 
         {loading ? (
           <div className={`w-3 h-3 border border-current border-t-transparent rounded-full animate-spin`}/>
@@ -141,7 +141,7 @@ function Attachment({ messageId, path, isAdmin }) {
       {/* Lightbox */}
       {lightbox && blobUrl && (
         <div
-          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-60 flex items-center justify-center p-4"
           onClick={() => setLightbox(false)}
         >
           <button
@@ -381,7 +381,7 @@ function TicketModal({ ticket, onClose, onUpdate }) {
               <div className="flex items-center gap-2 mb-2 px-1">
                 <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white/60">
                   <Paperclip size={11}/>
-                  <span className="max-w-[200px] truncate">{attachment.name}</span>
+                  <span className="max-w-50 truncate">{attachment.name}</span>
                   <span className="text-white/30">({(attachment.size / 1024).toFixed(0)} KB)</span>
                   <button
                     onClick={() => { setAttachment(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}

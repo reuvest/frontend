@@ -502,8 +502,8 @@ export default function AdminBlogPage() {
               </div>
               {filtered.map((post, i) => (
                 <div key={post.id}
-                  className={`grid grid-cols-[2.5fr_1fr_1fr_80px_80px_100px] gap-4 px-6 py-4 items-center hover:bg-white/[0.025] transition-colors ${
-                    i < filtered.length - 1 ? "border-b border-white/[0.04]" : ""
+                  className={`grid grid-cols-[2.5fr_1fr_1fr_80px_80px_100px] gap-4 px-6 py-4 items-center hover:bg-white/2.5 transition-colors ${
+                    i < filtered.length - 1 ? "border-b border-white/4" : ""
                   }`}>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-white truncate">{post.title}</p>
