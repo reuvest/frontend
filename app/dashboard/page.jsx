@@ -250,7 +250,7 @@ export default function Dashboard() {
 
         <header
           className="transition-all duration-700"
-          style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(10px)" }}
+          style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(10px)", isolation: "isolate" }}
         >
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
             <div className="min-w-0">
@@ -312,9 +312,10 @@ export default function Dashboard() {
         </header>
 
         <section
-          className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 transition-all duration-700 delay-100"
-          style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)" }}
+          className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
+          style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)", isolation: "isolate" }}
         >
+
           {loadingStats ? (
             [1, 2, 3].map((i) => <SkeletonCard key={i} />)
           ) : statsError ? (
@@ -332,7 +333,7 @@ export default function Dashboard() {
 
         <section
           className="transition-all duration-700 delay-150"
-          style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)" }}
+          style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)", isolation: "isolate" }}
         >
           <div className="grid grid-cols-3 gap-3 sm:gap-4">
             <QuickCard title="Wallet"    desc="Fund & manage"     href="/wallet"    icon={<Wallet size={17} />}     accent="#C8873A" />
@@ -343,7 +344,7 @@ export default function Dashboard() {
 
         <section
           className="transition-all duration-700 delay-200"
-          style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)" }}
+          style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)", isolation: "isolate" }}
         >
           <TransactionsSection
             transactions={transactions}
@@ -392,7 +393,7 @@ function MobileFoundingBadge() {
 
 function SkeletonCard() {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 min-h-32 overflow-hidden relative">
+    <div className="rounded-2xl border border-white/10 bg-white/5 min-h-32 relative">
       <div className="absolute inset-0 animate-pulse bg-white/5" />
     </div>
   );
@@ -432,8 +433,7 @@ function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
     : "₦" + animated.toLocaleString("en-NG") + fracPart;
 
   const inner = (
-    <div className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4 sm:p-5 hover:bg-white/5.5 hover:border-white/12 transition-all duration-300 overflow-hidden min-h-32 flex flex-col">
-      <div
+    <div className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4 sm:p-5 hover:bg-white/5.5 hover:border-white/12 transition-all duration-300 min-h-32 flex flex-col">      <div
         className="absolute -top-10 -right-10 w-28 h-28 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{ background: `radial-gradient(circle, ${a.glow}, transparent 70%)` }}
       />
@@ -468,7 +468,7 @@ function QuickCard({ title, desc, href, icon, accent }) {
   return (
     <Link
       href={href}
-      className="group relative rounded-2xl border border-white/[0.07] bg-white/3 hover:bg-white/5.5 hover:border-white/12 transition-all duration-300 overflow-hidden block"
+      className="group relative rounded-2xl border border-white/[0.07] bg-white/3 hover:bg-white/5.5 hover:border-white/12 transition-all duration-300 block"
     >
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"

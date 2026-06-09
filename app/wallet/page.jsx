@@ -277,7 +277,7 @@ export default function WalletPage() {
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-0"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8" style={{ isolation: "isolate" }}>
 
         {/* Header */}
         <div>
@@ -290,7 +290,7 @@ export default function WalletPage() {
         </div>
 
         {/* Balance Card */}
-        <div className="relative rounded-2xl overflow-hidden border border-amber-500/20 p-6 sm:p-8"
+        <div className="relative rounded-2xl border border-amber-500/20 p-6 sm:p-8"
           style={{ background: "linear-gradient(135deg, rgba(200,135,58,0.15) 0%, rgba(13,31,26,0.8) 60%)" }}>
           <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 pointer-events-none"
             style={{ background: "radial-gradient(circle, #E8A850, transparent)", transform: "translate(30%, -30%)" }} />

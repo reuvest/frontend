@@ -208,7 +208,7 @@ export default function ReferralDashboard() {
   // ── Render ───────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative">
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-10">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-10" style={{ isolation: "isolate" }}>
 
         {/* Header */}
         <div className="mb-8">
@@ -220,7 +220,7 @@ export default function ReferralDashboard() {
         </div>
 
         {/* ── Referral Link Card ─────────────────────────────────────────── */}
-        <div className="rounded-2xl p-6 mb-8 border border-amber-500/20 bg-gradient-to-br from-[#1a3a2a] to-[#0D1F1A]">
+        <div className="rounded-2xl p-6 mb-8 border border-amber-500/20 bg-linear-to-br from-[#1a3a2a] to-[#0D1F1A]">
           <div className="flex items-center gap-2 mb-4">
             <Gift size={18} className="text-amber-500" />
             <h2 className="text-white font-bold">Your Referral Link</h2>
@@ -269,7 +269,7 @@ export default function ReferralDashboard() {
         </div>
 
         {/* ── Stat Cards (5) ─────────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-8" style={{ isolation: "isolate" }}>
           {[
             {
               label:  "Total Referrals",
@@ -304,7 +304,7 @@ export default function ReferralDashboard() {
           ].map((card) => (
             <div
               key={card.label}
-              className="relative rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5 overflow-hidden hover:-translate-y-1 transition-all"
+              className="relative rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5 hover:-translate-y-1 transition-all"
             >
               <div
                 className="absolute -top-4 -right-4 w-16 h-16 rounded-full opacity-20"
