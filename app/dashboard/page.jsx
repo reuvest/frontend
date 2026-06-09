@@ -228,24 +228,23 @@ export default function Dashboard() {
       style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
        }}
     >
-      <div className="absolute inset-0 pointer-events-none select-none" style={{ zIndex: 0 }}>
+      {/* <div className="absolute inset-0 pointer-events-none select-none" style={{ zIndex: 0 }}>
         <div
           className="absolute -top-[15%] -right-[5%] w-[55vw] h-[55vw] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(200,135,58,0.11) 0%, transparent 65%)" }}
+          style={{ background: "" }}
         />
         <div
           className="absolute -bottom-[10%] -left-[10%] w-[45vw] h-[45vw] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(45,122,85,0.09) 0%, transparent 65%)" }}
+          style={{ background: "" }}
         />
         <div className="absolute top-0 left-0 right-0 h-48 bg-linear-to-b from-black/25 to-transparent" />
-        </div>
+        </div> */}
 
-      <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-5"
-        style={{ position: "relative", zIndex: 1 }}>
+      <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-5">
 
         <header
           className=""
-          style={{ willChange: "auto" }}
+          
         >
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
             <div className="min-w-0">
@@ -308,7 +307,7 @@ export default function Dashboard() {
 
         <section
           className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
-          style={{ willChange: "auto" }}
+          
         >
 
           {loadingStats ? (
@@ -328,7 +327,7 @@ export default function Dashboard() {
 
         <section
           className=""
-          style={{ willChange: "auto" }}
+          
         >
           <div className="grid grid-cols-3 gap-3 sm:gap-4">
             <QuickCard title="Wallet"    desc="Fund & manage"     href="/wallet"    icon={<Wallet size={17} />}     accent="#C8873A" />
@@ -339,7 +338,7 @@ export default function Dashboard() {
 
         <section
           className=""
-          style={{ willChange: "auto" }}
+          
         >
           <TransactionsSection
             transactions={transactions}
@@ -428,7 +427,10 @@ function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
     : "₦" + animated.toLocaleString("en-NG") + fracPart;
 
   const inner = (
-    <div className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4 sm:p-5 hover:bg-white/[0.055] hover:border-white/[0.12] transition-all duration-300 min-h-32 flex flex-col">      <div
+    <div className="group relative rounded-2xl border border-white/[0.07]  p-4 sm:p-5 hover:bg-white/[0.055] hover:border-white/[0.12] transition-all duration-300 min-h-32 flex flex-col" style={{
+    backgroundColor: "#132922"
+  }}>      
+  <div
         className="absolute -top-10 -right-10 w-28 h-28 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{ background: `radial-gradient(circle, ${a.glow}, transparent 70%)` }}
       />
@@ -467,7 +469,7 @@ function QuickCard({ title, desc, href, icon, accent }) {
     >
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-        style={{ background: `radial-gradient(ellipse at 20% 60%, ${accent}15, transparent 65%)` }}
+        style={{ background: `` }}
       />
       <div className="relative p-4 sm:p-5">
         <div

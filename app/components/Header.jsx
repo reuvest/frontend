@@ -64,9 +64,8 @@ export default function Header() {
               className="h-16 w-auto transition-opacity group-hover:opacity-80"
               style={{
                 maxWidth: "160px",
-                filter: "brightness(2.1)",
+                filter: "brightness(1.2)",
                 background: "transparent",
-                mixBlendMode: "screen",
               }}
             />
           </Link>
