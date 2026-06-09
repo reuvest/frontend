@@ -45,8 +45,7 @@ export default function Header() {
         className="w-full border-b"
         style={{
           fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
-          background: "rgba(13, 31, 26, 0.95)",
-          backdropFilter: "blur(12px)",
+          background: "#0D1F1A",
           borderColor: "rgba(255,255,255,0.07)",
           position: "relative",
           zIndex: 40,

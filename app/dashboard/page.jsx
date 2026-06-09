@@ -250,7 +250,8 @@ export default function Dashboard() {
         <div className="absolute top-0 left-0 right-0 h-48 bg-linear-to-b from-black/25 to-transparent" />
       </div>
 
-      <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-5">
+      <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-5"
+        style={{ position: "relative", zIndex: 1 }}>
 
         <header
           className=""
