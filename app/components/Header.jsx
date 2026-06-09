@@ -133,7 +133,7 @@ export default function Header() {
       {user && (
         <>
           <div
-            className={`fixed inset-0 bg-black/70 backdrop-blur-sm lg:hidden z-40 transition-opacity duration-300 ${
+            className={`fixed inset-0 bg-black/70  lg:hidden z-40 transition-opacity duration-300 ${
               menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
             }`}
             onClick={() => setMenuOpen(false)}
