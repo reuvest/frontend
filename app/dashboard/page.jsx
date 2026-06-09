@@ -226,19 +226,9 @@ export default function Dashboard() {
     <div
       className="min-h-screen bg-[#0D1F1A] relative overflow-x-clip"
       style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
-        transform: "translateZ(0)",
-        WebkitTransform: "translateZ(0)",
        }}
     >
-      <div className="absolute inset-0 pointer-events-none select-none"
-      style={{ zIndex: 0, isolation: "isolate" }}>
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.065) 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
-          }}
-        />
+      <div className="absolute inset-0 pointer-events-none select-none" style={{ zIndex: 0 }}>
         <div
           className="absolute -top-[15%] -right-[5%] w-[55vw] h-[55vw] rounded-full"
           style={{ background: "radial-gradient(circle, rgba(200,135,58,0.11) 0%, transparent 65%)" }}
@@ -248,7 +238,7 @@ export default function Dashboard() {
           style={{ background: "radial-gradient(circle, rgba(45,122,85,0.09) 0%, transparent 65%)" }}
         />
         <div className="absolute top-0 left-0 right-0 h-48 bg-linear-to-b from-black/25 to-transparent" />
-      </div>
+        </div>
 
       <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-5"
         style={{ position: "relative", zIndex: 1 }}>
