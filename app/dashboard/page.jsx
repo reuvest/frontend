@@ -723,8 +723,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
           return (
             <div
               key={idx}
-              className="px-4 py-3.5 flex items-center gap-3 hover:bg-white/2 transition-colors"
-            >
+              className="px-4 py-4 flex items-center gap-3 hover:bg-white/2 transition-colors">
               <div
                 className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                   isCredit === true    ? "bg-emerald-500/10"
@@ -742,17 +741,17 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
                 <p className="font-semibold text-sm capitalize text-white/75 truncate leading-none">
                   {tx?.type || "Transaction"}
                 </p>
-                <p className="text-[11px] text-white/22 mt-1 truncate">
+                <p className="text-[11px] text-white/40 mt-0.5 truncate">
                   {tx?.land || "Wallet"}
                   {tx?.units != null && (
-                    <span className="ml-1.5 text-white/20">
-                      · {tx.units} unit{tx.units !== 1 ? "s" : ""}
+                    <span className="text-white/20">
+                      {" "}· {tx.units} unit{tx.units !== 1 ? "s" : ""}
                     </span>
                   )}
-                  {" · "}{formatDate(txDate)}
                 </p>
+                <p className="text-[10px] text-white/20 mt-0.5">{formatDate(txDate)}</p>
               </div>
-              <div className="flex flex-col items-end gap-1.5 shrink-0">
+           <div className="flex flex-col items-end gap-1.5 shrink-0">
                 <span className={`font-bold text-sm tabular-nums ${color}`}>
                   {sign}₦{amountNaira.toLocaleString("en-NG")}
                 </span>
