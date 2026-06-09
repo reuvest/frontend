@@ -389,7 +389,7 @@ function MobileFoundingBadge() {
 function SkeletonCard() {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 min-h-32 relative">
-      <div className="absolute inset-0 animate-pulse bg-white/5" />
+      <div className="absolute inset-0 bg-white/5" />
     </div>
   );
 }
@@ -501,12 +501,12 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
         <div className="divide-y divide-white/5">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="px-5 py-4 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-white/5 animate-pulse shrink-0" />
+              <div className="w-10 h-10 rounded-xl bg-white/5 shrink-0" />
               <div className="flex-1 space-y-2">
-                <div className="h-3 rounded bg-white/5 animate-pulse w-2/5" />
-                <div className="h-2.5 rounded bg-white/3 animate-pulse w-1/4" />
+                <div className="h-3 rounded bg-white/5 w-2/5" />
+                <div className="h-2.5 rounded bg-white/3 w-1/4" />
               </div>
-              <div className="h-4 rounded bg-white/5 animate-pulse w-20" />
+              <div className="h-4 rounded bg-white/5 w-20" />
             </div>
           ))}
         </div>

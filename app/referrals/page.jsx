@@ -304,7 +304,7 @@ export default function ReferralDashboard() {
           ].map((card) => (
             <div
               key={card.label}
-              className="relative rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5 hover:-translate-y-1 transition-all"
+              className="relative rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5"
             >
               <div
                 className="absolute -top-4 -right-4 w-16 h-16 rounded-full opacity-20"
