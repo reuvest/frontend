@@ -86,7 +86,7 @@ export default function Header() {
                       aria-current={active ? "page" : undefined}
                       className={`relative px-3 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                         active
-                          ? "text-white bg-white/8"
+                          ? "text-white bg-white/[0.08]"
                           : "text-white/40 hover:text-white/80 hover:bg-white/5"
                       }`}
                     >
@@ -117,7 +117,7 @@ export default function Header() {
               <div className="lg:hidden flex items-center gap-2 shrink-0">
                 <NotificationBell />
                 <button
-                  className="w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all"
+                  className="w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/[0.01]0 text-white/50 hover:text-white transition-all"
                   onClick={() => setMenuOpen(!menuOpen)}
                   aria-label={menuOpen ? "Close menu" : "Open menu"}
                   aria-expanded={menuOpen}
@@ -152,7 +152,7 @@ export default function Header() {
               borderLeft: "1px solid rgba(255,255,255,0.07)",
             }}
           >
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/8 shrink-0">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.08] shrink-0">
               <Link
                 href={user ? "/dashboard" : "/"}
                 onClick={() => setMenuOpen(false)}
@@ -167,7 +167,7 @@ export default function Header() {
               </Link>
               <button
                 onClick={() => setMenuOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all"
+                className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/[0.01]0 text-white/40 hover:text-white transition-all"
               >
                 <X size={14} />
               </button>
@@ -183,7 +183,7 @@ export default function Header() {
                     aria-current={active ? "page" : undefined}
                     className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                       active
-                        ? "bg-white/8 text-white"
+                        ? "bg-white/[0.08] text-white"
                         : "text-white/40 hover:bg-white/5 hover:text-white/70"
                     }`}
                   >
@@ -202,7 +202,7 @@ export default function Header() {
             </nav>
 
             <div
-              className="shrink-0 px-3 py-4 border-t border-white/8 flex items-center justify-between"
+              className="shrink-0 px-3 py-4 border-t border-white/[0.08] flex items-center justify-between"
               style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
             >
               <NotificationBell />

@@ -208,7 +208,7 @@ export default async function Homepage() {
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link href="/lands"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white border border-white/20 hover:bg-white/10 transition-all text-sm sm:text-base">
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white border border-white/20 hover:bg-white/[0.01]0 transition-all text-sm sm:text-base">
                 Browse Properties
               </Link>
             </div>
@@ -221,7 +221,7 @@ export default async function Homepage() {
               <StatBadge value="Multiple cities" label="Major growth corridors in Nigeria" />
             </div>
 
-            <div className="flex flex-wrap justify-center gap-5 text-xs text-white/35">
+            <div className="flex flex-wrap justify-center gap-5 text-xs hover:border-white/[0.35]">
               {[
                 [CheckCircle, "Verified Properties"],
                 [Shield, "Secure Payments"],
@@ -396,7 +396,7 @@ export default async function Homepage() {
                       <CheckCircle size={15} className="text-emerald-400 shrink-0 mt-0.5" />
                       <div>
                         <p className="text-sm font-bold text-white">{title}</p>
-                        <p className="text-xs text-white/35 mt-0.5 leading-relaxed">{desc}</p>
+                        <p className="text-xs hover:border-white/[0.35] mt-0.5 leading-relaxed">{desc}</p>
                       </div>
                     </li>
                   ))}
@@ -563,7 +563,7 @@ export default async function Homepage() {
                     {c.icon}
                   </div>
                   <h3 className="text-sm font-bold text-white mb-1">{c.title}</h3>
-                  <p className="text-xs text-white/35 leading-relaxed">{c.desc}</p>
+                  <p className="text-xs hover:border-white/[0.35] leading-relaxed">{c.desc}</p>
                 </div>
               ))}
             </div>
@@ -642,7 +642,7 @@ export default async function Homepage() {
                 Start Investing <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link href="/lands"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white border border-white/20 hover:bg-white/10 transition-all text-sm sm:text-base">
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white border border-white/20 hover:bg-white/[0.01]0 transition-all text-sm sm:text-base">
                 Browse Properties
               </Link>
             </div>

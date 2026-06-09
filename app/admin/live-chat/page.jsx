@@ -105,7 +105,7 @@ function QueueItem({ ticket, isActive, onClick }) {
     <button
       onClick={onClick}
       className={`w-full text-left px-4 py-3.5 border-b border-white/4 transition-all relative group ${
-        isActive ? "bg-white/6" : "hover:bg-white/3"
+        isActive ? "bg-white/6" : "hover:bg-white/[0.03]"
       }`}
     >
       {isActive && (
@@ -153,7 +153,7 @@ function MessageBubble({ message, isAgent }) {
     <div className={`flex gap-2.5 ${isAgent ? "flex-row-reverse" : ""}`}>
       <div
         className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold mt-0.5 ${
-          isAgent ? "text-[#0D1F1A]" : "bg-white/10 text-white/60"
+          isAgent ? "text-[#0D1F1A]" : "bg-white/[0.01]0 text-white/60"
         }`}
         style={isAgent ? { background: "linear-gradient(135deg, #C8873A, #E8A850)" } : {}}
       >
@@ -180,13 +180,13 @@ function MessageBubble({ message, isAgent }) {
 function TypingIndicator({ name }) {
   return (
     <div className="flex gap-2.5 items-end">
-      <div className="w-7 h-7 rounded-xl bg-white/10 flex items-center justify-center text-xs font-bold text-white/60">
+      <div className="w-7 h-7 rounded-xl bg-white/[0.01]0 flex items-center justify-center text-xs font-bold text-white/60">
         {name?.[0] || "U"}
       </div>
       <div className="px-4 py-3 rounded-2xl rounded-tl-md bg-white/[0.07] border border-white/6 flex items-center gap-1">
         {[0, 1, 2].map((i) => (
           <span key={i}
-            className="w-1.5 h-1.5 rounded-full bg-white/30 animate-bounce"
+            className="w-1.5 h-1.5 rounded-full bg-white/[0.03]0 animate-bounce"
             style={{ animationDelay: `${i * 0.15}s` }} />
         ))}
       </div>
@@ -437,7 +437,7 @@ export default function AgentChatPage() {
             </button>
           ) : (
             <Link href="/admin"
-              className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all">
+              className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/40 hover:text-white transition-all">
               <ArrowLeft size={14} />
             </Link>
           )}
@@ -570,7 +570,7 @@ export default function AgentChatPage() {
               {/* Chat header — desktop only (mobile header is top bar) */}
               <div className="hidden sm:flex px-6 py-4 border-b border-white/6 bg-[#0D1F1A] items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-sm font-bold text-white/60 shrink-0">
+                  <div className="w-9 h-9 rounded-xl bg-white/[0.01]0 flex items-center justify-center text-sm font-bold text-white/60 shrink-0">
                     {activeTicket.user?.name?.[0] || "U"}
                   </div>
                   <div>
@@ -579,7 +579,7 @@ export default function AgentChatPage() {
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <p className="text-[11px] text-white/30">{activeTicket.reference}</p>
-                      <span className="w-1 h-1 rounded-full bg-white/15" />
+                      <span className="w-1 h-1 rounded-full bg-white/[0.01]5" />
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-md"
                         style={{
                           background: `${CATEGORY_COLORS[activeTicket.category] || "#6B7280"}20`,
@@ -638,7 +638,7 @@ export default function AgentChatPage() {
 
               {/* Input */}
               <div className="px-3 sm:px-5 py-3 sm:py-4 border-t border-white/6 bg-[#0D1F1A] shrink-0">
-                <div className="flex items-end gap-2 sm:gap-3 bg-white/4 border border-white/8 hover:border-white/[0.14] focus-within:border-amber-500/30 focus-within:ring-2 focus-within:ring-amber-500/10 rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 transition-all">
+                <div className="flex items-end gap-2 sm:gap-3 bg-white/4 border border-white/[0.08] hover:border-white/[0.14] focus-within:border-amber-500/30 focus-within:ring-2 focus-within:ring-amber-500/10 rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 transition-all">
                   <textarea
                     value={draft}
                     onChange={(e) => handleDraftChange(e.target.value)}

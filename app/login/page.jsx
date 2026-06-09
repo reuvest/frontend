@@ -235,9 +235,9 @@ function LoginForm() {
 
           {/* Divider */}
           <div className="flex items-center gap-3 my-7">
-            <div className="flex-1 h-px bg-white/10" />
+            <div className="flex-1 h-px bg-white/[0.01]0" />
             <span className="text-white/20 text-xs">OR</span>
-            <div className="flex-1 h-px bg-white/10" />
+            <div className="flex-1 h-px bg-white/[0.01]0" />
           </div>
 
           {/* Register link */}

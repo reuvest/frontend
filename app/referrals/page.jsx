@@ -258,7 +258,7 @@ export default function ReferralDashboard() {
               Facebook
             </button>
             <button onClick={nativeShare}
-              className="px-3 py-2 text-xs bg-white/10 text-white/60 rounded-lg flex items-center gap-1 hover:bg-white/15 transition-colors">
+              className="px-3 py-2 text-xs bg-white/[0.01]0 text-white/60 rounded-lg flex items-center gap-1 hover:bg-white/[0.01]5 transition-colors">
               <Share2 size={12}/> More
             </button>
           </div>
@@ -372,7 +372,7 @@ export default function ReferralDashboard() {
               </div>
               {/* Progress bar: claimed vs total */}
               {summary.totalKobo > 0 && (
-                <div className="mt-3 h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                <div className="mt-3 h-1.5 w-full bg-white/[0.01]0 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full bg-emerald-500 transition-all"
                     style={{
@@ -463,7 +463,7 @@ export default function ReferralDashboard() {
                     key={reward.id}
                     className={`flex items-center justify-between gap-3 p-4 rounded-xl border transition-all ${
                       reward.claimed
-                        ? "border-white/5 bg-white/2 opacity-60"
+                        ? "border-white/5 bg-white/[0.02] opacity-60"
                         : "border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10"
                     }`}
                   >

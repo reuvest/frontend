@@ -428,7 +428,7 @@ function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
     : "₦" + animated.toLocaleString("en-NG") + fracPart;
 
   const inner = (
-    <div className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4 sm:p-5 hover:bg-white/5.5 hover:border-white/12 transition-all duration-300 min-h-32 flex flex-col">      <div
+    <div className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4 sm:p-5 hover:bg-white/[0.055] hover:border-white/[0.12] transition-all duration-300 min-h-32 flex flex-col">      <div
         className="absolute -top-10 -right-10 w-28 h-28 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{ background: `radial-gradient(circle, ${a.glow}, transparent 70%)` }}
       />
@@ -463,7 +463,7 @@ function QuickCard({ title, desc, href, icon, accent }) {
   return (
     <Link
       href={href}
-      className="group relative rounded-2xl border border-white/[0.07] bg-white/3 hover:bg-white/5.5 hover:border-white/12 transition-all duration-300 block"
+      className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.03] hover:bg-white/[0.055] hover:border-white/[0.12] transition-all duration-300 block"
     >
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
@@ -477,7 +477,7 @@ function QuickCard({ title, desc, href, icon, accent }) {
           {icon}
         </div>
         <h3 className="font-bold text-white/85 text-sm leading-none">{title}</h3>
-        <p className="text-[11px] text-white/27 mt-1 sm:block leading-snug">{desc}</p>
+        <p className="text-[11px] hover:border-white/[0.27] mt-1 sm:block leading-snug">{desc}</p>
         <div className="hidden sm:flex items-center gap-1 mt-3">
           <span className="text-xs font-bold transition-colors" style={{ color: accent }}>Open</span>
           <ArrowUpRight
@@ -494,8 +494,8 @@ function QuickCard({ title, desc, href, icon, accent }) {
 function TransactionsSection({ transactions, loading, error, onRetry }) {
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/[0.07] bg-white/3 overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/5 bg-white/2">
+      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.03] overflow-hidden">
+        <div className="px-5 py-4 border-b border-white/5 bg-white/[0.02]">
           <div className="h-4 w-44 rounded-lg bg-white/[0.07] animate-pulse" />
         </div>
         <div className="divide-y divide-white/5">
@@ -504,7 +504,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
               <div className="w-10 h-10 rounded-xl bg-white/5 shrink-0" />
               <div className="flex-1 space-y-2">
                 <div className="h-3 rounded bg-white/5 w-2/5" />
-                <div className="h-2.5 rounded bg-white/3 w-1/4" />
+                <div className="h-2.5 rounded bg-white/[0.03] w-1/4" />
               </div>
               <div className="h-4 rounded bg-white/5 w-20" />
             </div>
@@ -516,7 +516,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-white/[0.07] bg-white/3 overflow-hidden">
+      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.03] overflow-hidden">
         <div className="flex flex-col items-center text-center px-5 py-10 gap-3">
           <WifiOff size={20} className="text-white/20" />
           <p className="text-sm text-white/40">Couldn't load transactions</p>
@@ -533,8 +533,8 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
 
   if (!transactions?.length) {
     return (
-      <div className="rounded-2xl border border-white/[0.07] bg-white/3 overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 bg-white/2">
+      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.03] overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 bg-white/[0.02]">
           <div className="flex items-center gap-2.5">
             <div
               className="w-7 h-7 rounded-lg flex items-center justify-center"
@@ -542,7 +542,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
             >
               <Activity size={13} className="text-amber-500" />
             </div>
-            <h2 className="text-[10px] font-black uppercase tracking-[0.22em] text-white/35">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.22em] hover:border-white/[0.35]">
               Recent Transactions
             </h2>
           </div>
@@ -576,8 +576,8 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
   }
 
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-white/3 overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 bg-white/2">
+    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.03] overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 bg-white/[0.02]">
         <div className="flex items-center gap-2.5">
           <div
             className="w-7 h-7 rounded-lg flex items-center justify-center"
@@ -585,7 +585,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
           >
             <Activity size={13} className="text-amber-500" />
           </div>
-          <h2 className="text-[10px] font-black uppercase tracking-[0.22em] text-white/35">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.22em] hover:border-white/[0.35]">
             Recent Transactions
           </h2>
           <span className="text-[9px] font-bold px-2 py-0.5 rounded-full border border-white/10 text-white/20">
@@ -650,7 +650,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
                         <p className="font-semibold capitalize text-white/75 text-sm leading-none truncate">
                           {tx?.type || "Transaction"}
                         </p>
-                        <p className="text-[11px] text-white/22 mt-1 truncate">
+                        <p className="text-[11px] hover:border-white/[0.22] mt-1 truncate">
                           {tx?.land || "Wallet"}
                           {tx?.units != null && (
                             <span className="ml-1.5 text-white/20">
@@ -678,7 +678,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
                     </span>
                   </td>
 
-                  <td className="px-5 py-4 text-[11px] text-white/22 whitespace-nowrap">
+                  <td className="px-5 py-4 text-[11px] hover:border-white/[0.22] whitespace-nowrap">
                     {formatDate(txDate)}
                   </td>
                 </tr>
@@ -698,7 +698,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
           return (
             <div
               key={idx}
-              className="px-4 py-4 flex items-center gap-3 hover:bg-white/2 transition-colors"
+              className="px-4 py-4 flex items-center gap-3 hover:bg-white/[0.02] transition-colors"
             >
               <div
                 className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
@@ -742,7 +742,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
       </div>
 
       {transactions.length > TX_DISPLAY_LIMIT && (
-        <div className="px-5 py-2 border-t border-white/5 text-center bg-white/1">
+        <div className="px-5 py-2 border-t border-white/5 text-center bg-white/[0.01]">
           <Link
             href="/wallet"
             className="text-xs text-white/20 hover:text-amber-500 transition-colors font-semibold"

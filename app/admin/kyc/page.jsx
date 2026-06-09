@@ -170,7 +170,7 @@ export default function AdminKycManagement() {
               key={status}
               onClick={() => setFilter(status)}
               className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
-                filter === status ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70"
+                filter === status ? "bg-white/[0.01]0 text-white" : "text-white/40 hover:text-white/70"
               }`}
             >
               {STATUS_CONFIG[status].label}
@@ -281,7 +281,7 @@ export default function AdminKycManagement() {
                 <StatusBadge status={selectedKyc.status} />
                 <button
                   onClick={closeModal}
-                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all"
+                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/50 hover:text-white transition-all"
                 >
                   <X size={16} />
                 </button>
@@ -469,9 +469,9 @@ export default function AdminKycManagement() {
                   </button>
 
                   <div className="flex items-center gap-3">
-                    <div className="flex-1 h-px bg-white/10" />
+                    <div className="flex-1 h-px bg-white/[0.01]0" />
                     <span className="text-white/20 text-xs whitespace-nowrap">or reject / request changes</span>
-                    <div className="flex-1 h-px bg-white/10" />
+                    <div className="flex-1 h-px bg-white/[0.01]0" />
                   </div>
 
                   <div>

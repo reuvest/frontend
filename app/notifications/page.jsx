@@ -86,7 +86,7 @@ export default function NotificationsPage() {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <button onClick={() => router.back()}
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/40 hover:text-white transition-all">
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/[0.01]0 border border-white/10 text-white/40 hover:text-white transition-all">
               <ArrowLeft size={15} />
             </button>
             <div>
@@ -153,7 +153,7 @@ export default function NotificationsPage() {
                 <div key={n.id}
                   onClick={() => unread && handleMarkAsRead(n.id)}
                   className={`px-5 py-4 border-b border-white/5 last:border-0 transition-colors ${
-                    unread ? "cursor-pointer hover:bg-white/6" : "hover:bg-white/3"
+                    unread ? "cursor-pointer hover:bg-white/6" : "hover:bg-white/[0.03]"
                   }`}
                   style={unread ? { borderLeft: "2px solid rgba(200,135,58,0.6)" } : {}}
                 >

@@ -712,7 +712,7 @@ export default function EditLand() {
             </div>
             <div className="flex items-center gap-3">
               <button type="button" onClick={() => setForm({ ...form, is_available: !form.is_available })}
-                className={`relative w-11 h-6 rounded-full transition-all ${form.is_available ? "bg-emerald-500" : "bg-white/10"}`}>
+                className={`relative w-11 h-6 rounded-full transition-all ${form.is_available ? "bg-emerald-500" : "bg-white/[0.01]0"}`}>
                 <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${form.is_available ? "left-6" : "left-1"}`} />
               </button>
               <span className="text-sm text-white/60">{form.is_available ? "Available for purchase" : "Not available"}</span>

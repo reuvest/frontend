@@ -563,7 +563,7 @@ export default function AdminDashboard() {
                 { href: "/admin/compliance",                 icon: <Shield          size={20} />, label: "Compliance",   accent: "#EF4444" },
               ].map((action) => (
                 <Link key={action.label} href={action.href}
-                  className="flex flex-col items-center gap-2.5 p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:-translate-y-1 transition-all text-center group">
+                  className="flex flex-col items-center gap-2.5 p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/[0.01]0 hover:-translate-y-1 transition-all text-center group">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform"
                     style={{ background: `${action.accent}20`, color: action.accent }}>
                     {action.icon}
@@ -586,7 +586,7 @@ function ManagementRow({ href, icon, title, subtitle, accent, highlight }) {
   return (
     <Link href={href}
       className={`flex items-center justify-between p-4 rounded-xl border transition-all group ${
-        highlight ? "border-white/10 bg-white/5 hover:bg-white/10" : "border-transparent hover:bg-white/5"
+        highlight ? "border-white/10 bg-white/5 hover:bg-white/[0.01]0" : "border-transparent hover:bg-white/5"
       }`}>
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"

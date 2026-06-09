@@ -171,7 +171,7 @@ export default function CreateListingPage() {
                     )}
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-white truncate">{selectedLand.title}</p>
-                      <p className="text-xs text-white/35 truncate">{selectedLand.location}</p>
+                      <p className="text-xs hover:border-white/[0.35] truncate">{selectedLand.location}</p>
                       <p className="text-xs text-amber-400/70 mt-0.5">
                         You own: <span className="font-bold text-amber-400">{availableUnits} units</span>
                       </p>

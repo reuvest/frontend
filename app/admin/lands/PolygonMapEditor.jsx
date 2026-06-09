@@ -196,7 +196,7 @@ export default function PolygonMapEditor({ polygon, onChange }) {
             type="button"
             onClick={() => setInputMode(tab.id)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              inputMode === tab.id ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70"
+              inputMode === tab.id ? "bg-white/[0.01]0 text-white" : "text-white/40 hover:text-white/70"
             }`}
           >
             {tab.label}
@@ -332,7 +332,7 @@ function PointInput({ onAdd }) {
       </div>
       <button
         type="button" onClick={handleAdd}
-        className="w-full py-2.5 rounded-xl text-xs font-semibold text-white/60 hover:text-white border border-white/10 hover:bg-white/10 transition-all"
+        className="w-full py-2.5 rounded-xl text-xs font-semibold text-white/60 hover:text-white border border-white/10 hover:bg-white/[0.01]0 transition-all"
       >
         + Add Point
       </button>

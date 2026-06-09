@@ -58,7 +58,7 @@ function NavItem({ item, active, kycStatus, pinIsSet, onClick }) {
     >
       <div
         className={`relative w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-          active ? "text-[#0D1F1A]" : "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white/60"
+          active ? "text-[#0D1F1A]" : "bg-white/5 text-white/40 group-hover:bg-white/[0.01]0 group-hover:text-white/60"
         }`}
         style={active ? { background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" } : {}}
       >

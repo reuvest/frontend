@@ -18,7 +18,7 @@ const STATUS_CONFIG = {
 };
 
 const PRIORITY_CONFIG = {
-  low:    { label:"Low",    color:"text-white/40", dot:"bg-white/20" },
+  low:    { label:"Low",    color:"text-white/40", dot:"bg-white/[0.02]0" },
   normal: { label:"Normal", color:"text-blue-400", dot:"bg-blue-400" },
   high:   { label:"High",   color:"text-red-400",  dot:"bg-red-400"  },
 };
@@ -145,7 +145,7 @@ function Attachment({ messageId, path, isAdmin }) {
           onClick={() => setLightbox(false)}
         >
           <button
-            className="absolute top-4 right-4 w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all"
+            className="absolute top-4 right-4 w-9 h-9 rounded-xl bg-white/[0.01]0 hover:bg-white/[0.02]0 flex items-center justify-center text-white transition-all"
             onClick={() => setLightbox(false)}
           >
             <X size={16}/>
@@ -158,7 +158,7 @@ function Attachment({ messageId, path, isAdmin }) {
           />
           <button
             onClick={e => { e.stopPropagation(); handleDownload(); }}
-            className="absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-all"
+            className="absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.01]0 hover:bg-white/[0.02]0 text-white text-xs font-semibold transition-all"
           >
             <Download size={13}/> Download
           </button>
@@ -305,7 +305,7 @@ function TicketModal({ ticket, onClose, onUpdate }) {
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all shrink-0"
+            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/50 hover:text-white transition-all shrink-0"
           >
             <X size={16}/>
           </button>
@@ -321,7 +321,7 @@ function TicketModal({ ticket, onClose, onUpdate }) {
               disabled={statusUpdating || localTicket.status === s}
               className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all border ${
                 localTicket.status === s
-                  ? "bg-white/10 border-white/20 text-white"
+                  ? "bg-white/[0.01]0 border-white/20 text-white"
                   : "border-white/5 text-white/40 hover:text-white hover:border-white/20 hover:bg-white/5"
               }`}
             >
@@ -567,7 +567,7 @@ function AdminSupportTicketsInner() {
                 key={tab.value}
                 onClick={() => handleFilterChange("status", tab.value)}
                 className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                  filters.status === tab.value ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70"
+                  filters.status === tab.value ? "bg-white/[0.01]0 text-white" : "text-white/40 hover:text-white/70"
                 }`}
               >
                 {tab.label}

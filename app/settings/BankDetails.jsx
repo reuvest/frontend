@@ -173,7 +173,7 @@ export default function BankDetails() {
           <div className="relative">
             <input
               type="text" value={accountName} readOnly
-              className="w-full bg-white/3 border border-emerald-500/20 text-emerald-400 px-4 py-3 rounded-xl text-sm cursor-not-allowed"
+              className="w-full bg-white/[0.03] border border-emerald-500/20 text-emerald-400 px-4 py-3 rounded-xl text-sm cursor-not-allowed"
             />
             <CheckCircle size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-400" />
           </div>
@@ -212,7 +212,7 @@ function ReadonlyField({ label, value }) {
     <Field label={label}>
       <input
         type="text" value={value} readOnly
-        className="w-full bg-white/3 border border-white/8 text-white/50 px-4 py-3 rounded-xl text-sm cursor-not-allowed"
+        className="w-full bg-white/[0.03] border border-white/[0.08] text-white/50 px-4 py-3 rounded-xl text-sm cursor-not-allowed"
       />
     </Field>
   );

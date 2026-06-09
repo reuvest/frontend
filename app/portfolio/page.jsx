@@ -376,7 +376,7 @@ export default function Portfolio() {
                     Buy More
                   </button>
                   <button onClick={() => openModal("sell", land)}
-                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white border border-white/20 bg-white/5 hover:bg-white/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white border border-white/20 bg-white/5 hover:bg-white/[0.01]0 transition-all hover:scale-[1.02] active:scale-[0.98]">
                     Sell
                   </button>
                 </div>
@@ -416,7 +416,7 @@ export default function Portfolio() {
                     const isPurchase = t.type === "Purchase";
                     return (
                       <div key={t.reference ?? `${t.type}-${t.date}-${i}`}
-                        className="flex justify-between items-center rounded-xl border border-white/8 bg-white/3 px-4 py-3 hover:border-white/15 transition-all">
+                        className="flex justify-between items-center rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 hover:border-white/15 transition-all">
                         <div className="flex items-center gap-3">
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                             isPurchase ? "bg-emerald-500/10" : "bg-red-500/10"}`}>
@@ -447,7 +447,7 @@ export default function Portfolio() {
                 {totalPages > 1 && (
                   <div className="flex items-center justify-center gap-2 mt-6">
                     <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}
-                      className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                      className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
                       <ChevronLeft size={14} />
                     </button>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -455,14 +455,14 @@ export default function Portfolio() {
                         className={`w-8 h-8 rounded-lg text-sm font-bold transition-all ${
                           currentPage === page
                             ? "text-[#0D1F1A]"
-                            : "bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10"
+                            : "bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/[0.01]0"
                         }`}
                         style={currentPage === page ? { background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" } : {}}>
                         {page}
                       </button>
                     ))}
                     <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
-                      className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                      className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
                       <ChevronRight size={14} />
                     </button>
                   </div>
@@ -487,7 +487,7 @@ export default function Portfolio() {
                 </h2>
               </div>
               <button onClick={closeModal}
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all">
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/40 hover:text-white transition-all">
                 <X size={14} />
               </button>
             </div>
@@ -509,7 +509,7 @@ export default function Portfolio() {
                     type="button"
                     onClick={stepDown}
                     disabled={!modal.units || Number(modal.units) <= 1}
-                    className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                    className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     aria-label="Decrease units"
                   >
                     <Minus size={14} />
@@ -543,7 +543,7 @@ export default function Portfolio() {
                     type="button"
                     onClick={stepUp}
                     disabled={maxUnits > 0 && Number(modal.units) >= maxUnits}
-                    className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                    className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     aria-label="Increase units"
                   >
                     <Plus size={14} />
@@ -662,7 +662,7 @@ export default function Portfolio() {
 
               <div className="flex gap-3 pt-1">
                 <button type="button" onClick={closeModal}
-                  className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 text-sm font-semibold transition-all">
+                  className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-white/[0.01]0 text-sm font-semibold transition-all">
                   Cancel
                 </button>
                 <button

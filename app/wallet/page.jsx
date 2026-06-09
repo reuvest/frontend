@@ -305,11 +305,11 @@ export default function WalletPage() {
             </h2>
             <div className="flex flex-wrap gap-3">
               <button onClick={() => setActiveTab("deposit")}
-                className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white text-sm font-semibold transition-all">
+                className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-white/[0.01]0 hover:bg-white/[0.01]5 border border-white/10 text-white text-sm font-semibold transition-all">
                 <ArrowDownCircle size={14} /> Add Money
               </button>
               <button onClick={() => setActiveTab("withdraw")}
-                className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white text-sm font-semibold transition-all">
+                className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-white/[0.01]0 hover:bg-white/[0.01]5 border border-white/10 text-white text-sm font-semibold transition-all">
                 <ArrowUpCircle size={14} /> Withdraw
               </button>
             </div>
@@ -358,7 +358,7 @@ export default function WalletPage() {
                           className={`relative flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all ${
                             active
                               ? "border-amber-500/50 bg-amber-500/10"
-                              : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/8"
+                              : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/[0.08]"
                           }`}
                         >
                           {active && (
@@ -565,7 +565,7 @@ export default function WalletPage() {
                   return (
                     <div
                       key={t.reference ?? i}
-                      className="rounded-xl border border-white/[0.07] bg-white/3 hover:border-white/12 hover:bg-white/5 transition-all p-3 sm:p-4"
+                      className="rounded-xl border border-white/[0.07] bg-white/[0.03] hover:border-white/[0.12] hover:bg-white/5 transition-all p-3 sm:p-4"
                     >
                       <div className="flex items-start gap-3">
                         {/* Gateway badge */}

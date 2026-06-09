@@ -54,7 +54,7 @@ function Field({ label, hint, children, index = 0 }) {
       transition={{ duration: 0.35, delay: 0.05 * index, ease: [0.22, 1, 0.36, 1] }}
     >
       {label && (
-        <label className="block text-[11px] font-bold text-white/35 uppercase tracking-[0.12em] mb-2">
+        <label className="block text-[11px] font-bold hover:border-white/[0.35] uppercase tracking-[0.12em] mb-2">
           {label}
           {hint && <span className="normal-case font-normal text-white/20 ml-1">{hint}</span>}
         </label>
@@ -70,7 +70,7 @@ const inputBase =
 
 function inputCls(extra = "", state = "default") {
   const borders = {
-    default: "border-white/8 hover:border-white/18 focus:border-amber-500/60 focus:ring-2 focus:ring-amber-500/15",
+    default: "border-white/[0.08] hover:border-white/18 focus:border-amber-500/60 focus:ring-2 focus:ring-amber-500/15",
     error:   "border-red-500/40 focus:border-red-500/60 focus:ring-2 focus:ring-red-500/10",
     success: "border-emerald-500/40 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10",
   };
@@ -228,7 +228,7 @@ function RegisterForm() {
             <h1 className="text-3xl font-bold text-white mb-1.5" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
               Create account
             </h1>
-            <p className="text-white/35 text-sm">Start your investment journey today</p>
+            <p className="hover:border-white/[0.35] text-sm">Start your investment journey today</p>
           </motion.div>
 
           {/* Step indicator */}
@@ -317,7 +317,7 @@ function RegisterForm() {
                       </button>
                     ) : (
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} transition={{ duration: 0.2 }}>
-                        <label className="block text-[11px] font-bold text-white/35 uppercase tracking-[0.12em] mb-2">
+                        <label className="block text-[11px] font-bold hover:border-white/[0.35] uppercase tracking-[0.12em] mb-2">
                           Referral code <span className="normal-case font-normal text-white/20">(optional)</span>
                         </label>
                         <div className="relative">
@@ -405,7 +405,7 @@ function RegisterForm() {
                         <motion.ul
                           initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
                           transition={{ duration: 0.2 }}
-                          className="mt-3 space-y-1.5 rounded-2xl border border-white/7 bg-white/3 p-3.5"
+                          className="mt-3 space-y-1.5 rounded-2xl border border-white/7 bg-white/[0.03] p-3.5"
                         >
                           {PASSWORD_CHECKS.map((check, i) => {
                             const passed = check.test.test(form.password);
@@ -488,7 +488,7 @@ function RegisterForm() {
             
                   <div className="flex gap-3 mt-2">
                     <button type="button" onClick={() => setStep(1)}
-                      className="px-5 py-4 rounded-2xl text-sm font-semibold text-white/40 hover:text-white/70 border border-white/8 hover:border-white/18 transition-all">
+                      className="px-5 py-4 rounded-2xl text-sm font-semibold text-white/40 hover:text-white/70 border border-white/[0.08] hover:border-white/18 transition-all">
                       Back
                     </button>
                     <motion.button type="submit" disabled={loading || !isFormValid}

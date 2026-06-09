@@ -63,9 +63,9 @@ const statusCfg = (s = "") => ({
 
 const priorityCfg = (p = "") => ({
   high:   { cls: "text-red-400 bg-red-500/10 border-red-500/20",      label: "High"   },
-  normal: { cls: "text-white/35 bg-white/[0.04] border-white/10",     label: "Normal" },
+  normal: { cls: "hover:border-white/[0.35] bg-white/[0.04] border-white/10",     label: "Normal" },
   low:    { cls: "text-white/20 bg-white/[0.02] border-white/[0.06]", label: "Low"    },
-}[p] || { cls: "text-white/35 bg-white/[0.04] border-white/10", label: "Normal" });
+}[p] || { cls: "hover:border-white/[0.35] bg-white/[0.04] border-white/10", label: "Normal" });
 
 const fmtDate = (d) =>
   d ? new Date(d).toLocaleString("en-NG", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
@@ -99,7 +99,7 @@ function Pill({ active, onClick, children, "data-tab": dataTab }) {
       onClick={onClick}
       data-tab={dataTab}
       className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${
-        active ? "text-[#0A1A13] shadow-lg" : "border border-white/8 text-white/40 hover:text-white hover:bg-white/8"
+        active ? "text-[#0A1A13] shadow-lg" : "border border-white/[0.08] text-white/40 hover:text-white hover:bg-white/[0.08]"
       }`}
       style={active ? { background: grad } : {}}
     >
@@ -199,7 +199,7 @@ function AttachmentLink({ ticketId, message }) {
           onClick={() => setLightbox(false)}
         >
           <button
-            className="absolute top-4 right-4 w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all"
+            className="absolute top-4 right-4 w-9 h-9 rounded-xl bg-white/[0.01]0 hover:bg-white/[0.02]0 flex items-center justify-center text-white transition-all"
             onClick={() => setLightbox(false)}
           >
             <X size={16} />
@@ -212,7 +212,7 @@ function AttachmentLink({ ticketId, message }) {
           />
           <button
             onClick={e => { e.stopPropagation(); handleDownload(); }}
-            className="absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-all"
+            className="absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.01]0 hover:bg-white/[0.02]0 text-white text-xs font-semibold transition-all"
           >
             <Download size={13} /> Download
           </button>
@@ -856,7 +856,7 @@ function FaqView({ onContact }) {
             return (
               <button key={c} onClick={() => { setActiveTab(c); setExpanded(null); }}
                 className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize border transition-all duration-200 ${
-                  isActive ? cfg.color : "bg-white/4 border-white/8 text-white/35 hover:text-white"
+                  isActive ? cfg.color : "bg-white/4 border-white/[0.08] hover:border-white/[0.35] hover:text-white"
                 }`}>
                 {c !== "all" && <span>{cfg.icon}</span>}
                 {c === "all" ? "All Topics" : c}
@@ -887,7 +887,7 @@ function FaqView({ onContact }) {
                 className="rounded-2xl overflow-hidden transition-all duration-200"
                 style={{ background: SURFACE, border: `1px solid ${isOpen ? "rgba(200,135,58,0.25)" : BORDER}` }}>
                 <button onClick={() => setExpanded(isOpen ? null : i)}
-                  className="w-full flex items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-white/3">
+                  className="w-full flex items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-white/[0.03]">
                   <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${cfg.color}`}>
                     {cfg.icon}
                   </div>

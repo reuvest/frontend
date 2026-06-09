@@ -15,7 +15,7 @@ export const btnPrimary =
 // Usage: apply btnPrimary as className, then style={{ background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" }}
 
 export const btnSecondary =
-  "w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 " +
+  "w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/[0.01]0 border border-white/10 " +
   "text-white font-bold text-sm px-5 py-4 rounded-xl " +
   "transition-all active:scale-95 touch-manipulation disabled:opacity-40 disabled:cursor-not-allowed";
 

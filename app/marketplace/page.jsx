@@ -55,7 +55,7 @@ function ListingCard({ listing }) {
         <p className="text-xs text-amber-500/70 font-bold uppercase tracking-widest mb-1 truncate">
           {land?.title ?? "Land"}
         </p>
-        <div className="flex items-center gap-1 text-white/35 text-xs mb-3">
+        <div className="flex items-center gap-1 hover:border-white/[0.35] text-xs mb-3">
           <MapPin size={10} /> <span className="truncate">{land?.location}</span>
         </div>
 

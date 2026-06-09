@@ -200,7 +200,7 @@ export default function AdminLands() {
                 </div>
               </div>
               <button onClick={() => setShowModal(false)}
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all">
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/40 hover:text-white transition-all">
                 <X size={15} />
               </button>
             </div>
@@ -254,7 +254,7 @@ export default function AdminLands() {
 function ActionBtn({ href, icon, label, color }) {
   return (
     <Link href={href} title={label}
-      className={`w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all ${color}`}>
+      className={`w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white/[0.01]0 transition-all ${color}`}>
       {icon}
     </Link>
   );

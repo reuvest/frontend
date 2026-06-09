@@ -146,7 +146,7 @@ export default function AdminReferralManagement() {
                     <span className="text-lg">{MEDAL[i] || `#${i + 1}`}</span>
                     <p className="text-sm font-semibold text-white">{referrer.name}</p>
                     <p className="text-sm text-white/40 truncate">{referrer.email}</p>
-                    <code className="text-xs bg-white/10 border border-white/10 px-2 py-1 rounded-lg text-amber-400 font-mono w-fit">
+                    <code className="text-xs bg-white/[0.01]0 border border-white/10 px-2 py-1 rounded-lg text-amber-400 font-mono w-fit">
                       {referrer.referral_code}
                     </code>
                     <span
@@ -179,7 +179,7 @@ export default function AdminReferralManagement() {
                       key={s}
                       onClick={() => setFilter(s)}
                       className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all capitalize ${
-                        filter === s ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70"
+                        filter === s ? "bg-white/[0.01]0 text-white" : "text-white/40 hover:text-white/70"
                       }`}
                     >
                       {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}

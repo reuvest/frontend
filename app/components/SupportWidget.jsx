@@ -36,7 +36,7 @@ const statusCfg = (s = "") => {
   if (s === "open")     return { cls: "bg-amber-500/15 text-amber-400 border-amber-500/25",   dot: "bg-amber-400"   };
   if (s === "waiting")  return { cls: "bg-blue-500/15 text-blue-400 border-blue-500/25",      dot: "bg-blue-400"    };
   if (s === "resolved") return { cls: "bg-emerald-500/15 text-emerald-400 border-emerald-500/25", dot: "bg-emerald-400" };
-  return                       { cls: "bg-white/10 text-white/40 border-white/15",            dot: "bg-white/30"    };
+  return                       { cls: "bg-white/[0.01]0 text-white/40 border-white/15",            dot: "bg-white/[0.03]0"    };
 };
 
 /* ── Shared input style ────────────────────────────────────────────────────── */
@@ -93,7 +93,7 @@ export default function SupportWidget() {
             }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/8"
+            <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/[0.08]"
               style={{ background: "linear-gradient(135deg, rgba(200,135,58,0.15), rgba(232,168,80,0.08))" }}>
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl flex items-center justify-center"
@@ -110,19 +110,19 @@ export default function SupportWidget() {
               </div>
               <div className="flex items-center gap-1">
                 <Link href="/support" onClick={() => setOpen(false)}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg text-white/30 hover:text-white hover:bg-white/8 transition-all"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg text-white/30 hover:text-white hover:bg-white/[0.08] transition-all"
                   title="Open full support page">
                   <ExternalLink size={13} />
                 </Link>
                 <button onClick={() => setOpen(false)}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg text-white/30 hover:text-white hover:bg-white/8 transition-all">
+                  className="w-7 h-7 flex items-center justify-center rounded-lg text-white/30 hover:text-white hover:bg-white/[0.08] transition-all">
                   <X size={14} />
                 </button>
               </div>
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-white/8">
+            <div className="flex border-b border-white/[0.08]">
               {[
                 { id: "chat",   icon: <Bot size={13} />,      label: "AI Chat"  },
                 { id: "faq",    icon: <HelpCircle size={13} />, label: "FAQ"    },
@@ -207,7 +207,7 @@ function ChatTab({ user, onEscalate }) {
       <div className="px-3 pt-2.5 pb-1 flex gap-1.5 flex-wrap border-b border-white/5">
         {FAQ_PREVIEWS.map(q => (
           <button key={q} onClick={() => send(q)}
-            className="text-[10px] px-2.5 py-1 rounded-lg border border-white/10 text-white/40 hover:text-amber-400 hover:border-amber-500/30 transition-all bg-white/3">
+            className="text-[10px] px-2.5 py-1 rounded-lg border border-white/10 text-white/40 hover:text-amber-400 hover:border-amber-500/30 transition-all bg-white/[0.03]">
             {q}
           </button>
         ))}
@@ -221,7 +221,7 @@ function ChatTab({ user, onEscalate }) {
             <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
               m.role === "user"
                 ? "text-[#0D1F1A]"
-                : "bg-white/8 border border-white/10 text-amber-500"
+                : "bg-white/[0.08] border border-white/10 text-amber-500"
             }`} style={m.role === "user" ? { background: "linear-gradient(135deg,#C8873A,#E8A850)" } : {}}>
               {m.role === "user" ? <User size={11} /> : <Bot size={11} />}
             </div>
@@ -231,7 +231,7 @@ function ChatTab({ user, onEscalate }) {
                 ? "text-[#0D1F1A] rounded-tr-sm"
                 : m.isError
                   ? "bg-red-500/10 border border-red-500/20 text-red-400 rounded-tl-sm"
-                  : "bg-white/8 border border-white/8 text-white/80 rounded-tl-sm"
+                  : "bg-white/[0.08] border border-white/[0.08] text-white/80 rounded-tl-sm"
             }`} style={m.role === "user" ? { background: "linear-gradient(135deg,#C8873A,#E8A850)" } : {}}>
               {m.content}
               {m.isError && (
@@ -246,10 +246,10 @@ function ChatTab({ user, onEscalate }) {
 
         {loading && (
           <div className="flex gap-2">
-            <div className="w-6 h-6 rounded-lg bg-white/8 border border-white/10 flex items-center justify-center text-amber-500">
+            <div className="w-6 h-6 rounded-lg bg-white/[0.08] border border-white/10 flex items-center justify-center text-amber-500">
               <Bot size={11} />
             </div>
-            <div className="bg-white/8 border border-white/8 rounded-2xl rounded-tl-sm px-3 py-2.5 flex gap-1 items-center">
+            <div className="bg-white/[0.08] border border-white/[0.08] rounded-2xl rounded-tl-sm px-3 py-2.5 flex gap-1 items-center">
               {[0,1,2].map(i => (
                 <span key={i} className="w-1.5 h-1.5 rounded-full bg-amber-500/60 animate-bounce"
                   style={{ animationDelay: `${i * 0.15}s` }} />
@@ -319,7 +319,7 @@ function FaqTab() {
   return (
     <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1.5">
       {allFaqs.map((f, i) => (
-        <div key={f.id ?? i} className="rounded-xl border border-white/8 overflow-hidden bg-white/3">
+        <div key={f.id ?? i} className="rounded-xl border border-white/[0.08] overflow-hidden bg-white/[0.03]">
           <button onClick={() => setExpanded(expanded === i ? null : i)}
             className="w-full flex items-center justify-between px-3.5 py-3 text-left gap-2">
             <span className="text-xs font-semibold text-white/70 leading-snug">{f.question}</span>
@@ -416,7 +416,7 @@ function TicketTab({ user }) {
             Attachment <span className="normal-case font-normal">(optional, max 5MB)</span>
           </label>
           <button type="button" onClick={() => fileRef.current?.click()}
-            className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-dashed border-white/15 hover:border-amber-500/30 text-white/30 hover:text-amber-400 text-xs transition-all bg-white/2">
+            className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-dashed border-white/15 hover:border-amber-500/30 text-white/30 hover:text-amber-400 text-xs transition-all bg-white/[0.02]">
             <Paperclip size={12} />
             {file ? file.name : "Attach screenshot or file"}
           </button>
@@ -485,7 +485,7 @@ function GuestSupportBubble() {
           style={{ background: "#0b1e17", border: "1px solid rgba(255,255,255,0.1)", maxHeight: "min(520px, calc(100vh - 100px))" }}>
 
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/8"
+          <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/[0.08]"
             style={{ background: "linear-gradient(135deg, rgba(200,135,58,0.15), rgba(232,168,80,0.08))" }}>
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl flex items-center justify-center"
@@ -498,7 +498,7 @@ function GuestSupportBubble() {
               </div>
             </div>
             <button onClick={() => setOpen(false)}
-              className="w-7 h-7 flex items-center justify-center rounded-lg text-white/30 hover:text-white hover:bg-white/8 transition-all">
+              className="w-7 h-7 flex items-center justify-center rounded-lg text-white/30 hover:text-white hover:bg-white/[0.08] transition-all">
               <X size={14} />
             </button>
           </div>

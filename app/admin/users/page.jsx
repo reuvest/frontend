@@ -68,7 +68,7 @@ function UserMenuItems({ user, onView, onAction, onClose }) {
           ? item(() => onAction("unsuspend", user), <UserCheck size={14}/>, "Unsuspend", "text-emerald-400")
           : item(() => onAction("suspend", user, `Suspend ${user.name}?`), <UserX size={14}/>, "Suspend", "text-amber-400")}
         {item(() => onAction("makeAdmin", user, `Make ${user.name} an admin?`), <Crown size={14}/>, "Make Admin", "text-purple-400")}
-        <div className="h-px bg-white/10 my-1" />
+        <div className="h-px bg-white/[0.01]0 my-1" />
         {item(() => onAction("delete", user, `Permanently delete ${user.name}?`), <Trash2 size={14}/>, "Delete", "text-red-400")}
       </>}
       {user.is_admin &&
@@ -204,7 +204,7 @@ export default function AdminUsersPage() {
         </div>
 
         {showFilters && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5 p-4 rounded-xl border border-white/10 bg-white/3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5 p-4 rounded-xl border border-white/10 bg-white/[0.03]">
             {[
               { label: "Status", key: "suspended",  options: [["","All Users"],["true","Suspended"],["false","Active"]] },
               { label: "Role",   key: "is_admin",   options: [["","All Roles"],["true","Admins Only"],["false","Regular Users"]] },
@@ -261,7 +261,7 @@ export default function AdminUsersPage() {
                     <div className="relative flex items-center justify-center"
                       ref={menuOpen === user.id ? menuRef : null}>
                       <button onClick={() => setMenuOpen(menuOpen === user.id ? null : user.id)}
-                        className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all">
+                        className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/40 hover:text-white transition-all">
                         <MoreVertical size={14} />
                       </button>
                       {menuOpen === user.id && (
@@ -329,11 +329,11 @@ export default function AdminUsersPage() {
                 <p className="text-xs text-white/30">Page {pagination.current_page} of {pagination.last_page}</p>
                 <div className="flex gap-2">
                   <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={pagination.current_page === 1}
-                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
                     <ChevronLeft size={15} />
                   </button>
                   <button onClick={() => setPage((p) => Math.min(pagination.last_page, p + 1))} disabled={pagination.current_page === pagination.last_page}
-                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
                     <ChevronRight size={15} />
                   </button>
                 </div>
@@ -356,7 +356,7 @@ export default function AdminUsersPage() {
                 </div>
                 <p className="text-white/40 text-xs sm:text-sm mt-0.5 truncate">{selectedUser.email}</p>
               </div>
-              <button onClick={closeModal} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all shrink-0">
+              <button onClick={closeModal} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/50 hover:text-white transition-all shrink-0">
                 <X size={16} />
               </button>
             </div>

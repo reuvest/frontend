@@ -67,7 +67,7 @@ export default function FeaturedProperties({ lands }) {
                     Featured
                   </span>
                   {land.sold_percentage > 0 && (
-                    <span className="bg-white/20 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full">
+                    <span className="bg-white/[0.02]0 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full">
                       {land.sold_percentage}% sold
                     </span>
                   )}

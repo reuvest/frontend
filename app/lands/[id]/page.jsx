@@ -74,11 +74,11 @@ function Section({ title, icon, children, defaultOpen = true, accent = "amber" }
   const a = accentMap[accent] || accentMap.amber;
 
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-white/2.5 overflow-hidden">
+    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02].5 overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/3 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.03] transition-colors"
       >
         <div className="flex items-center gap-3">
           <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${a.icon}`}>
@@ -105,7 +105,7 @@ function Section({ title, icon, children, defaultOpen = true, accent = "amber" }
 function DataRow({ label, value, highlight, mono, children }) {
   return (
     <div className="flex items-start justify-between gap-4 py-2 border-b border-white/4 last:border-0">
-      <span className="text-xs text-white/35 shrink-0 w-44">{label}</span>
+      <span className="text-xs hover:border-white/[0.35] shrink-0 w-44">{label}</span>
       {children ?? (
         <span className={`text-xs text-right ${
           highlight ? "font-bold text-amber-400" :
@@ -141,7 +141,7 @@ function SignalBar({ strength }) {
   const color = pct >= 70 ? "bg-emerald-400" : pct >= 40 ? "bg-amber-400" : "bg-red-400";
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
+      <div className="flex-1 h-1.5 rounded-full bg-white/[0.01]0 overflow-hidden">
         <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
       </div>
       <span className="text-xs text-white/40 w-8 text-right">{pct}%</span>
@@ -168,7 +168,7 @@ function PromoPriceTable({ land }) {
 
   return (
     <div className="mb-10 rounded-2xl border border-white/[0.07] overflow-hidden">
-      <div className="px-5 py-4 border-b border-white/5 bg-white/3">
+      <div className="px-5 py-4 border-b border-white/5 bg-white/[0.03]">
         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/40">
           Price Journey
         </p>
@@ -189,7 +189,7 @@ function PromoPriceTable({ land }) {
           </div>
         ))}
       </div>
-      <div className="px-5 py-3 bg-white/2 border-t border-white/5">
+      <div className="px-5 py-3 bg-white/[0.02] border-t border-white/5">
         <p className="text-[10px] text-white/20">
           Promotional prices are for reference only. Purchase price is the current price.
         </p>
@@ -475,7 +475,7 @@ function KycBanner({ kycStatus }) {
       </div>
       {["none", "rejected", "resubmit"].includes(kycStatus) && (
         <Link href="/settings?tab=kyc"
-          className="shrink-0 text-xs font-bold text-white px-3 py-2 rounded-lg border border-white/20 hover:bg-white/10 transition-all">
+          className="shrink-0 text-xs font-bold text-white px-3 py-2 rounded-lg border border-white/20 hover:bg-white/[0.01]0 transition-all">
           {kycStatus === "none" ? "Submit KYC" : "Resubmit"}
         </Link>
       )}
@@ -882,7 +882,7 @@ export default function LandDetails() {
           </button>
           {userUnits > 0 && (
             <button onClick={() => openModal("sell")}
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-white border border-white/20 bg-white/5 hover:bg-white/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-white border border-white/20 bg-white/5 hover:bg-white/[0.01]0 transition-all hover:scale-[1.02] active:scale-[0.98]">
               <TrendingUp size={16} /> Sell Units
             </button>
           )}
@@ -942,7 +942,7 @@ export default function LandDetails() {
               </div>
               <div className="space-y-1.5">
                 {neighbouringTx.map((tx, i) => (
-                  <div key={i} className="grid grid-cols-4 gap-2 items-center px-3 py-2.5 rounded-xl bg-white/3 border border-white/5">
+                  <div key={i} className="grid grid-cols-4 gap-2 items-center px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/5">
                     <span className="text-xs text-white/60">
                       {tx.plot_size ? `${Number(tx.plot_size).toLocaleString()} m²` : "—"}
                     </span>
@@ -1118,7 +1118,7 @@ export default function LandDetails() {
                 </h2>
               </div>
               <button onClick={closeModal}
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all">
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/40 hover:text-white transition-all">
                 <X size={14} />
               </button>
             </div>
@@ -1139,7 +1139,7 @@ export default function LandDetails() {
                   <button type="button"
                     onClick={() => setUnitsInput((v) => String(Math.max(1, Number(v || 1) - 1)))}
                     disabled={!unitsInput || Number(unitsInput) <= 1}
-                    className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-lg font-bold">
+                    className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-lg font-bold">
                     −
                   </button>
                   <input
@@ -1163,7 +1163,7 @@ export default function LandDetails() {
                   <button type="button"
                     onClick={() => setUnitsInput((v) => String(Math.min(maxUnits, Number(v || 0) + 1)))}
                     disabled={maxUnits > 0 && Number(unitsInput) >= maxUnits}
-                    className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-lg font-bold">
+                    className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-lg font-bold">
                     +
                   </button>
                 </div>
@@ -1278,7 +1278,7 @@ export default function LandDetails() {
 
               <div className="flex gap-3 pt-1">
                 <button onClick={closeModal}
-                  className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 text-sm font-semibold transition-all">
+                  className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-white/[0.01]0 text-sm font-semibold transition-all">
                   Cancel
                 </button>
                 <button onClick={handleAction}
@@ -1326,7 +1326,7 @@ export default function LandDetails() {
                   <ShieldCheck size={15} /> Go to Settings
                 </Link>
                 <button onClick={() => setShowPinModal(false)}
-                  className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/50 hover:bg-white/10 text-sm font-semibold transition-all">
+                  className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/50 hover:bg-white/[0.01]0 text-sm font-semibold transition-all">
                   Dismiss
                 </button>
               </div>
@@ -1364,7 +1364,7 @@ export default function LandDetails() {
                   </Link>
                 )}
                 <button onClick={() => setShowKycModal(false)}
-                  className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/50 hover:bg-white/10 text-sm font-semibold transition-all">
+                  className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/50 hover:bg-white/[0.01]0 text-sm font-semibold transition-all">
                   Dismiss
                 </button>
               </div>

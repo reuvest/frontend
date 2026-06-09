@@ -135,7 +135,7 @@ export default function ResetPin() {
                 </span>
               </div>
               {i < steps.length - 1 && (
-                <div className="flex-1 h-px mx-1 bg-white/10">
+                <div className="flex-1 h-px mx-1 bg-white/[0.01]0">
                   {done && (
                     <div
                       className="h-full"

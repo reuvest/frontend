@@ -244,7 +244,7 @@ export default function KycSteps({
             <Shield size={14} className="text-amber-500 mt-0.5 shrink-0" />
             <div className="space-y-1">
               <p className="text-white/70 text-xs font-semibold">What is a Politically Exposed Person (PEP)?</p>
-              <p className="text-white/35 text-xs leading-relaxed">
+              <p className="hover:border-white/[0.35] text-xs leading-relaxed">
                 A PEP is someone who holds or has held a prominent public position — such as a government official,
                 senior executive of a state-owned enterprise, senior military officer, or a close family member
                 or associate of such a person. This is a standard regulatory requirement.

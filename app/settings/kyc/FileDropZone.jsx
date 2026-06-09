@@ -254,7 +254,7 @@ export default function FileDropZone({
           <button
             type="button"
             onClick={() => cameraRef.current?.click()}
-            className="mt-2 w-full flex items-center justify-center gap-2 border border-white/10 bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/70 font-semibold text-sm rounded-xl py-3 transition-all touch-manipulation"
+            className="mt-2 w-full flex items-center justify-center gap-2 border border-white/10 bg-white/5 hover:bg-white/[0.01]0 text-white/50 hover:text-white/70 font-semibold text-sm rounded-xl py-3 transition-all touch-manipulation"
           >
             <Camera size={13} className="text-amber-500" />
             Take photo with camera

@@ -67,7 +67,7 @@ function AuthPromptModal({ onClose }) {
         {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center rounded-full bg-white/5 text-white/30 hover:text-white/70 hover:bg-white/10 transition-all"
+          className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center rounded-full bg-white/5 text-white/30 hover:text-white/70 hover:bg-white/[0.01]0 transition-all"
         >
           <X size={13} />
         </button>
@@ -185,7 +185,7 @@ function GuestCtaBanner() {
         </div>
         <div>
           <p className="text-sm font-bold text-amber-400">Ready to start investing?</p>
-          <p className="text-xs text-white/35 mt-0.5">Sign up free — own verified land from ₦5,000</p>
+          <p className="text-xs hover:border-white/[0.35] mt-0.5">Sign up free — own verified land from ₦5,000</p>
         </div>
       </div>
       <div className="flex gap-2 shrink-0">
@@ -217,7 +217,7 @@ function TrustBar() {
         [ShieldCheck, "Legally Backed"],
         [TrendingUp,  "15–30% Projected ROI"],
       ].map(([Icon, label]) => (
-        <span key={label} className="flex items-center gap-1.5 text-xs text-white/35">
+        <span key={label} className="flex items-center gap-1.5 text-xs hover:border-white/[0.35]">
           <Icon size={12} className="text-emerald-400" />
           {label}
         </span>
@@ -237,7 +237,7 @@ function SearchBar({ value, onChange }) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Search by title or location…"
-        className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder-white/25 focus:outline-none focus:border-amber-500/40 focus:bg-white/8 transition-all"
+        className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder-white/25 focus:outline-none focus:border-amber-500/40 focus:bg-white/[0.08] transition-all"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
     </div>
@@ -441,18 +441,18 @@ export default function LandList() {
                 <MapPin size={12} className="text-amber-500" />
                 <span className="text-white/60 text-xs font-semibold tabular-nums">{visibleLands.length} visible</span>
               </div>
-              <div className="w-px h-5 bg-white/10" />
+              <div className="w-px h-5 bg-white/[0.01]0" />
               <button
                 onClick={() => setShowHeatmap((v) => !v)}
-                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${showHeatmap ? "text-white" : "text-white/70 hover:text-white hover:bg-white/10"}`}
+                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${showHeatmap ? "text-white" : "text-white/70 hover:text-white hover:bg-white/[0.01]0"}`}
                 style={showHeatmap ? { background: "linear-gradient(135deg, #f97316, #ef4444)" } : {}}
               >
                 <Flame size={13} />{showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
               </button>
-              <div className="w-px h-5 bg-white/10" />
+              <div className="w-px h-5 bg-white/[0.01]0" />
               <button
                 onClick={() => setIsFullScreen(false)}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-white/70 hover:text-white hover:bg-white/10 transition-all"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-white/70 hover:text-white hover:bg-white/[0.01]0 transition-all"
               >
                 <X size={13} /> Exit Fullscreen
               </button>
@@ -633,7 +633,7 @@ export default function LandList() {
                       {/* Map pin — always public */}
                       <button
                         onClick={() => focusLandOnMap(land)}
-                        className="px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-amber-500/30 transition-all group/pin"
+                        className="px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/[0.01]0 hover:border-amber-500/30 transition-all group/pin"
                         title="Show on map"
                         aria-label="Show on map"
                       >

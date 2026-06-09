@@ -76,7 +76,7 @@ function UnitsStepper({ value, onChange, max, placeholder }) {
         type="button"
         onClick={() => step(-1)}
         disabled={numVal <= 1 || !value}
-        className="w-8 h-8 shrink-0 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        className="w-8 h-8 shrink-0 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
         aria-label="Decrease units"
       >
         <Minus size={12} />
@@ -109,7 +109,7 @@ function UnitsStepper({ value, onChange, max, placeholder }) {
         type="button"
         onClick={() => step(1)}
         disabled={max > 0 && numVal >= max}
-        className="w-8 h-8 shrink-0 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        className="w-8 h-8 shrink-0 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
         aria-label="Increase units"
       >
         <Plus size={12} />
@@ -194,7 +194,7 @@ function OfferForm({ listing, onSuccess }) {
       {/* Total preview */}
       {totalNaira !== null && (
         <div className="flex justify-between items-center rounded-lg bg-amber-500/5 border border-amber-500/15 px-3 py-2">
-          <span className="text-xs text-white/35">Total offer</span>
+          <span className="text-xs hover:border-white/[0.35]">Total offer</span>
           <span className="text-sm font-bold text-amber-400">
             ₦{totalNaira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}
           </span>
@@ -262,7 +262,7 @@ function OffersList({ listing, onUpdate }) {
           <div className="flex items-start justify-between gap-3 mb-2">
             <div>
               <p className="text-sm font-bold text-white">{offer.buyer?.name}</p>
-              <p className="text-xs text-white/35 mt-0.5">
+              <p className="text-xs hover:border-white/[0.35] mt-0.5">
                 {offer.units} units @ ₦{(offer.offer_price_kobo / 100).toLocaleString("en-NG")} / unit
               </p>
               <p className="text-xs font-bold text-amber-400 mt-0.5">
@@ -624,7 +624,7 @@ export default function ListingDetailPage() {
                 <p className="text-xs text-amber-500/70 font-bold uppercase tracking-widest mb-1">
                   {land?.title}
                 </p>
-                <div className="flex items-center gap-1.5 text-white/35 text-xs mb-4">
+                <div className="flex items-center gap-1.5 hover:border-white/[0.35] text-xs mb-4">
                   <MapPin size={11} /> {land?.location}
                 </div>
 
@@ -721,7 +721,7 @@ export default function ListingDetailPage() {
                           <p className="text-sm font-bold text-white">
                             {offer.units} units @ {formatNaira(offer.offer_price_kobo)}
                           </p>
-                          <p className="text-xs text-white/35 mt-0.5">
+                          <p className="text-xs hover:border-white/[0.35] mt-0.5">
                             Total: ₦{((offer.offer_price_kobo * offer.units) / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
                           </p>
                         </div>
@@ -772,7 +772,7 @@ export default function ListingDetailPage() {
               ].map(([Icon, text]) => (
                 <div key={text} className="flex items-center gap-2.5">
                   <Icon size={12} className="text-amber-500/60 shrink-0" />
-                  <p className="text-xs text-white/35">{text}</p>
+                  <p className="text-xs hover:border-white/[0.35]">{text}</p>
                 </div>
               ))}
               <p className="text-[10px] text-white/20 border-t border-white/5 pt-3">

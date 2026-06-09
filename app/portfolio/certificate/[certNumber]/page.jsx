@@ -293,10 +293,10 @@ export default function CertificatePage() {
               style={{ background: "linear-gradient(90deg, transparent, rgba(200,135,58,0.2), transparent)" }} />
 
             {/* Digital signature */}
-            <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
+            <div className="rounded-2xl border border-white/6 bg-white/[0.02] p-5 mb-6">
               <div className="flex items-center gap-2 mb-3">
                 <ShieldCheck size={14} className="text-amber-500/70" />
-                <span className="text-[10px] font-black tracking-[0.2em] text-white/35 uppercase">
+                <span className="text-[10px] font-black tracking-[0.2em] hover:border-white/[0.35] uppercase">
                   Digital Signature
                 </span>
               </div>

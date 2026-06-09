@@ -358,7 +358,7 @@ export default function ComplianceDashboard() {
                   <StatusBadge status={selected.status} />
                   <button
                     onClick={closeModal}
-                    className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all"
+                    className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/50 hover:text-white transition-all"
                   >
                     <X size={16} />
                   </button>

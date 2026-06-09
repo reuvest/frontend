@@ -116,7 +116,7 @@ function PostModal({ post, categories, tags, onClose, onSaved }) {
             {isEdit ? "Edit Post" : "New Post"}
           </h2>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all">
+            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/50 hover:text-white transition-all">
             <X size={15} />
           </button>
         </div>
@@ -468,7 +468,7 @@ export default function AdminBlogPage() {
             {[["", "All"], ["published", "Published"], ["draft", "Drafts"]].map(([v, l]) => (
               <button key={v} onClick={() => setFilterStatus(v)}
                 className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${
-                  filterStatus === v ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70"
+                  filterStatus === v ? "bg-white/[0.01]0 text-white" : "text-white/40 hover:text-white/70"
                 }`}>
                 {l}
               </button>
@@ -502,7 +502,7 @@ export default function AdminBlogPage() {
               </div>
               {filtered.map((post, i) => (
                 <div key={post.id}
-                  className={`grid grid-cols-[2.5fr_1fr_1fr_80px_80px_100px] gap-4 px-6 py-4 items-center hover:bg-white/2.5 transition-colors ${
+                  className={`grid grid-cols-[2.5fr_1fr_1fr_80px_80px_100px] gap-4 px-6 py-4 items-center hover:bg-white/[0.02].5 transition-colors ${
                     i < filtered.length - 1 ? "border-b border-white/4" : ""
                   }`}>
                   <div className="min-w-0">
@@ -519,7 +519,7 @@ export default function AdminBlogPage() {
                   <span className="text-xs text-white/40">{post.read_time_minutes || 1} min</span>
                   <div className="flex items-center gap-1">
                     <Link href={`/blog/${post.slug}`} target="_blank" title="View"
-                      className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition-all">
+                      className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/[0.01]0 transition-all">
                       <Eye size={13} />
                     </Link>
                     <button onClick={() => openEdit(post.id)} title="Edit"
@@ -555,7 +555,7 @@ export default function AdminBlogPage() {
                     </div>
                     <div className="flex gap-1">
                       <Link href={`/blog/${post.slug}`} target="_blank"
-                        className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10">
+                        className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/[0.01]0">
                         <Eye size={13} />
                       </Link>
                       <button onClick={() => openEdit(post.id)}
@@ -578,11 +578,11 @@ export default function AdminBlogPage() {
                 <p className="text-xs text-white/30">Page {pagination.current_page} of {pagination.last_page}</p>
                 <div className="flex gap-2">
                   <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={pagination.current_page === 1}
-                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-30">
+                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30">
                     <ChevronLeft size={15} />
                   </button>
                   <button onClick={() => setPage(p => Math.min(pagination.last_page, p + 1))} disabled={pagination.current_page === pagination.last_page}
-                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-30">
+                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30">
                     <ChevronRight size={15} />
                   </button>
                 </div>

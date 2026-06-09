@@ -160,7 +160,7 @@ function CheckPositionPanel({ onClose }) {
         </div>
         <button
           onClick={onClose}
-          className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition-all"
+          className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/[0.01]0 transition-all"
           aria-label="Close"
         >
           <X size={14} />
@@ -186,7 +186,7 @@ function CheckPositionPanel({ onClose }) {
                 <Sparkles size={15} className="text-amber-400 shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-bold text-white/80">Still on the list</p>
-                  <p className="text-xs text-white/35 mt-0.5 leading-relaxed">
+                  <p className="text-xs hover:border-white/[0.35] mt-0.5 leading-relaxed">
                     Access opens in batches. Refer friends below to move up and get in sooner.
                   </p>
                 </div>
@@ -247,7 +247,7 @@ function CheckPositionPanel({ onClose }) {
                     <span>Priority access at 3 referrals</span>
                     <span>{Math.min(result.referrals_count ?? 0, 3)}/3</span>
                   </div>
-                  <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                  <div className="h-1.5 rounded-full bg-white/[0.01]0 overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-700"
                       style={{
@@ -780,14 +780,14 @@ export default function WaitlistPage() {
               </p>
             </form>
 
-            <div className="mt-5 pt-5 border-t border-white/8">
+            <div className="mt-5 pt-5 border-t border-white/[0.08]">
               <AvatarStack />
             </div>
           </div>
         </div>
 
         {/* Bottom strip */}
-        <div className="mt-16 sm:mt-24 pt-8 border-t border-white/8 flex flex-wrap items-center justify-between gap-4">
+        <div className="mt-16 sm:mt-24 pt-8 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap gap-4 text-xs text-white/20">
             {[
               [CheckCircle, "Verified land titles"],

@@ -571,7 +571,7 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
               <div key={i} className={`w-3 h-3 rounded-full border-2 transition-all duration-300 ${
                 completedIdxs.includes(i) ? "bg-emerald-400 border-emerald-200 scale-110"
                   : i === promptIdx       ? "bg-amber-400 border-amber-200 scale-125"
-                  : "bg-white/20 border-white/40"
+                  : "bg-white/[0.02]0 border-white/40"
               }`} />
             ))}
           </div>
@@ -608,7 +608,7 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse inline-block" />
               Motion detected
             </p>
-            <div className="relative h-2 bg-white/20 rounded-full overflow-hidden">
+            <div className="relative h-2 bg-white/[0.02]0 rounded-full overflow-hidden">
               <div className="absolute top-0 bottom-0 w-0.5 bg-white/60 rounded-full z-10" style={{ left: `${thresholdPct}%` }} />
               <motion.div className="h-full rounded-full"
                 style={{
@@ -733,7 +733,7 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
       )}
       {phase === "error" && (
         <button type="button" onClick={startCamera}
-          className="w-full flex items-center justify-center gap-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-sm px-5 py-4 rounded-xl transition-all touch-manipulation">
+          className="w-full flex items-center justify-center gap-2 bg-white/5 border border-white/10 hover:bg-white/[0.01]0 text-white font-bold text-sm px-5 py-4 rounded-xl transition-all touch-manipulation">
           <RotateCcw size={13} /> Try Again
         </button>
       )}

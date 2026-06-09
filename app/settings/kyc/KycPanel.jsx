@@ -257,7 +257,7 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
             </span>
           </div>
 
-          <div className="sm:hidden h-0.5 bg-white/10 rounded-full mb-5 overflow-hidden">
+          <div className="sm:hidden h-0.5 bg-white/[0.01]0 rounded-full mb-5 overflow-hidden">
             <motion.div
               className="h-full rounded-full"
               style={{ background: "linear-gradient(90deg, #C8873A, #E8A850)" }}
