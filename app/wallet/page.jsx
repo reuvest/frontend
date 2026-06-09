@@ -277,7 +277,7 @@ export default function WalletPage() {
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-0"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8" style={{ isolation: "isolate" }}>
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8" >
 
         {/* Header */}
         <div>

@@ -208,7 +208,7 @@ export default function ReferralDashboard() {
   // ── Render ───────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative">
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-10" style={{ isolation: "isolate" }}>
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-10" >
 
         {/* Header */}
         <div className="mb-8">
@@ -269,7 +269,7 @@ export default function ReferralDashboard() {
         </div>
 
         {/* ── Stat Cards (5) ─────────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-8" style={{ isolation: "isolate" }}>
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-8" >
           {[
             {
               label:  "Total Referrals",

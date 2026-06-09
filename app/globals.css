@@ -25,6 +25,12 @@ html, body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Prevent mobile GPU layer ghosting */
+.min-h-screen {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
 @keyframes shimmer {
   0%   { background-position: 0% center; }
   100% { background-position: 200% center; }

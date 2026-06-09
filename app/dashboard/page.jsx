@@ -225,9 +225,13 @@ export default function Dashboard() {
   return (
     <div
       className="min-h-screen bg-[#0D1F1A] relative overflow-x-clip"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
+      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
+        transform: "translateZ(0)",
+        WebkitTransform: "translateZ(0)",
+       }}
     >
-      <div className="absolute inset-0 pointer-events-none select-none">
+      <div className="absolute inset-0 pointer-events-none select-none"
+      style={{ zIndex: 0, isolation: "isolate" }}>
         <div
           className="absolute inset-0"
           style={{
@@ -249,8 +253,8 @@ export default function Dashboard() {
       <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-5">
 
         <header
-          className="transition-all duration-700"
-          style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(10px)", isolation: "isolate" }}
+          className=""
+          style={{ willChange: "auto" }}
         >
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
             <div className="min-w-0">
@@ -313,7 +317,7 @@ export default function Dashboard() {
 
         <section
           className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
-          style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)", isolation: "isolate" }}
+          style={{ willChange: "auto" }}
         >
 
           {loadingStats ? (
@@ -332,8 +336,8 @@ export default function Dashboard() {
         </section>
 
         <section
-          className="transition-all duration-700 delay-150"
-          style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)", isolation: "isolate" }}
+          className=""
+          style={{ willChange: "auto" }}
         >
           <div className="grid grid-cols-3 gap-3 sm:gap-4">
             <QuickCard title="Wallet"    desc="Fund & manage"     href="/wallet"    icon={<Wallet size={17} />}     accent="#C8873A" />
@@ -343,8 +347,8 @@ export default function Dashboard() {
         </section>
 
         <section
-          className="transition-all duration-700 delay-200"
-          style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)", isolation: "isolate" }}
+          className=""
+          style={{ willChange: "auto" }}
         >
           <TransactionsSection
             transactions={transactions}
