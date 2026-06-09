@@ -54,23 +54,22 @@ export default function Header() {
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between px-5 sm:px-8 py-3 gap-4">
 
-          {/* Logo */}
           <Link
             href={user ? "/dashboard" : "/"}
             className="flex items-center shrink-0 group"
             aria-label={`${appname} Home`}
           >
-          <img
-            src="/reu_ng_logo.png"
-            alt={`${appname} logo`}
-            className="h-16 w-auto transition-opacity group-hover:opacity-80"
-            style={{
-              maxWidth: "160px",
-              filter: "brightness(2.1)",
-              background: "transparent",
-              mixBlendMode: "screen",
-            }}
-          />
+            <img
+              src="/reu_ng_logo.png"
+              alt={`${appname} logo`}
+              className="h-16 w-auto transition-opacity group-hover:opacity-80"
+              style={{
+                maxWidth: "160px",
+                filter: "brightness(2.1)",
+                background: "transparent",
+                mixBlendMode: "screen",
+              }}
+            />
           </Link>
 
           {user && (
@@ -104,7 +103,6 @@ export default function Header() {
                 })}
               </nav>
 
-              {/* Logout + bell — desktop only */}
               <div className="hidden lg:flex items-center gap-2 shrink-0">
                 <NotificationBell />
                 <button
@@ -118,9 +116,7 @@ export default function Header() {
               </div>
 
               <div className="lg:hidden flex items-center gap-2 shrink-0">
-                <div className="hidden sm:block">
-                  <NotificationBell />
-                </div>
+                <NotificationBell />
                 <button
                   className="w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all"
                   onClick={() => setMenuOpen(!menuOpen)}
@@ -135,10 +131,8 @@ export default function Header() {
         </div>
       </header>
 
-      {/* ── Drawer (phones + tablets, below lg) ───────────────────────────── */}
       {user && (
         <>
-          {/* Backdrop */}
           <div
             className={`fixed inset-0 bg-black/70 backdrop-blur-sm lg:hidden z-40 transition-opacity duration-300 ${
               menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
@@ -159,7 +153,6 @@ export default function Header() {
               borderLeft: "1px solid rgba(255,255,255,0.07)",
             }}
           >
-            {/* Drawer header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/8 shrink-0">
               <Link
                 href={user ? "/dashboard" : "/"}
@@ -181,7 +174,6 @@ export default function Header() {
               </button>
             </div>
 
-            {/* Scrollable link list */}
             <nav className="flex-1 overflow-y-auto flex flex-col px-3 py-3 gap-0.5">
               {links.map((link) => {
                 const active = pathname === link.path;
@@ -210,11 +202,11 @@ export default function Header() {
               })}
             </nav>
 
-            <div className="shrink-0 px-3 pt-4 pb-24 border-t border-white/8 flex items-center justify-between">
-              <div className="sm:hidden">
-                <NotificationBell />
-              </div>
-              <div className="hidden sm:block" /> {/* spacer on tablet */}
+            <div
+              className="shrink-0 px-3 py-4 border-t border-white/8 flex items-center justify-between"
+              style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
+            >
+              <NotificationBell />
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 text-sm text-red-400/60 hover:text-red-400 hover:bg-red-500/8 px-4 py-2.5 rounded-xl transition-all font-medium"

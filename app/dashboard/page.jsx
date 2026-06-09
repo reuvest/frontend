@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import api from "../../utils/api";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import {
   TrendingUp, Wallet, MapPin, Activity,
   ArrowUpRight, LayoutGrid, ChevronRight,
@@ -13,7 +13,16 @@ import {
   WifiOff,
 } from "lucide-react";
 
-/* ── Helpers ──────────────────────────────────────────────────────────────── */
+const FOUNDING_MEMBER_MAX_ID = 50;
+const TX_DISPLAY_LIMIT = 8;
+
+const GOLD_GRADIENT_STYLE = {
+  background: "linear-gradient(135deg, #E8A850 0%, #C8873A 50%, #E8A850 100%)",
+  backgroundSize: "200% auto",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  backgroundClip: "text",
+};
 
 const statusCfg = (status = "") => {
   const s = status?.toLowerCase() ?? "";
@@ -41,23 +50,26 @@ const formatDate = (date) =>
       })
     : "—";
 
-const greeting = () => {
+const getGreeting = () => {
   const h = new Date().getHours();
   if (h < 12) return "Good morning";
   if (h < 17) return "Good afternoon";
   return "Good evening";
 };
 
-// ── Founding member helper ─────────────────────────────────────────────────
-const isFoundingMember = (user) => user?.id && Number(user.id) <= 50;
+const isFoundingMember = (user) =>
+  user?.id && Number(user.id) <= FOUNDING_MEMBER_MAX_ID;
 
-// ── Animated counter ──────────────────────────────────────────────────────────
 function useCountUp(target, duration = 1100, enabled = true) {
   const [value, setValue] = useState(0);
   const raf = useRef(null);
 
   useEffect(() => {
+    cancelAnimationFrame(raf.current);
+    setValue(0);
+
     if (!enabled || target === 0) { setValue(target); return; }
+
     const start = performance.now();
     const tick = (now) => {
       const p    = Math.min((now - start) / duration, 1);
@@ -72,10 +84,9 @@ function useCountUp(target, duration = 1100, enabled = true) {
   return value;
 }
 
-/* ── Data hook ────────────────────────────────────────────────────────────── */
 function useDashboardData(enabled) {
-  const [stats, setStats]           = useState(null);
-  const [statsError, setStatsError] = useState(false);
+  const [stats, setStats]                 = useState(null);
+  const [statsError, setStatsError]       = useState(false);
   const [transactions, setTransactions]   = useState([]);
   const [txError, setTxError]             = useState(false);
   const [loadingStats, setLoadingStats]   = useState(true);
@@ -119,33 +130,37 @@ function useDashboardData(enabled) {
     }
   }, []);
 
+  const cleanupRef = useRef(() => {});
+
   const loadData = useCallback(() => {
     if (!enabled) return () => {};
 
-    // Each request gets its own AbortController — 8-second timeout.
-    const statsCtrl = new AbortController();
-    const txCtrl    = new AbortController();
+    cleanupRef.current();
+
+    const statsCtrl  = new AbortController();
+    const txCtrl     = new AbortController();
     const statsTimer = setTimeout(() => statsCtrl.abort(), 8_000);
     const txTimer    = setTimeout(() => txCtrl.abort(),    8_000);
 
-    fetchStats(statsCtrl.signal);
-    fetchTransactions(txCtrl.signal);
-
-    return () => {
+    const cleanup = () => {
       clearTimeout(statsTimer);
       clearTimeout(txTimer);
       statsCtrl.abort();
       txCtrl.abort();
     };
+    cleanupRef.current = cleanup;
+
+    fetchStats(statsCtrl.signal);
+    fetchTransactions(txCtrl.signal);
+
+    return cleanup;
   }, [enabled, fetchStats, fetchTransactions]);
 
-  // Re-run whenever enabled flips (e.g. user logs in) or on manual refetch.
   useEffect(() => {
     const cleanup = loadData();
     return cleanup;
   }, [loadData]);
 
-  // Manual refetch — abort any in-flight requests then restart.
   const refetch = useCallback(() => {
     loadData();
   }, [loadData]);
@@ -153,17 +168,17 @@ function useDashboardData(enabled) {
   return { stats, statsError, transactions, txError, loadingStats, loadingTx, refetch };
 }
 
-/* ── Page ─────────────────────────────────────────────────────────────────── */
 export default function Dashboard() {
   const { user, loading: loadingUser } = useAuth();
   const router = useRouter();
 
   const [mounted, setMounted]           = useState(false);
-  const [slowHint, setSlowHint]         = useState(false);  // shows "Still loading…" at 3s
-  const [authTimedOut, setAuthTimedOut] = useState(false);  // redirect at 8s
+  const [slowHint, setSlowHint]         = useState(false);
+  const [authTimedOut, setAuthTimedOut] = useState(false);
+
+  const greetingText = useMemo(() => getGreeting(), []);
 
   useEffect(() => {
-    // Fire mount animation immediately — don't wait for data.
     requestAnimationFrame(() => setMounted(true));
 
     const hintTimer    = setTimeout(() => setSlowHint(true),    3_000);
@@ -178,7 +193,6 @@ export default function Dashboard() {
   const { stats, statsError, transactions, txError, loadingStats, loadingTx, refetch } =
     useDashboardData(!!user);
 
-  // ── Welcome toast (once per login session) ────────────────────────────────
   useEffect(() => {
     if (!user) return;
     if (sessionStorage.getItem("justLoggedIn") === "1") {
@@ -187,13 +201,11 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  // ── Redirect unauthenticated visitors ────────────────────────────────────
   useEffect(() => {
     if (!loadingUser && !user) router.replace("/login");
-    if (authTimedOut && !user)  router.replace("/login");
+    if (authTimedOut && !loadingUser && !user) router.replace("/login");
   }, [loadingUser, user, router, authTimedOut]);
 
-  // ── Loading spinner ───────────────────────────────────────────────────────
   if (loadingUser || !user) {
     return (
       <div className="min-h-screen bg-[#0D1F1A] flex flex-col items-center justify-center gap-4">
@@ -210,13 +222,11 @@ export default function Dashboard() {
     );
   }
 
-  /* ── Render ──────────────────────────────────────────────────────────────── */
   return (
     <div
-      className="min-h-screen bg-[#0D1F1A] relative overflow-x-hidden"
+      className="min-h-screen bg-[#0D1F1A] relative overflow-x-clip"
       style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
     >
-      {/* ── Background ── */}
       <div className="absolute inset-0 pointer-events-none select-none">
         <div
           className="absolute inset-0"
@@ -238,7 +248,6 @@ export default function Dashboard() {
 
       <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-5">
 
-        {/* ── Header ── */}
         <header
           className="transition-all duration-700"
           style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(10px)" }}
@@ -262,26 +271,15 @@ export default function Dashboard() {
                   className="text-2xl sm:text-4xl font-bold leading-tight"
                   style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
                 >
-                  <span className="text-white">{greeting()}, </span>
-                  <span
-                    style={{
-                      background: "linear-gradient(135deg, #E8A850 0%, #C8873A 50%, #E8A850 100%)",
-                      backgroundSize: "200% auto",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
-                    }}
-                  >
+                  <span className="text-white">{greetingText}, </span>
+                  <span style={GOLD_GRADIENT_STYLE}>
                     {user?.name?.split(" ")[0] || "Investor"}
                   </span>
                 </h1>
 
                 {isFoundingMember(user) && (
                   <>
-                    {/* Mobile: star icon with tap-to-show tooltip */}
                     <MobileFoundingBadge />
-
-                    {/* Desktop: full badge */}
                     <span
                       className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border"
                       style={{
@@ -313,49 +311,38 @@ export default function Dashboard() {
           </div>
         </header>
 
-        {/* ── Stat Cards ── */}
         <section
-          className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 transition-all duration-700 delay-100"
+          className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 transition-all duration-700 delay-100"
           style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)" }}
         >
           {loadingStats ? (
-            [1, 2, 3, 4].map((i) => <SkeletonCard key={i} />)
+            [1, 2, 3].map((i) => <SkeletonCard key={i} />)
           ) : statsError ? (
-            <StatErrorCard onRetry={() => refetch()} />
+            <StatErrorCard onRetry={refetch} />
           ) : (
             <>
               <StatCard icon={<Wallet size={16} />}     label="Wallet Balance"  value={stats?.balance ?? 0}                  accent="amber"   href="/wallet"    mounted={mounted} />
               <StatCard icon={<TrendingUp size={16} />} label="Portfolio Value" value={stats?.current_portfolio_value ?? 0}  accent="emerald" href="/portfolio" mounted={mounted} />
-              <StatCard icon={<MapPin size={16} />}     label="Lands Invested"  value={stats?.lands_owned ?? 0}              accent="blue"    href="/portfolio" mounted={mounted} isCount sub={`${stats?.units_owned ?? 0} units`} />
-              <StatCard icon={<Activity size={16} />}   label="Sale Proceeds"   value={stats?.total_withdrawn ?? 0}          accent="purple"  href="/wallet"    mounted={mounted} />
+              <div className="col-span-2 lg:col-span-1">
+                <StatCard icon={<MapPin size={16} />}   label="Lands Invested"  value={stats?.lands_owned ?? 0}              accent="blue"    href="/portfolio" mounted={mounted} isCount sub={`${stats?.units_owned ?? 0} units`} />
+              </div>
             </>
           )}
         </section>
 
-        {/* ── Quick Actions ── */}
         <section
-          className="transition-all duration-700 delay-175"
+          className="transition-all duration-700 delay-150"
           style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)" }}
         >
-          {/* Mobile: scrollable strip */}
-          <div className="flex sm:hidden gap-3 overflow-x-auto pb-1 snap-x snap-mandatory
-                          [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <QuickCard title="Wallet"    desc="Fund & manage"     href="/wallet"    icon={<Wallet size={17} />}     accent="#C8873A" mobile />
-            <QuickCard title="Portfolio" desc="Track investments" href="/portfolio" icon={<LayoutGrid size={17} />} accent="#2D7A55" mobile />
-            <QuickCard title="Explore"   desc="New opportunities" href="/lands"     icon={<MapPin size={17} />}     accent="#8B5CF6" mobile />
-          </div>
-
-          {/* Desktop: 3-col grid (unchanged) */}
-          <div className="hidden sm:grid grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4">
             <QuickCard title="Wallet"    desc="Fund & manage"     href="/wallet"    icon={<Wallet size={17} />}     accent="#C8873A" />
             <QuickCard title="Portfolio" desc="Track investments" href="/portfolio" icon={<LayoutGrid size={17} />} accent="#2D7A55" />
             <QuickCard title="Explore"   desc="New opportunities" href="/lands"     icon={<MapPin size={17} />}     accent="#8B5CF6" />
           </div>
         </section>
 
-        {/* ── Transactions ── */}
         <section
-          className="transition-all duration-700 delay-250"
+          className="transition-all duration-700 delay-200"
           style={{ opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)" }}
         >
           <TransactionsSection
@@ -371,7 +358,6 @@ export default function Dashboard() {
   );
 }
 
-/* ── MobileFoundingBadge ──────────────────────────────────────────────────── */
 function MobileFoundingBadge() {
   const [show, setShow] = useState(false);
 
@@ -389,7 +375,7 @@ function MobileFoundingBadge() {
         onClick={() => setShow(v => !v)}
       />
       <span
-        className={`absolute right-0 bottom-6 z-50 max-w-40 px-2 py-1 rounded-lg text-[10px] font-bold border pointer-events-none transition-opacity duration-200 ${
+        className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-50 whitespace-nowrap px-2.5 py-1 rounded-lg text-[10px] font-bold border pointer-events-none transition-opacity duration-200 ${
           show ? "opacity-100" : "opacity-0"
         }`}
         style={{
@@ -404,7 +390,6 @@ function MobileFoundingBadge() {
   );
 }
 
-/* ── SkeletonCard ─────────────────────────────────────────────────────────── */
 function SkeletonCard() {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 min-h-32 overflow-hidden relative">
@@ -413,10 +398,9 @@ function SkeletonCard() {
   );
 }
 
-/* ── StatErrorCard ────────────────────────────────────────────────────────── */
 function StatErrorCard({ onRetry }) {
   return (
-    <div className="col-span-2 lg:col-span-4 rounded-2xl border border-red-500/20 bg-red-500/5 min-h-32 flex flex-col items-center justify-center gap-3 p-5 text-center">
+    <div className="col-span-2 lg:col-span-3 rounded-2xl border border-red-500/20 bg-red-500/5 min-h-32 flex flex-col items-center justify-center gap-3 p-5 text-center">
       <WifiOff size={20} className="text-red-400/60" />
       <p className="text-sm text-white/40">Couldn't load stats</p>
       <button
@@ -429,7 +413,6 @@ function StatErrorCard({ onRetry }) {
   );
 }
 
-/* ── StatCard ─────────────────────────────────────────────────────────────── */
 function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
   const palette = {
     amber:   { glow: "rgba(200,135,58,0.14)",  icon: "rgba(200,135,58,1)",  ring: "rgba(200,135,58,0.22)"  },
@@ -437,12 +420,16 @@ function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
     blue:    { glow: "rgba(59,130,246,0.14)",  icon: "rgba(96,165,250,1)",  ring: "rgba(59,130,246,0.22)"  },
     purple:  { glow: "rgba(139,92,246,0.14)",  icon: "rgba(167,139,250,1)", ring: "rgba(139,92,246,0.22)"  },
   };
-  const a        = palette[accent] ?? palette.amber;
-  const num      = parseFloat(value) || 0;
-  const animated = useCountUp(num, 1000, mounted);
-  const display  = isCount
+  const a   = palette[accent] ?? palette.amber;
+  const num = parseFloat(value) || 0;
+
+  const intPart  = Math.floor(num);
+  const fracPart = isCount ? null : (num % 1).toFixed(2).slice(1);
+  const animated = useCountUp(intPart, 1000, mounted);
+
+  const display = isCount
     ? animated.toLocaleString()
-    : "₦" + animated.toLocaleString("en-NG");
+    : "₦" + animated.toLocaleString("en-NG") + fracPart;
 
   const inner = (
     <div className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4 sm:p-5 hover:bg-white/5.5 hover:border-white/12 transition-all duration-300 overflow-hidden min-h-32 flex flex-col">
@@ -477,14 +464,11 @@ function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
   return href ? <Link href={href}>{inner}</Link> : <div>{inner}</div>;
 }
 
-/* ── QuickCard ────────────────────────────────────────────────────────────── */
-function QuickCard({ title, desc, href, icon, accent, mobile = false }) {
+function QuickCard({ title, desc, href, icon, accent }) {
   return (
     <Link
       href={href}
-      className={`group relative rounded-2xl border border-white/[0.07] bg-white/3 hover:bg-white/5.5 hover:border-white/12 transition-all duration-300 overflow-hidden block shrink-0 ${
-        mobile ? "snap-start min-w-35" : ""
-      }`}
+      className="group relative rounded-2xl border border-white/[0.07] bg-white/3 hover:bg-white/5.5 hover:border-white/12 transition-all duration-300 overflow-hidden block"
     >
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
@@ -498,7 +482,7 @@ function QuickCard({ title, desc, href, icon, accent, mobile = false }) {
           {icon}
         </div>
         <h3 className="font-bold text-white/85 text-sm leading-none">{title}</h3>
-        <p className="text-[11px] text-white/27 mt-1 hidden sm:block leading-snug">{desc}</p>
+        <p className="text-[11px] text-white/27 mt-1 sm:block leading-snug">{desc}</p>
         <div className="hidden sm:flex items-center gap-1 mt-3">
           <span className="text-xs font-bold transition-colors" style={{ color: accent }}>Open</span>
           <ArrowUpRight
@@ -512,7 +496,6 @@ function QuickCard({ title, desc, href, icon, accent, mobile = false }) {
   );
 }
 
-/* ── TransactionsSection ──────────────────────────────────────────────────── */
 function TransactionsSection({ transactions, loading, error, onRetry }) {
   if (loading) {
     return (
@@ -599,7 +582,6 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
 
   return (
     <div className="rounded-2xl border border-white/[0.07] bg-white/3 overflow-hidden">
-      {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 bg-white/2">
         <div className="flex items-center gap-2.5">
           <div
@@ -623,7 +605,6 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
         </Link>
       </div>
 
-      {/* Desktop table */}
       <div className="hidden md:block">
         <table className="w-full text-sm">
           <thead>
@@ -643,8 +624,8 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
               ))}
             </tr>
           </thead>
-          <tbody>
-            {transactions.slice(0, 8).map((tx, idx) => {
+          <tbody className="[&>tr:last-child]:border-b-0">
+            {transactions.slice(0, TX_DISPLAY_LIMIT).map((tx, idx) => {
               const { sign, color, isCredit } = amountMeta(tx?.type);
               const { cls, dot }              = statusCfg(tx?.status);
               const amountNaira = Number(tx?.amount ?? 0);
@@ -712,9 +693,8 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
         </table>
       </div>
 
-      {/* Mobile list */}
-      <div className="md:hidden divide-y divide-white/5">
-        {transactions.slice(0, 6).map((tx, idx) => {
+      <div className="md:hidden divide-y divide-white/5 [&>div:last-child]:border-b-0">
+        {transactions.slice(0, TX_DISPLAY_LIMIT).map((tx, idx) => {
           const { sign, color, isCredit } = amountMeta(tx?.type);
           const { cls, dot }              = statusCfg(tx?.status);
           const amountNaira = Number(tx?.amount ?? 0);
@@ -723,7 +703,8 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
           return (
             <div
               key={idx}
-              className="px-4 py-4 flex items-center gap-3 hover:bg-white/2 transition-colors">
+              className="px-4 py-4 flex items-center gap-3 hover:bg-white/2 transition-colors"
+            >
               <div
                 className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                   isCredit === true    ? "bg-emerald-500/10"
@@ -751,7 +732,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
                 </p>
                 <p className="text-[10px] text-white/20 mt-0.5">{formatDate(txDate)}</p>
               </div>
-           <div className="flex flex-col items-end gap-1.5 shrink-0">
+              <div className="flex flex-col items-end gap-1.5 shrink-0">
                 <span className={`font-bold text-sm tabular-nums ${color}`}>
                   {sign}₦{amountNaira.toLocaleString("en-NG")}
                 </span>
@@ -765,9 +746,8 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
         })}
       </div>
 
-      {/* Footer */}
-      {transactions.length > 6 && (
-        <div className="px-5 py-3 border-t border-white/5 text-center bg-white/1">
+      {transactions.length > TX_DISPLAY_LIMIT && (
+        <div className="px-5 py-2 border-t border-white/5 text-center bg-white/1">
           <Link
             href="/wallet"
             className="text-xs text-white/20 hover:text-amber-500 transition-colors font-semibold"
