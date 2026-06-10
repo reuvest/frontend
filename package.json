@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "axios": "^1.13.5",
+    "critters": "^0.0.23",
     "framer-motion": "^12.34.3",
     "laravel-echo": "^2.3.4",
     "leaflet": "^1.9.4",

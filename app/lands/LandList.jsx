@@ -509,9 +509,9 @@ export default function LandList() {
                   <Maximize2 size={13} /> Fullscreen
                 </button>
               </div>
-              <div className="h-152 w-full">
-                <MapWithNoSSR {...mapProps} />
-              </div>
+                <div className="h-64 sm:h-96 lg:h-152 w-full">
+                  <MapWithNoSSR {...mapProps} />
+                </div>
             </div>
           )}
 
@@ -544,6 +544,7 @@ export default function LandList() {
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
+                      onError={(e) => { e.currentTarget.src = '/no-image.jpeg'; }}
                     />
                     <div
                       className="absolute inset-0"
