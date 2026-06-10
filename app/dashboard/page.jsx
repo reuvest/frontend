@@ -16,13 +16,7 @@ import {
 const FOUNDING_MEMBER_MAX_ID = 50;
 const TX_DISPLAY_LIMIT = 8;
 
-const GOLD_GRADIENT_STYLE = {
-  background: "linear-gradient(135deg, #E8A850 0%, #C8873A 50%, #E8A850 100%)",
-  backgroundSize: "200% auto",
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-  backgroundClip: "text",
-};
+const GOLD_TEXT_STYLE = { color: "#E8A850" };
 
 const statusCfg = (status = "") => {
   const s = status?.toLowerCase() ?? "";
@@ -85,12 +79,12 @@ function useCountUp(target, duration = 1100, enabled = true) {
 }
 
 function useDashboardData(enabled) {
-  const [stats, setStats]                 = useState(null);
-  const [statsError, setStatsError]       = useState(false);
-  const [transactions, setTransactions]   = useState([]);
-  const [txError, setTxError]             = useState(false);
-  const [loadingStats, setLoadingStats]   = useState(true);
-  const [loadingTx, setLoadingTx]         = useState(true);
+  const [stats, setStats]               = useState(null);
+  const [statsError, setStatsError]     = useState(false);
+  const [transactions, setTransactions] = useState([]);
+  const [txError, setTxError]           = useState(false);
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [loadingTx, setLoadingTx]       = useState(true);
 
   const fetchStats = useCallback(async (signal) => {
     setLoadingStats(true);
@@ -161,9 +155,7 @@ function useDashboardData(enabled) {
     return cleanup;
   }, [loadData]);
 
-  const refetch = useCallback(() => {
-    loadData();
-  }, [loadData]);
+  const refetch = useCallback(() => { loadData(); }, [loadData]);
 
   return { stats, statsError, transactions, txError, loadingStats, loadingTx, refetch };
 }
@@ -180,14 +172,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     requestAnimationFrame(() => setMounted(true));
-
-    const hintTimer    = setTimeout(() => setSlowHint(true),    3_000);
+    const hintTimer    = setTimeout(() => setSlowHint(true),     3_000);
     const timeoutTimer = setTimeout(() => setAuthTimedOut(true), 8_000);
-
-    return () => {
-      clearTimeout(hintTimer);
-      clearTimeout(timeoutTimer);
-    };
+    return () => { clearTimeout(hintTimer); clearTimeout(timeoutTimer); };
   }, []);
 
   const { stats, statsError, transactions, txError, loadingStats, loadingTx, refetch } =
@@ -210,11 +197,11 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-[#0D1F1A] flex flex-col items-center justify-center gap-4">
         <div className="relative w-12 h-12">
-          <div className="absolute inset-0 w-12 h-12 border-2 border-amber-500/15 rounded-full" />
+          <div className="absolute inset-0 w-12 h-12 border-2 border-[#2a3d37] rounded-full" />
           <div className="absolute inset-0 w-12 h-12 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
         </div>
         {slowHint && (
-          <p className="text-white/30 text-xs animate-pulse">
+          <p className="text-[#4a6660] text-xs animate-pulse">
             Still loading… check your connection
           </p>
         )}
@@ -225,35 +212,20 @@ export default function Dashboard() {
   return (
     <div
       className="min-h-screen bg-[#0D1F1A] relative overflow-x-clip"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
-       }}
+      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
     >
-      {/* <div className="absolute inset-0 pointer-events-none select-none" style={{ zIndex: 0 }}>
-        <div
-          className="absolute -top-[15%] -right-[5%] w-[55vw] h-[55vw] rounded-full"
-          style={{ background: "" }}
-        />
-        <div
-          className="absolute -bottom-[10%] -left-[10%] w-[45vw] h-[45vw] rounded-full"
-          style={{ background: "" }}
-        />
-        <div className="absolute top-0 left-0 right-0 h-48 bg-linear-to-b from-black/25 to-transparent" />
-        </div> */}
-
       <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-5">
 
-        <header
-          className=""
-          
-        >
+        {/* ── Header ── */}
+        <header>
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
             <div className="min-w-0">
               <div className="flex items-center gap-2 mb-2.5">
-                <span className="text-[10px] font-black tracking-[0.28em] uppercase text-amber-500/60">
+                <span className="text-[10px] font-black tracking-[0.28em] uppercase text-[#6b8c7e]">
                   Dashboard
                 </span>
-                <span className="w-1 h-1 rounded-full bg-amber-500/30" />
-                <span className="text-[10px] text-white/20">
+                <span className="w-1 h-1 rounded-full bg-[#2d4f44]" />
+                <span className="text-[10px] text-[#3a5248]">
                   {new Date().toLocaleDateString("en-NG", {
                     weekday: "short", month: "short", day: "numeric",
                   })}
@@ -266,7 +238,8 @@ export default function Dashboard() {
                   style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
                 >
                   <span className="text-white">{greetingText}, </span>
-                  <span style={GOLD_GRADIENT_STYLE}>
+                  {/* Solid color — eliminates gradient-text layer promotion */}
+                  <span style={GOLD_TEXT_STYLE}>
                     {user?.name?.split(" ")[0] || "Investor"}
                   </span>
                 </h1>
@@ -277,8 +250,8 @@ export default function Dashboard() {
                     <span
                       className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border"
                       style={{
-                        background: "linear-gradient(135deg, rgba(200,135,58,0.15), rgba(232,168,80,0.08))",
-                        borderColor: "rgba(200,135,58,0.35)",
+                        backgroundColor: "#201b0e",
+                        borderColor: "#4a3018",
                         color: "#E8A850",
                         fontFamily: "'DM Sans', sans-serif",
                       }}
@@ -290,14 +263,14 @@ export default function Dashboard() {
                 )}
               </div>
 
-              <p className="text-sm text-white/30 mt-1.5">
+              <p className="text-sm text-[#4a6660] mt-1.5">
                 Here's how your investments are performing today.
               </p>
             </div>
 
             <button
               onClick={refetch}
-              className="group self-start flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white/30 border border-white/10 hover:border-white/20 hover:text-white/55 hover:bg-white/5 transition-all"
+              className="group self-start flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-[#4a6660] border border-[#1e3530] hover:border-[#2a4a42] hover:text-[#7aab97] hover:bg-[#142D25] transition-all"
             >
               <RefreshCw size={12} className="group-hover:rotate-180 transition-transform duration-500" />
               Refresh
@@ -305,30 +278,25 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <section
-          className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
-          
-        >
-
+        {/* ── Stat cards ── */}
+        <section className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {loadingStats ? (
             [1, 2, 3].map((i) => <SkeletonCard key={i} />)
           ) : statsError ? (
             <StatErrorCard onRetry={refetch} />
           ) : (
             <>
-              <StatCard icon={<Wallet size={16} />}     label="Wallet Balance"  value={stats?.balance ?? 0}                  accent="amber"   href="/wallet"    mounted={mounted} />
-              <StatCard icon={<TrendingUp size={16} />} label="Portfolio Value" value={stats?.current_portfolio_value ?? 0}  accent="emerald" href="/portfolio" mounted={mounted} />
+              <StatCard icon={<Wallet size={16} />}     label="Wallet Balance"  value={stats?.balance ?? 0}                 accent="amber"   href="/wallet"    mounted={mounted} />
+              <StatCard icon={<TrendingUp size={16} />} label="Portfolio Value" value={stats?.current_portfolio_value ?? 0} accent="emerald" href="/portfolio" mounted={mounted} />
               <div className="col-span-2 lg:col-span-1">
-                <StatCard icon={<MapPin size={16} />}   label="Lands Invested"  value={stats?.lands_owned ?? 0}              accent="blue"    href="/portfolio" mounted={mounted} isCount sub={`${stats?.units_owned ?? 0} units`} />
+                <StatCard icon={<MapPin size={16} />}   label="Lands Invested"  value={stats?.lands_owned ?? 0}            accent="blue"    href="/portfolio" mounted={mounted} isCount sub={`${stats?.units_owned ?? 0} units`} />
               </div>
             </>
           )}
         </section>
 
-        <section
-          className=""
-          
-        >
+        {/* ── Quick links ── */}
+        <section>
           <div className="grid grid-cols-3 gap-3 sm:gap-4">
             <QuickCard title="Wallet"    desc="Fund & manage"     href="/wallet"    icon={<Wallet size={17} />}     accent="#C8873A" />
             <QuickCard title="Portfolio" desc="Track investments" href="/portfolio" icon={<LayoutGrid size={17} />} accent="#2D7A55" />
@@ -336,10 +304,8 @@ export default function Dashboard() {
           </div>
         </section>
 
-        <section
-          className=""
-          
-        >
+        {/* ── Transactions ── */}
+        <section>
           <TransactionsSection
             transactions={transactions}
             loading={loadingTx}
@@ -352,6 +318,8 @@ export default function Dashboard() {
     </div>
   );
 }
+
+// ── Sub-components ────────────────────────────────────────────────────────────
 
 function MobileFoundingBadge() {
   const [show, setShow] = useState(false);
@@ -374,8 +342,8 @@ function MobileFoundingBadge() {
           show ? "opacity-100" : "opacity-0"
         }`}
         style={{
-          background: "linear-gradient(135deg, rgba(20,40,30,0.98), rgba(15,30,22,0.98))",
-          borderColor: "rgba(200,135,58,0.35)",
+          backgroundColor: "#142818",
+          borderColor: "#4a3018",
           color: "#E8A850",
         }}
       >
@@ -387,20 +355,20 @@ function MobileFoundingBadge() {
 
 function SkeletonCard() {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 min-h-32 relative">
-      <div className="absolute inset-0 bg-white/5" />
+    <div className="rounded-2xl border border-[#1e3530] bg-[#142D25] min-h-32 relative">
+      <div className="absolute inset-0 bg-[#142D25] rounded-2xl" />
     </div>
   );
 }
 
 function StatErrorCard({ onRetry }) {
   return (
-    <div className="col-span-2 lg:col-span-3 rounded-2xl border border-red-500/20 bg-red-500/5 min-h-32 flex flex-col items-center justify-center gap-3 p-5 text-center">
+    <div className="col-span-2 lg:col-span-3 rounded-2xl border border-[#3d1f1f] bg-[#1f1414] min-h-32 flex flex-col items-center justify-center gap-3 p-5 text-center">
       <WifiOff size={20} className="text-red-400/60" />
-      <p className="text-sm text-white/40">Couldn't load stats</p>
+      <p className="text-sm text-[#7a5555]">Couldn't load stats</p>
       <button
         onClick={onRetry}
-        className="px-4 py-1.5 rounded-xl text-xs font-bold border border-red-500/20 text-red-400/70 hover:bg-red-500/10 transition-all"
+        className="px-4 py-1.5 rounded-xl text-xs font-bold border border-[#3d1f1f] text-[#a06060] hover:bg-[#2a1818] transition-all"
       >
         Retry
       </button>
@@ -410,10 +378,9 @@ function StatErrorCard({ onRetry }) {
 
 function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
   const palette = {
-    amber:   { glow: "rgba(200,135,58,0.14)",  icon: "rgba(200,135,58,1)",  ring: "rgba(200,135,58,0.22)"  },
-    emerald: { glow: "rgba(45,122,85,0.14)",   icon: "rgba(74,222,128,1)",  ring: "rgba(45,122,85,0.22)"   },
-    blue:    { glow: "rgba(59,130,246,0.14)",  icon: "rgba(96,165,250,1)",  ring: "rgba(59,130,246,0.22)"  },
-    purple:  { glow: "rgba(139,92,246,0.14)",  icon: "rgba(167,139,250,1)", ring: "rgba(139,92,246,0.22)"  },
+    amber:   { glow: "#251d0e", icon: "#C8873A", ring: "#362211" },
+    emerald: { glow: "#0f2118", icon: "#4ade80", ring: "#132d1f" },
+    blue:    { glow: "#0f1826", icon: "#60a5fa", ring: "#131d38" },
   };
   const a   = palette[accent] ?? palette.amber;
   const num = parseFloat(value) || 0;
@@ -427,33 +394,30 @@ function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
     : "₦" + animated.toLocaleString("en-NG") + fracPart;
 
   const inner = (
-    <div className="group relative rounded-2xl border border-white/[0.07]  p-4 sm:p-5 hover:bg-white/[0.055] hover:border-white/[0.12] transition-all duration-300 min-h-32 flex flex-col" style={{
-    backgroundColor: "#132922"
-  }}>      
-  <div
-        className="absolute -top-10 -right-10 w-28 h-28 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-        style={{ background: `radial-gradient(circle, ${a.glow}, transparent 70%)` }}
-      />
+    <div
+      className="group relative rounded-2xl border border-[#1e3530] p-4 sm:p-5 hover:bg-[#18352b] hover:border-[#2a4a42] transition-all duration-300 min-h-32 flex flex-col"
+      style={{ backgroundColor: "#132922" }}
+    >
       <div
         className="w-9 h-9 rounded-xl flex items-center justify-center mb-4 shrink-0"
-        style={{ background: a.glow, boxShadow: `0 0 0 1px ${a.ring}`, color: a.icon }}
+        style={{ backgroundColor: a.glow, boxShadow: `0 0 0 1px ${a.ring}`, color: a.icon }}
       >
         {icon}
       </div>
-      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/25 mb-1.5 truncate">
+      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3f5e56] mb-1.5 truncate">
         {label}
       </p>
       <p
         className="text-xl sm:text-2xl font-bold text-white leading-none mt-auto"
-        style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+        style={{ fontFamily: "'Playfair Display', Georgia, serif", contain: "content" }}
         title={isCount ? String(num) : `₦${num.toLocaleString()}`}
       >
         {display}
       </p>
-      {sub && <p className="text-[11px] text-white/25 mt-1.5 truncate">{sub}</p>}
+      {sub && <p className="text-[11px] text-[#3f5e56] mt-1.5 truncate">{sub}</p>}
       <ChevronRight
         size={12}
-        className="absolute bottom-4 right-4 text-white/15 opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0 transition-all duration-300"
+        className="absolute bottom-4 right-4 text-[#3f5e56] opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0 transition-all duration-300"
       />
     </div>
   );
@@ -465,21 +429,18 @@ function QuickCard({ title, desc, href, icon, accent }) {
   return (
     <Link
       href={href}
-      className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.03] hover:bg-white/[0.055] hover:border-white/[0.12] transition-all duration-300 block"
+      className="group relative rounded-2xl border border-[#1e3530] bg-[#132922] hover:bg-[#18352b] hover:border-[#2a4a42] transition-all duration-300 block"
     >
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-        style={{ background: `` }}
-      />
       <div className="relative p-4 sm:p-5">
         <div
           className="w-9 h-9 rounded-xl flex items-center justify-center mb-3.5 transition-transform duration-300 group-hover:scale-[1.08]"
-          style={{ background: `${accent}16`, color: accent, boxShadow: `0 0 0 1px ${accent}28` }}
+          // Solid bg derived from accent at ~9% opacity over #132922
+          style={{ backgroundColor: `${accent}18`, color: accent, boxShadow: `0 0 0 1px ${accent}30` }}
         >
           {icon}
         </div>
-        <h3 className="font-bold text-white/85 text-sm leading-none">{title}</h3>
-        <p className="text-[11px] hover:border-white/[0.27] mt-1 sm:block leading-snug">{desc}</p>
+        <h3 className="font-bold text-[#c8ddd7] text-sm leading-none">{title}</h3>
+        <p className="text-[11px] text-[#4a6660] mt-1 sm:block leading-snug">{desc}</p>
         <div className="hidden sm:flex items-center gap-1 mt-3">
           <span className="text-xs font-bold transition-colors" style={{ color: accent }}>Open</span>
           <ArrowUpRight
@@ -496,19 +457,19 @@ function QuickCard({ title, desc, href, icon, accent }) {
 function TransactionsSection({ transactions, loading, error, onRetry }) {
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.03] overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/5 bg-white/[0.02]">
-          <div className="h-4 w-44 rounded-lg bg-white/[0.07] animate-pulse" />
+      <div className="rounded-2xl border border-[#1e3530] bg-[#132922] overflow-hidden">
+        <div className="px-5 py-4 border-b border-[#193028] bg-[#142D25]">
+          <div className="h-4 w-44 rounded-lg bg-[#1e3530] animate-pulse" />
         </div>
-        <div className="divide-y divide-white/5">
+        <div className="divide-y divide-[#193028]">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="px-5 py-4 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-white/5 shrink-0" />
+              <div className="w-10 h-10 rounded-xl bg-[#142D25] shrink-0" />
               <div className="flex-1 space-y-2">
-                <div className="h-3 rounded bg-white/5 w-2/5" />
-                <div className="h-2.5 rounded bg-white/[0.03] w-1/4" />
+                <div className="h-3 rounded bg-[#142D25] w-2/5" />
+                <div className="h-2.5 rounded bg-[#132922] w-1/4" />
               </div>
-              <div className="h-4 rounded bg-white/5 w-20" />
+              <div className="h-4 rounded bg-[#142D25] w-20" />
             </div>
           ))}
         </div>
@@ -518,13 +479,13 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.03] overflow-hidden">
+      <div className="rounded-2xl border border-[#1e3530] bg-[#132922] overflow-hidden">
         <div className="flex flex-col items-center text-center px-5 py-10 gap-3">
-          <WifiOff size={20} className="text-white/20" />
-          <p className="text-sm text-white/40">Couldn't load transactions</p>
+          <WifiOff size={20} className="text-[#3f5e56]" />
+          <p className="text-sm text-[#4a6660]">Couldn't load transactions</p>
           <button
             onClick={onRetry}
-            className="px-4 py-1.5 rounded-xl text-xs font-bold border border-white/10 text-white/30 hover:bg-white/5 transition-all"
+            className="px-4 py-1.5 rounded-xl text-xs font-bold border border-[#1e3530] text-[#4a6660] hover:bg-[#142D25] transition-all"
           >
             Retry
           </button>
@@ -535,16 +496,16 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
 
   if (!transactions?.length) {
     return (
-      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.03] overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 bg-white/[0.02]">
+      <div className="rounded-2xl border border-[#1e3530] bg-[#132922] overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#193028] bg-[#142D25]">
           <div className="flex items-center gap-2.5">
             <div
               className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: "rgba(200,135,58,0.1)", boxShadow: "0 0 0 1px rgba(200,135,58,0.18)" }}
+              style={{ backgroundColor: "#251d0e", boxShadow: "0 0 0 1px #362211" }}
             >
               <Activity size={13} className="text-amber-500" />
             </div>
-            <h2 className="text-[10px] font-black uppercase tracking-[0.22em] hover:border-white/[0.35]">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.22em] text-[#7aab97]">
               Recent Transactions
             </h2>
           </div>
@@ -552,23 +513,24 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
         <div className="flex flex-col items-center text-center px-5 py-10">
           <div
             className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-            style={{ background: "rgba(200,135,58,0.07)", boxShadow: "0 0 0 1px rgba(200,135,58,0.13)" }}
+            style={{ backgroundColor: "#1e1a0f", boxShadow: "0 0 0 1px #362211" }}
           >
             <Sparkles size={16} className="text-amber-500/50" />
           </div>
           <p
-            className="font-bold text-white/60 text-sm mb-1"
+            className="font-bold text-[#7aab97] text-sm mb-1"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             No transactions yet
           </p>
-          <p className="text-xs text-white/25 mb-5 max-w-50 leading-relaxed">
+          <p className="text-xs text-[#3f5e56] mb-5 max-w-[12rem] leading-relaxed">
             Invest in verified land to see activity here.
           </p>
+          {/* Solid color button — was linear-gradient, caused layer promotion */}
           <Link
             href="/lands"
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg font-bold text-xs text-[#0D1F1A] transition-all hover:scale-[1.03] active:scale-[0.98]"
-            style={{ background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" }}
+            style={{ backgroundColor: "#C8873A" }}
           >
             Browse Properties <ArrowUpRight size={11} />
           </Link>
@@ -578,34 +540,35 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
   }
 
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.03] overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 bg-white/[0.02]">
+    <div className="rounded-2xl border border-[#1e3530] bg-[#132922] overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-[#193028] bg-[#142D25]">
         <div className="flex items-center gap-2.5">
           <div
             className="w-7 h-7 rounded-lg flex items-center justify-center"
-            style={{ background: "rgba(200,135,58,0.1)", boxShadow: "0 0 0 1px rgba(200,135,58,0.18)" }}
+            style={{ backgroundColor: "#251d0e", boxShadow: "0 0 0 1px #362211" }}
           >
             <Activity size={13} className="text-amber-500" />
           </div>
-          <h2 className="text-[10px] font-black uppercase tracking-[0.22em] hover:border-white/[0.35]">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.22em] text-[#7aab97]">
             Recent Transactions
           </h2>
-          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full border border-white/10 text-white/20">
+          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full border border-[#1e3530] text-[#3f5e56]">
             {transactions.length}
           </span>
         </div>
         <Link
           href="/wallet"
-          className="flex items-center gap-1 text-xs font-bold text-amber-500/65 hover:text-amber-400 transition-colors"
+          className="flex items-center gap-1 text-xs font-bold text-[#9a7040] hover:text-amber-400 transition-colors"
         >
           View all <ChevronRight size={11} />
         </Link>
       </div>
 
+      {/* Desktop table */}
       <div className="hidden md:block">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/5">
+            <tr className="border-b border-[#193028]">
               {[
                 { label: "Type / Asset", align: "text-left"  },
                 { label: "Amount",       align: "text-right" },
@@ -614,14 +577,14 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
               ].map(({ label, align }) => (
                 <th
                   key={label}
-                  className={`px-5 py-3 text-[9px] font-black uppercase tracking-[0.22em] text-white/20 ${align}`}
+                  className={`px-5 py-3 text-[9px] font-black uppercase tracking-[0.22em] text-[#3f5e56] ${align}`}
                 >
                   {label}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="[&>tr:last-child]:border-b-0">
+          <tbody>
             {transactions.slice(0, TX_DISPLAY_LIMIT).map((tx, idx) => {
               const { sign, color, isCredit } = amountMeta(tx?.type);
               const { cls, dot }              = statusCfg(tx?.status);
@@ -631,31 +594,31 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
               return (
                 <tr
                   key={idx}
-                  className="border-b border-white/[0.035] hover:bg-white/[0.022] transition-colors group"
+                  className="border-b border-[#182e27] hover:bg-[#162d26] transition-colors group last:border-b-0"
                 >
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-[1.04] ${
-                          isCredit === true    ? "bg-emerald-500/10"
-                          : isCredit === false ? "bg-red-500/10"
-                          : "bg-white/5"
+                          isCredit === true    ? "bg-[#0f2118]"
+                          : isCredit === false ? "bg-[#1f1414]"
+                          : "bg-[#142D25]"
                         }`}
                       >
                         {isCredit === true
                           ? <ArrowDownLeft size={14} className="text-emerald-400" />
                           : isCredit === false
                           ? <ArrowUpRight size={14} className="text-red-400" />
-                          : <Activity size={14} className="text-white/25" />}
+                          : <Activity size={14} className="text-[#3f5e56]" />}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-semibold capitalize text-white/75 text-sm leading-none truncate">
+                        <p className="font-semibold capitalize text-[#c8ddd7] text-sm leading-none truncate">
                           {tx?.type || "Transaction"}
                         </p>
-                        <p className="text-[11px] hover:border-white/[0.22] mt-1 truncate">
+                        <p className="text-[11px] text-[#4a6660] mt-1 truncate">
                           {tx?.land || "Wallet"}
                           {tx?.units != null && (
-                            <span className="ml-1.5 text-white/20">
+                            <span className="ml-1.5 text-[#3f5e56]">
                               · {tx.units} unit{tx.units !== 1 ? "s" : ""}
                             </span>
                           )}
@@ -680,7 +643,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
                     </span>
                   </td>
 
-                  <td className="px-5 py-4 text-[11px] hover:border-white/[0.22] whitespace-nowrap">
+                  <td className="px-5 py-4 text-[11px] text-[#4a6660] whitespace-nowrap">
                     {formatDate(txDate)}
                   </td>
                 </tr>
@@ -690,7 +653,8 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
         </table>
       </div>
 
-      <div className="md:hidden divide-y divide-white/5 [&>div:last-child]:border-b-0">
+      {/* Mobile list */}
+      <div className="md:hidden divide-y divide-[#193028]">
         {transactions.slice(0, TX_DISPLAY_LIMIT).map((tx, idx) => {
           const { sign, color, isCredit } = amountMeta(tx?.type);
           const { cls, dot }              = statusCfg(tx?.status);
@@ -700,34 +664,34 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
           return (
             <div
               key={idx}
-              className="px-4 py-4 flex items-center gap-3 hover:bg-white/[0.02] transition-colors"
+              className="px-4 py-4 flex items-center gap-3 hover:bg-[#162d26] transition-colors"
             >
               <div
                 className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                  isCredit === true    ? "bg-emerald-500/10"
-                  : isCredit === false ? "bg-red-500/10"
-                  : "bg-white/5"
+                  isCredit === true    ? "bg-[#0f2118]"
+                  : isCredit === false ? "bg-[#1f1414]"
+                  : "bg-[#142D25]"
                 }`}
               >
                 {isCredit === true
                   ? <ArrowDownLeft size={15} className="text-emerald-400" />
                   : isCredit === false
                   ? <ArrowUpRight size={15} className="text-red-400" />
-                  : <Activity size={15} className="text-white/25" />}
+                  : <Activity size={15} className="text-[#3f5e56]" />}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm capitalize text-white/75 truncate leading-none">
+                <p className="font-semibold text-sm capitalize text-[#c8ddd7] truncate leading-none">
                   {tx?.type || "Transaction"}
                 </p>
-                <p className="text-[11px] text-white/40 mt-0.5 truncate">
+                <p className="text-[11px] text-[#4a6660] mt-0.5 truncate">
                   {tx?.land || "Wallet"}
                   {tx?.units != null && (
-                    <span className="text-white/20">
+                    <span className="text-[#3f5e56]">
                       {" "}· {tx.units} unit{tx.units !== 1 ? "s" : ""}
                     </span>
                   )}
                 </p>
-                <p className="text-[10px] text-white/20 mt-0.5">{formatDate(txDate)}</p>
+                <p className="text-[10px] text-[#3f5e56] mt-0.5">{formatDate(txDate)}</p>
               </div>
               <div className="flex flex-col items-end gap-1.5 shrink-0">
                 <span className={`font-bold text-sm tabular-nums ${color}`}>
@@ -744,10 +708,10 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
       </div>
 
       {transactions.length > TX_DISPLAY_LIMIT && (
-        <div className="px-5 py-2 border-t border-white/5 text-center bg-white/[0.01]">
+        <div className="px-5 py-2 border-t border-[#193028] text-center bg-[#121f1b]">
           <Link
             href="/wallet"
-            className="text-xs text-white/20 hover:text-amber-500 transition-colors font-semibold"
+            className="text-xs text-[#3f5e56] hover:text-amber-500 transition-colors font-semibold"
           >
             View all {transactions.length} transactions →
           </Link>
