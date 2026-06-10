@@ -993,7 +993,7 @@ function GuestContactForm() {
           <Link href="/login" className="font-semibold transition-colors hover:opacity-80" style={{ color: AMBER }}>
             Sign in
           </Link>{" "}
-          to track your ticket and use AI chat support.
+          to track your ticket.
         </p>
       </div>
     </div>
@@ -1018,7 +1018,7 @@ function GuestContactForm() {
         <Link href="/login"
           className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-[#0A1A13] transition-all hover:scale-[1.02]"
           style={{ background: grad }}>
-          <Sparkles size={12} /> Sign in for AI chat
+          <Sparkles size={12} /> Sign in
         </Link>
       </div>
 
