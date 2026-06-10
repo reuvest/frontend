@@ -201,7 +201,7 @@ export default function Dashboard() {
           <div className="absolute inset-0 w-12 h-12 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
         </div>
         {slowHint && (
-          <p className="text-[#4a6660] text-xs animate-pulse">
+          <p className="text-[#7aab97] text-xs animate-pulse">
             Still loading… check your connection
           </p>
         )}
@@ -212,7 +212,7 @@ export default function Dashboard() {
   return (
     <div
       className="min-h-screen bg-[#0D1F1A] relative overflow-x-clip"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}
     >
       <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-5">
 
@@ -225,7 +225,7 @@ export default function Dashboard() {
                   Dashboard
                 </span>
                 <span className="w-1 h-1 rounded-full bg-[#2d4f44]" />
-                <span className="text-[10px] text-[#3a5248]">
+                <span className="text-[10px] text-[#7aab97]">
                   {new Date().toLocaleDateString("en-NG", {
                     weekday: "short", month: "short", day: "numeric",
                   })}
@@ -235,7 +235,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-2 flex-wrap">
                 <h1
                   className="text-2xl sm:text-4xl font-bold leading-tight"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                 >
                   <span className="text-white">{greetingText}, </span>
                   {/* Solid color — eliminates gradient-text layer promotion */}
@@ -263,14 +263,14 @@ export default function Dashboard() {
                 )}
               </div>
 
-              <p className="text-sm text-[#4a6660] mt-1.5">
+              <p className="text-sm text-[#7aab97] mt-1.5">
                 Here's how your investments are performing today.
               </p>
             </div>
 
             <button
               onClick={refetch}
-              className="group self-start flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-[#4a6660] border border-[#1e3530] hover:border-[#2a4a42] hover:text-[#7aab97] hover:bg-[#142D25] transition-all"
+              className="group self-start flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-[#7aab97] border border-[#1e3530] hover:border-[#2a4a42] hover:text-[#7aab97] hover:bg-[#142D25] transition-all"
             >
               <RefreshCw size={12} className="group-hover:rotate-180 transition-transform duration-500" />
               Refresh
@@ -404,7 +404,7 @@ function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
       >
         {icon}
       </div>
-      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3f5e56] mb-1.5 truncate">
+      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8ab9a9] mb-1.5 truncate">
         {label}
       </p>
       <p
@@ -414,10 +414,10 @@ function StatCard({ icon, label, value, accent, href, mounted, isCount, sub }) {
       >
         {display}
       </p>
-      {sub && <p className="text-[11px] text-[#3f5e56] mt-1.5 truncate">{sub}</p>}
+      {sub && <p className="text-[11px] text-[#8ab9a9] mt-1.5 truncate">{sub}</p>}
       <ChevronRight
         size={12}
-        className="absolute bottom-4 right-4 text-[#3f5e56] opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0 transition-all duration-300"
+        className="absolute bottom-4 right-4 text-[#8ab9a9] opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0 transition-all duration-300"
       />
     </div>
   );
@@ -440,7 +440,7 @@ function QuickCard({ title, desc, href, icon, accent }) {
           {icon}
         </div>
         <h3 className="font-bold text-[#c8ddd7] text-sm leading-none">{title}</h3>
-        <p className="text-[11px] text-[#4a6660] mt-1 sm:block leading-snug">{desc}</p>
+        <p className="text-[11px] text-[#7aab97] mt-1 sm:block leading-snug">{desc}</p>
         <div className="hidden sm:flex items-center gap-1 mt-3">
           <span className="text-xs font-bold transition-colors" style={{ color: accent }}>Open</span>
           <ArrowUpRight
@@ -481,11 +481,11 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
     return (
       <div className="rounded-2xl border border-[#1e3530] bg-[#132922] overflow-hidden">
         <div className="flex flex-col items-center text-center px-5 py-10 gap-3">
-          <WifiOff size={20} className="text-[#3f5e56]" />
-          <p className="text-sm text-[#4a6660]">Couldn't load transactions</p>
+          <WifiOff size={20} className="text-[#8ab9a9]" />
+          <p className="text-sm text-[#7aab97]">Couldn't load transactions</p>
           <button
             onClick={onRetry}
-            className="px-4 py-1.5 rounded-xl text-xs font-bold border border-[#1e3530] text-[#4a6660] hover:bg-[#142D25] transition-all"
+            className="px-4 py-1.5 rounded-xl text-xs font-bold border border-[#1e3530] text-[#7aab97] hover:bg-[#142D25] transition-all"
           >
             Retry
           </button>
@@ -519,11 +519,11 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
           </div>
           <p
             className="font-bold text-[#7aab97] text-sm mb-1"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
             No transactions yet
           </p>
-          <p className="text-xs text-[#3f5e56] mb-5 max-w-[12rem] leading-relaxed">
+          <p className="text-xs text-[#8ab9a9] mb-5 max-w-[12rem] leading-relaxed">
             Invest in verified land to see activity here.
           </p>
           {/* Solid color button — was linear-gradient, caused layer promotion */}
@@ -552,7 +552,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
           <h2 className="text-[10px] font-black uppercase tracking-[0.22em] text-[#7aab97]">
             Recent Transactions
           </h2>
-          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full border border-[#1e3530] text-[#3f5e56]">
+          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full border border-[#1e3530] text-[#8ab9a9]">
             {transactions.length}
           </span>
         </div>
@@ -577,7 +577,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
               ].map(({ label, align }) => (
                 <th
                   key={label}
-                  className={`px-5 py-3 text-[9px] font-black uppercase tracking-[0.22em] text-[#3f5e56] ${align}`}
+                  className={`px-5 py-3 text-[9px] font-black uppercase tracking-[0.22em] text-[#8ab9a9] ${align}`}
                 >
                   {label}
                 </th>
@@ -609,16 +609,16 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
                           ? <ArrowDownLeft size={14} className="text-emerald-400" />
                           : isCredit === false
                           ? <ArrowUpRight size={14} className="text-red-400" />
-                          : <Activity size={14} className="text-[#3f5e56]" />}
+                          : <Activity size={14} className="text-[#8ab9a9]" />}
                       </div>
                       <div className="min-w-0">
                         <p className="font-semibold capitalize text-[#c8ddd7] text-sm leading-none truncate">
                           {tx?.type || "Transaction"}
                         </p>
-                        <p className="text-[11px] text-[#4a6660] mt-1 truncate">
+                        <p className="text-[11px] text-[#7aab97] mt-1 truncate">
                           {tx?.land || "Wallet"}
                           {tx?.units != null && (
-                            <span className="ml-1.5 text-[#3f5e56]">
+                            <span className="ml-1.5 text-[#8ab9a9]">
                               · {tx.units} unit{tx.units !== 1 ? "s" : ""}
                             </span>
                           )}
@@ -630,7 +630,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
                   <td className="px-5 py-4 text-right">
                     <span
                       className={`font-bold tabular-nums text-[0.9rem] ${color}`}
-                      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                      style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                     >
                       {sign}₦{amountNaira.toLocaleString("en-NG")}
                     </span>
@@ -643,7 +643,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
                     </span>
                   </td>
 
-                  <td className="px-5 py-4 text-[11px] text-[#4a6660] whitespace-nowrap">
+                  <td className="px-5 py-4 text-[11px] text-[#7aab97] whitespace-nowrap">
                     {formatDate(txDate)}
                   </td>
                 </tr>
@@ -677,21 +677,21 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
                   ? <ArrowDownLeft size={15} className="text-emerald-400" />
                   : isCredit === false
                   ? <ArrowUpRight size={15} className="text-red-400" />
-                  : <Activity size={15} className="text-[#3f5e56]" />}
+                  : <Activity size={15} className="text-[#8ab9a9]" />}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm capitalize text-[#c8ddd7] truncate leading-none">
                   {tx?.type || "Transaction"}
                 </p>
-                <p className="text-[11px] text-[#4a6660] mt-0.5 truncate">
+                <p className="text-[11px] text-[#7aab97] mt-0.5 truncate">
                   {tx?.land || "Wallet"}
                   {tx?.units != null && (
-                    <span className="text-[#3f5e56]">
+                    <span className="text-[#8ab9a9]">
                       {" "}· {tx.units} unit{tx.units !== 1 ? "s" : ""}
                     </span>
                   )}
                 </p>
-                <p className="text-[10px] text-[#3f5e56] mt-0.5">{formatDate(txDate)}</p>
+                <p className="text-[10px] text-[#8ab9a9] mt-0.5">{formatDate(txDate)}</p>
               </div>
               <div className="flex flex-col items-end gap-1.5 shrink-0">
                 <span className={`font-bold text-sm tabular-nums ${color}`}>
@@ -711,7 +711,7 @@ function TransactionsSection({ transactions, loading, error, onRetry }) {
         <div className="px-5 py-2 border-t border-[#193028] text-center bg-[#121f1b]">
           <Link
             href="/wallet"
-            className="text-xs text-[#3f5e56] hover:text-amber-500 transition-colors font-semibold"
+            className="text-xs text-[#8ab9a9] hover:text-amber-500 transition-colors font-semibold"
           >
             View all {transactions.length} transactions →
           </Link>

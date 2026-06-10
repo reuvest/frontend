@@ -75,7 +75,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
 
       <div className="absolute inset-0 pointer-events-none"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px", opacity: 0.03 }} />
@@ -86,12 +86,12 @@ export default function NotificationsPage() {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <button onClick={() => router.back()}
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/[0.01]0 border border-white/10 text-white/40 hover:text-white transition-all">
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/[0.01]0 border border-white/10 text-white/60 hover:text-white transition-all">
               <ArrowLeft size={15} />
             </button>
             <div>
               <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-0.5">Inbox</p>
-              <h1 className="text-2xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              <h1 className="text-2xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                 Notifications
               </h1>
             </div>
@@ -99,7 +99,7 @@ export default function NotificationsPage() {
 
           {unreadCount > 0 && (
             <button onClick={handleMarkAllAsRead}
-              className="flex items-center gap-1.5 text-xs font-semibold text-white/30 hover:text-emerald-400 transition-colors px-3 py-2 rounded-xl hover:bg-emerald-500/10 border border-transparent hover:border-emerald-500/20">
+              className="flex items-center gap-1.5 text-xs font-semibold text-white/55 hover:text-emerald-400 transition-colors px-3 py-2 rounded-xl hover:bg-emerald-500/10 border border-transparent hover:border-emerald-500/20">
               <CheckCheck size={13} />
               Mark all read
             </button>

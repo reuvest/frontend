@@ -128,7 +128,7 @@ export default function ResetPin() {
                 </div>
                 <span
                   className={`text-xs font-semibold hidden sm:block ${
-                    active ? "text-amber-400" : done ? "text-white/40" : "text-white/20"
+                    active ? "text-amber-400" : done ? "text-white/60" : "text-white/20"
                   }`}
                 >
                   {label}
@@ -167,7 +167,7 @@ export default function ResetPin() {
       {step === 2 && (
         <form onSubmit={handleVerifyCode} className="space-y-5">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">
+            <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">
               Verification Code
             </label>
             <input
@@ -187,7 +187,7 @@ export default function ResetPin() {
       {step === 3 && (
         <form onSubmit={handleResetPin} className="space-y-6">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-3">
+            <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-3">
               New PIN
             </label>
             <PinInput
@@ -198,7 +198,7 @@ export default function ResetPin() {
             />
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-3">
+            <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-3">
               Confirm New PIN
             </label>
             <PinInput

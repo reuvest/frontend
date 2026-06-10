@@ -48,7 +48,7 @@ const isLoggedIn = !!user;
       <div className="min-h-screen bg-[#0D1F1A] flex items-center justify-center"
         style={{ fontFamily: "'DM Sans', sans-serif" }}>
         <div className="text-center">
-          <p className="text-white/40 mb-4">{error || "Article not found."}</p>
+          <p className="text-white/60 mb-4">{error || "Article not found."}</p>
           <Link href="/blog" className="text-amber-500 hover:text-amber-400 text-sm">← Back to Blog</Link>
         </div>
       </div>
@@ -60,7 +60,7 @@ const isLoggedIn = !!user;
 
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
 
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
@@ -83,7 +83,7 @@ const isLoggedIn = !!user;
 
         {/* Back nav */}
         <Link href="/blog"
-          className="inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors mb-8">
+          className="inline-flex items-center gap-1.5 text-xs text-white/55 hover:text-white/60 transition-colors mb-8">
           <ArrowLeft size={13} /> Back to Blog
         </Link>
 
@@ -99,7 +99,7 @@ const isLoggedIn = !!user;
 
         {/* Title */}
         <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-4"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
           {post.title}
         </h1>
 
@@ -111,7 +111,7 @@ const isLoggedIn = !!user;
         )}
 
         {/* Meta strip */}
-        <div className="flex flex-wrap items-center gap-4 text-xs text-white/30 mb-8 pb-8 border-b border-white/6">
+        <div className="flex flex-wrap items-center gap-4 text-xs text-white/55 mb-8 pb-8 border-b border-white/6">
           <span className="flex items-center gap-1.5">
             <Calendar size={11} /> {fmtDate(post.published_at)}
           </span>
@@ -141,7 +141,7 @@ const isLoggedIn = !!user;
                 <Link
                   key={t.id}
                   href={`/blog?tag=${t.slug}`}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-white/10 bg-white/5 text-white/40 hover:border-amber-500/30 hover:text-amber-400 hover:bg-amber-500/5 transition-all">
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-white/10 bg-white/5 text-white/60 hover:border-amber-500/30 hover:text-amber-400 hover:bg-amber-500/5 transition-all">
                   <Tag size={9} /> {t.name}
                 </Link>
               ))}
@@ -153,7 +153,7 @@ const isLoggedIn = !!user;
        {!isLoggedIn && (
         <div className="mt-12 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-6 text-center">
           <p className="text-sm font-bold text-white/80 mb-1"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Ready to start investing in Nigerian land?
           </p>
           <p className="text-xs hover:border-white/[0.35] mb-4">

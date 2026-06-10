@@ -674,14 +674,14 @@ export default function TermsOfService() {
   const sections = getSections(appname, email);
 
   return (
-    <div className="min-h-screen bg-[#FDFAF5]" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+    <div className="min-h-screen bg-[#FDFAF5]" style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
 
       {/* Top bar */}
       <div className="bg-[#0D1F1A] px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm font-medium">
           <ArrowLeft size={15} /> Back to {appname}
         </Link>
-        <span className="text-white/30 text-xs hidden sm:block">Effective {EFFECTIVE_DATE}</span>
+        <span className="text-white/55 text-xs hidden sm:block">Effective {EFFECTIVE_DATE}</span>
       </div>
 
       <div className="max-w-4xl mx-auto px-6 py-16 sm:py-24">
@@ -689,12 +689,12 @@ export default function TermsOfService() {
         <header className="mb-14">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 rounded-2xl bg-amber-100 border border-amber-200 flex items-center justify-center">
-              <FileText className="text-amber-700" size={22} />
+              <FileText className="text-amber-400" size={22} />
             </div>
             <div>
-              <p className="text-xs font-bold tracking-[0.15em] uppercase text-amber-700">Legal</p>
+              <p className="text-xs font-bold tracking-[0.15em] uppercase text-amber-400">Legal</p>
               <h1 className="text-3xl sm:text-4xl font-bold text-[#0D1F1A]"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                 Terms &amp; Conditions
               </h1>
             </div>
@@ -714,7 +714,7 @@ export default function TermsOfService() {
             <div className="grid grid-cols-2 gap-1.5">
               {sections.map((s) => (
                 <a key={s.number} href={`#section-${s.number}`}
-                  className="text-sm text-[#5C6B63] hover:text-amber-700 transition-colors py-0.5">
+                  className="text-sm text-[#5C6B63] hover:text-amber-400 transition-colors py-0.5">
                   {s.number === "Summary" ? "Summary" : `${s.number}.`} {s.title}
                 </a>
               ))}
@@ -733,7 +733,7 @@ export default function TermsOfService() {
                   {s.number === "Summary" ? "!" : s.number}
                 </span>
                 <h2 className="text-lg font-bold text-[#0D1F1A]"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   {s.title}
                 </h2>
               </div>
@@ -751,12 +751,12 @@ export default function TermsOfService() {
           <p className="text-white/80 text-sm italic leading-relaxed">
             By creating an account or using the REU.ng Platform, you confirm that you have read, understood, and agreed to these Terms and Conditions in their entirety.
           </p>
-          <p className="text-white/40 text-xs mt-3">Effective: {EFFECTIVE_DATE} · SproutVest GSE Ltd.</p>
+          <p className="text-white/60 text-xs mt-3">Effective: {EFFECTIVE_DATE} · SproutVest GSE Ltd.</p>
         </div>
 
         {/* Footer */}
         <div className="mt-10 pt-8 border-t border-stone-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <Link href="/" className="inline-flex items-center gap-2 text-amber-700 hover:text-amber-800 font-semibold text-sm transition-colors">
+          <Link href="/" className="inline-flex items-center gap-2 text-amber-400 hover:text-amber-800 font-semibold text-sm transition-colors">
             <ArrowLeft size={15} /> Back to Home
           </Link>
           <Link href="/privacy" className="text-sm text-[#5C6B63] hover:text-[#0D1F1A] transition-colors">

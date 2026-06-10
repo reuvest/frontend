@@ -130,7 +130,7 @@ export default function AdminKycManagement() {
   return (
     <div
       className="min-h-screen bg-[#0D1F1A] relative"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}
     >
       {/* Background decorations */}
       <div
@@ -146,7 +146,7 @@ export default function AdminKycManagement() {
 
         <Link
           href="/admin"
-          className="inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors mb-6 sm:mb-8"
+          className="inline-flex items-center gap-1.5 text-xs text-white/55 hover:text-white/60 transition-colors mb-6 sm:mb-8"
         >
           <ArrowLeft size={13} /> Back to Dashboard
         </Link>
@@ -156,11 +156,11 @@ export default function AdminKycManagement() {
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-purple-400 mb-2">Admin Panel</p>
           <h1
             className="text-3xl sm:text-4xl font-bold text-white"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
             KYC Verification
           </h1>
-          <p className="text-white/40 mt-1 text-sm">Review and manage identity verification submissions</p>
+          <p className="text-white/60 mt-1 text-sm">Review and manage identity verification submissions</p>
         </div>
 
         {/* Filter Tabs */}
@@ -170,7 +170,7 @@ export default function AdminKycManagement() {
               key={status}
               onClick={() => setFilter(status)}
               className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
-                filter === status ? "bg-white/[0.01]0 text-white" : "text-white/40 hover:text-white/70"
+                filter === status ? "bg-white/[0.01]0 text-white" : "text-white/60 hover:text-white/70"
               }`}
             >
               {STATUS_CONFIG[status].label}
@@ -186,7 +186,7 @@ export default function AdminKycManagement() {
         ) : kycs.length === 0 ? (
           <div className="text-center py-24 border border-white/10 rounded-2xl">
             <ShieldCheck size={40} className="mx-auto mb-4 text-white/10" />
-            <p className="text-white/30">No {filter} KYC submissions found</p>
+            <p className="text-white/55">No {filter} KYC submissions found</p>
           </div>
         ) : (
           <>
@@ -194,7 +194,7 @@ export default function AdminKycManagement() {
             <div className="hidden md:block rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
               <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr_1fr_80px] gap-4 px-6 py-3 border-b border-white/10 bg-white/5">
                 {["User", "Full Name", "ID Type", "Status", "Submitted", ""].map((h) => (
-                  <span key={h} className="text-xs font-bold uppercase tracking-widest text-white/30">{h}</span>
+                  <span key={h} className="text-xs font-bold uppercase tracking-widest text-white/55">{h}</span>
                 ))}
               </div>
               {kycs.map((kyc, i) => (
@@ -206,12 +206,12 @@ export default function AdminKycManagement() {
                 >
                   <div>
                     <p className="text-sm font-semibold text-white">{kyc.user?.name}</p>
-                    <p className="text-xs text-white/30 mt-0.5 truncate">{kyc.user?.email}</p>
+                    <p className="text-xs text-white/55 mt-0.5 truncate">{kyc.user?.email}</p>
                   </div>
                   <p className="text-sm text-white/70 truncate">{kyc.full_name}</p>
                   <p className="text-sm text-white/70 uppercase">{kyc.id_type?.replace(/_/g, " ")}</p>
                   <StatusBadge status={kyc.status} />
-                  <p className="text-sm text-white/40">{new Date(kyc.created_at).toLocaleDateString()}</p>
+                  <p className="text-sm text-white/60">{new Date(kyc.created_at).toLocaleDateString()}</p>
                   <button
                     onClick={() => viewDetails(kyc.id)}
                     className="flex items-center gap-1.5 text-xs font-semibold text-amber-500 hover:text-amber-400 transition-colors"
@@ -229,22 +229,22 @@ export default function AdminKycManagement() {
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-bold text-white truncate">{kyc.user?.name}</p>
-                      <p className="text-xs text-white/30 truncate">{kyc.user?.email}</p>
+                      <p className="text-xs text-white/55 truncate">{kyc.user?.email}</p>
                     </div>
                     <StatusBadge status={kyc.status} />
                   </div>
                   <div className="grid grid-cols-2 gap-2 mb-3">
                     <div className="bg-white/5 rounded-lg p-2.5">
-                      <p className="text-[10px] text-white/30 uppercase tracking-wider mb-0.5">Full Name</p>
+                      <p className="text-[10px] text-white/55 uppercase tracking-wider mb-0.5">Full Name</p>
                       <p className="text-xs font-semibold text-white truncate">{kyc.full_name}</p>
                     </div>
                     <div className="bg-white/5 rounded-lg p-2.5">
-                      <p className="text-[10px] text-white/30 uppercase tracking-wider mb-0.5">ID Type</p>
+                      <p className="text-[10px] text-white/55 uppercase tracking-wider mb-0.5">ID Type</p>
                       <p className="text-xs font-semibold text-white uppercase">{kyc.id_type?.replace(/_/g, " ")}</p>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-white/30">{new Date(kyc.created_at).toLocaleDateString()}</p>
+                    <p className="text-xs text-white/55">{new Date(kyc.created_at).toLocaleDateString()}</p>
                     <button
                       onClick={() => viewDetails(kyc.id)}
                       className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-500 hover:text-amber-400 transition-colors px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20"
@@ -269,11 +269,11 @@ export default function AdminKycManagement() {
               <div className="min-w-0 flex-1 pr-3">
                 <h2
                   className="text-lg sm:text-xl font-bold text-white"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                 >
                   KYC Details
                 </h2>
-                <p className="text-white/40 text-xs sm:text-sm mt-0.5 truncate">
+                <p className="text-white/60 text-xs sm:text-sm mt-0.5 truncate">
                   {selectedKyc.user?.name} · {selectedKyc.user?.email}
                 </p>
               </div>
@@ -304,12 +304,12 @@ export default function AdminKycManagement() {
                     { label: "City, State",   value: `${selectedKyc.city}, ${selectedKyc.state}`,              icon: <MapPin   size={13} /> },
                   ].map((item) => (
                     <div key={item.label} className="bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5">
-                      <p className="text-xs text-white/30 flex items-center gap-1.5 mb-1">{item.icon}{item.label}</p>
+                      <p className="text-xs text-white/55 flex items-center gap-1.5 mb-1">{item.icon}{item.label}</p>
                       <p className="text-sm font-semibold text-white">{item.value}</p>
                     </div>
                   ))}
                   <div className="sm:col-span-2 bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5">
-                    <p className="text-xs text-white/30 flex items-center gap-1.5 mb-1"><MapPin size={13} />Address</p>
+                    <p className="text-xs text-white/55 flex items-center gap-1.5 mb-1"><MapPin size={13} />Address</p>
                     <p className="text-sm font-semibold text-white">{selectedKyc.address}</p>
                   </div>
                 </div>
@@ -323,11 +323,11 @@ export default function AdminKycManagement() {
                 </div>
                 <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   <div className="bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5">
-                    <p className="text-xs text-white/30 mb-1">ID Type</p>
+                    <p className="text-xs text-white/55 mb-1">ID Type</p>
                     <p className="text-sm font-semibold text-white uppercase">{selectedKyc.id_type?.replace(/_/g, " ")}</p>
                   </div>
                   <div className="bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5">
-                    <p className="text-xs text-white/30 mb-1">ID Number</p>
+                    <p className="text-xs text-white/55 mb-1">ID Number</p>
                     <p className="text-sm font-semibold text-white font-mono break-all">{selectedKyc.id_number}</p>
                   </div>
                 </div>
@@ -359,7 +359,7 @@ export default function AdminKycManagement() {
                     {/* PEP detail cards */}
                     <div className="grid grid-cols-2 gap-2 sm:gap-3">
                       <div className="bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5">
-                        <p className="text-xs text-white/30 mb-1">Relationship</p>
+                        <p className="text-xs text-white/55 mb-1">Relationship</p>
                         <p className="text-sm font-semibold text-white capitalize">
                           {selectedKyc.pep_relationship === "self"
                             ? "Self — Direct PEP"
@@ -372,14 +372,14 @@ export default function AdminKycManagement() {
                       </div>
 
                       <div className="bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5">
-                        <p className="text-xs text-white/30 mb-1">Country</p>
+                        <p className="text-xs text-white/55 mb-1">Country</p>
                         <p className="text-sm font-semibold text-white font-mono">
                           {selectedKyc.pep_country ?? "—"}
                         </p>
                       </div>
 
                       <div className="sm:col-span-2 bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5">
-                        <p className="text-xs text-white/30 mb-1">Public Role / Position</p>
+                        <p className="text-xs text-white/55 mb-1">Public Role / Position</p>
                         <p className="text-sm font-semibold text-white">
                           {selectedKyc.pep_role ?? "—"}
                         </p>
@@ -387,7 +387,7 @@ export default function AdminKycManagement() {
 
                       {selectedKyc.pep_details && (
                         <div className="sm:col-span-2 bg-white/5 rounded-xl p-3 sm:p-4 border border-white/5">
-                          <p className="text-xs text-white/30 mb-1">Additional Details</p>
+                          <p className="text-xs text-white/55 mb-1">Additional Details</p>
                           <p className="text-sm text-white/70 leading-relaxed">
                             {selectedKyc.pep_details}
                           </p>
@@ -436,7 +436,7 @@ export default function AdminKycManagement() {
                           <Eye size={20} className="text-white" />
                         </div>
                       </div>
-                      <p className="text-xs text-white/30 text-center mt-1.5">{doc.label}</p>
+                      <p className="text-xs text-white/55 text-center mt-1.5">{doc.label}</p>
                     </a>
                   ))}
                 </div>
@@ -475,7 +475,7 @@ export default function AdminKycManagement() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-white/40 mb-2">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-white/60 mb-2">
                       Reason <span className="normal-case font-normal">(required for reject / resubmit)</span>
                     </label>
                     <textarea

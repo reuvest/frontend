@@ -37,8 +37,8 @@ function StatCard({ icon, label, value, accent }) {
         style={{ background: `${accent}20`, color: accent }}>
         {icon}
       </div>
-      <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-0.5">{label}</p>
-      <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{value}</p>
+      <p className="text-[10px] font-bold uppercase tracking-widest text-white/55 mb-0.5">{label}</p>
+      <p className="text-2xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>{value}</p>
     </div>
   );
 }
@@ -103,7 +103,7 @@ function PostModal({ post, categories, tags, onClose, onSaved }) {
   };
 
   const inputCls = "w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 text-white placeholder-white/20 px-4 py-3 rounded-xl text-sm outline-none transition-all";
-  const labelCls = "block text-xs font-bold uppercase tracking-widest text-white/30 mb-2";
+  const labelCls = "block text-xs font-bold uppercase tracking-widest text-white/55 mb-2";
 
   return (
     <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -112,7 +112,7 @@ function PostModal({ post, categories, tags, onClose, onSaved }) {
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/10 sticky top-0 bg-[#0f2820] z-10">
-          <h2 className="text-lg font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h2 className="text-lg font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             {isEdit ? "Edit Post" : "New Post"}
           </h2>
           <button onClick={onClose}
@@ -184,7 +184,7 @@ function PostModal({ post, categories, tags, onClose, onSaved }) {
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
                       selectedTags.includes(tag.id)
                         ? "border-amber-500/60 bg-amber-500/15 text-amber-400"
-                        : "border-white/10 bg-white/5 text-white/40 hover:border-white/20 hover:text-white/70"
+                        : "border-white/10 bg-white/5 text-white/60 hover:border-white/20 hover:text-white/70"
                     }`}>
                     #{tag.name}
                   </button>
@@ -202,7 +202,7 @@ function PostModal({ post, categories, tags, onClose, onSaved }) {
               ) : (
                 <div className="flex flex-col items-center gap-1">
                   <Image size={18} className="text-white/20" />
-                  <span className="text-xs text-white/30">Click to upload cover image</span>
+                  <span className="text-xs text-white/55">Click to upload cover image</span>
                 </div>
               )}
               <input type="file" accept="image/*" onChange={handleCover} className="hidden" />
@@ -211,7 +211,7 @@ function PostModal({ post, categories, tags, onClose, onSaved }) {
 
           {/* SEO */}
           <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
-            <p className="text-xs font-bold uppercase tracking-widest text-white/30">SEO (optional)</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-white/55">SEO (optional)</p>
             <input value={form.seo_title} onChange={e => setForm({ ...form, seo_title: e.target.value })}
               placeholder="SEO title (max 70 chars)" maxLength={70} className={inputCls} />
             <textarea value={form.seo_description} onChange={e => setForm({ ...form, seo_description: e.target.value })}
@@ -222,7 +222,7 @@ function PostModal({ post, categories, tags, onClose, onSaved }) {
           {/* Actions */}
           <div className="flex gap-3 pt-1">
             <button type="button" onClick={onClose}
-              className="flex-1 py-3 rounded-xl text-sm font-semibold text-white/40 hover:text-white border border-white/10 hover:bg-white/5 transition-all">
+              className="flex-1 py-3 rounded-xl text-sm font-semibold text-white/60 hover:text-white border border-white/10 hover:bg-white/5 transition-all">
               Cancel
             </button>
             <button type="submit" disabled={saving}
@@ -278,7 +278,7 @@ function TaxonomyManager({ type, items, onRefresh }) {
 
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-      <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3">{label}s</p>
+      <p className="text-xs font-bold uppercase tracking-widest text-white/55 mb-3">{label}s</p>
       <div className="flex gap-2 mb-3">
         <input value={newName} onChange={e => setNewName(e.target.value)}
           onKeyDown={e => e.key === "Enter" && handleAdd()}
@@ -397,7 +397,7 @@ export default function AdminBlogPage() {
     : posts;
 
   return (
-    <div className="min-h-screen bg-[#0D1F1A] relative" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+    <div className="min-h-screen bg-[#0D1F1A] relative" style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
       <div className="absolute top-0 left-0 w-[40vw] h-[40vw] rounded-full opacity-10 pointer-events-none"
@@ -405,7 +405,7 @@ export default function AdminBlogPage() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
 
-        <Link href="/admin" className="inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors mb-6">
+        <Link href="/admin" className="inline-flex items-center gap-1.5 text-xs text-white/55 hover:text-white/60 transition-colors mb-6">
           <ArrowLeft size={13} /> Back to Dashboard
         </Link>
 
@@ -413,10 +413,10 @@ export default function AdminBlogPage() {
         <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
           <div>
             <p className="text-xs font-bold tracking-[0.2em] uppercase text-purple-400 mb-2">Admin Panel</p>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               Blog
             </h1>
-            <p className="text-white/40 mt-1 text-sm">{pagination.total} total posts</p>
+            <p className="text-white/60 mt-1 text-sm">{pagination.total} total posts</p>
           </div>
           <div className="flex gap-2">
             <button onClick={() => setShowTaxonomy(!showTaxonomy)}
@@ -468,7 +468,7 @@ export default function AdminBlogPage() {
             {[["", "All"], ["published", "Published"], ["draft", "Drafts"]].map(([v, l]) => (
               <button key={v} onClick={() => setFilterStatus(v)}
                 className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${
-                  filterStatus === v ? "bg-white/[0.01]0 text-white" : "text-white/40 hover:text-white/70"
+                  filterStatus === v ? "bg-white/[0.01]0 text-white" : "text-white/60 hover:text-white/70"
                 }`}>
                 {l}
               </button>
@@ -484,7 +484,7 @@ export default function AdminBlogPage() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-24 border border-white/10 rounded-2xl">
             <BookOpen size={36} className="mx-auto mb-4 text-white/10" />
-            <p className="text-white/30 mb-4">No posts found</p>
+            <p className="text-white/55 mb-4">No posts found</p>
             <button onClick={() => { setEditPost(null); setShowModal(true); }}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-[#0D1F1A] text-sm"
               style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)" }}>
@@ -497,7 +497,7 @@ export default function AdminBlogPage() {
             <div className="hidden md:block rounded-2xl border border-white/10 bg-white/5 overflow-hidden mb-5">
               <div className="grid grid-cols-[2.5fr_1fr_1fr_80px_80px_100px] gap-4 px-6 py-3 border-b border-white/10 bg-white/5">
                 {["Title", "Category", "Status", "Views", "Read time", "Actions"].map(h => (
-                  <span key={h} className="text-[10px] font-bold uppercase tracking-widest text-white/30">{h}</span>
+                  <span key={h} className="text-[10px] font-bold uppercase tracking-widest text-white/55">{h}</span>
                 ))}
               </div>
               {filtered.map((post, i) => (
@@ -516,10 +516,10 @@ export default function AdminBlogPage() {
                   <span className="text-xs text-white/50 truncate">{post.category?.name || "—"}</span>
                   <StatusBadge status={post.status} />
                   <span className="text-sm text-white/50 tabular-nums">{(post.views || 0).toLocaleString()}</span>
-                  <span className="text-xs text-white/40">{post.read_time_minutes || 1} min</span>
+                  <span className="text-xs text-white/60">{post.read_time_minutes || 1} min</span>
                   <div className="flex items-center gap-1">
                     <Link href={`/blog/${post.slug}`} target="_blank" title="View"
-                      className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/[0.01]0 transition-all">
+                      className="w-7 h-7 rounded-lg flex items-center justify-center text-white/55 hover:text-white hover:bg-white/[0.01]0 transition-all">
                       <Eye size={13} />
                     </Link>
                     <button onClick={() => openEdit(post.id)} title="Edit"
@@ -544,18 +544,18 @@ export default function AdminBlogPage() {
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-bold text-white truncate">{post.title}</p>
-                      <p className="text-xs text-white/30 mt-0.5">{post.category?.name || "Uncategorised"}</p>
+                      <p className="text-xs text-white/55 mt-0.5">{post.category?.name || "Uncategorised"}</p>
                     </div>
                     <StatusBadge status={post.status} />
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex gap-3 text-xs text-white/30">
+                    <div className="flex gap-3 text-xs text-white/55">
                       <span>{(post.views || 0).toLocaleString()} views</span>
                       <span>{post.read_time_minutes || 1} min read</span>
                     </div>
                     <div className="flex gap-1">
                       <Link href={`/blog/${post.slug}`} target="_blank"
-                        className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/[0.01]0">
+                        className="w-7 h-7 rounded-lg flex items-center justify-center text-white/55 hover:text-white hover:bg-white/[0.01]0">
                         <Eye size={13} />
                       </Link>
                       <button onClick={() => openEdit(post.id)}
@@ -575,7 +575,7 @@ export default function AdminBlogPage() {
             {/* Pagination */}
             {pagination.last_page > 1 && (
               <div className="flex items-center justify-between">
-                <p className="text-xs text-white/30">Page {pagination.current_page} of {pagination.last_page}</p>
+                <p className="text-xs text-white/55">Page {pagination.current_page} of {pagination.last_page}</p>
                 <div className="flex gap-2">
                   <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={pagination.current_page === 1}
                     className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30">

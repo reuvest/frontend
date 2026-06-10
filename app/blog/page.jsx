@@ -37,7 +37,7 @@ function PostCard({ post }) {
           <div className="h-44 flex items-center justify-center"
             style={{ background: "linear-gradient(135deg, rgba(200,135,58,0.08), rgba(45,122,85,0.08))" }}>
             <span className="text-amber-500/20 text-4xl font-bold"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               {post.title[0]}
             </span>
           </div>
@@ -53,13 +53,13 @@ function PostCard({ post }) {
 
           {/* Title */}
           <h2 className="font-bold text-white/90 text-base leading-snug mb-2 group-hover:text-amber-400/90 transition-colors"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             {post.title}
           </h2>
 
           {/* Excerpt */}
           {post.excerpt && (
-            <p className="text-xs text-white/40 leading-relaxed mb-4 flex-1 line-clamp-3">
+            <p className="text-xs text-white/60 leading-relaxed mb-4 flex-1 line-clamp-3">
               {post.excerpt}
             </p>
           )}
@@ -153,7 +153,7 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
 
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
@@ -169,10 +169,10 @@ export default function BlogPage() {
             {appname} Blog
           </p>
           <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Insights & Updates
           </h1>
-          <p className="text-white/40 max-w-xl mx-auto text-sm leading-relaxed">
+          <p className="text-white/60 max-w-xl mx-auto text-sm leading-relaxed">
             Land investment guides, market updates, and property insights from the {appname} team.
           </p>
         </div>
@@ -197,7 +197,7 @@ export default function BlogPage() {
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all ${
                 !activeCategory
                   ? "border-amber-500/50 bg-amber-500/10 text-amber-400"
-                  : "border-white/10 bg-white/5 text-white/40 hover:border-white/20"
+                  : "border-white/10 bg-white/5 text-white/60 hover:border-white/20"
               }`}>
               All
             </button>
@@ -207,7 +207,7 @@ export default function BlogPage() {
                 className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all ${
                   activeCategory === c.slug
                     ? "border-amber-500/50 bg-amber-500/10 text-amber-400"
-                    : "border-white/10 bg-white/5 text-white/40 hover:border-white/20"
+                    : "border-white/10 bg-white/5 text-white/60 hover:border-white/20"
                 }`}>
                 <Folder size={10} /> {c.name}
                 <span className="text-white/20">({c.posts_count})</span>
@@ -225,7 +225,7 @@ export default function BlogPage() {
                 className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${
                   activeTag === t.slug
                     ? "border-amber-500/40 bg-amber-500/8 text-amber-400"
-                    : "border-white/[0.07] bg-transparent text-white/25 hover:border-white/15 hover:text-white/40"
+                    : "border-white/[0.07] bg-transparent text-white/25 hover:border-white/15 hover:text-white/60"
                 }`}>
                 <Tag size={8} /> {t.name}
               </button>
@@ -243,7 +243,7 @@ export default function BlogPage() {
               {meta?.total != null && ` · ${meta.total} result${meta.total !== 1 ? "s" : ""}`}
             </p>
             <button onClick={clearFilters}
-              className="flex items-center gap-1 text-xs text-white/30 hover:text-white/60 transition-colors">
+              className="flex items-center gap-1 text-xs text-white/55 hover:text-white/60 transition-colors">
               <X size={11} /> Clear
             </button>
           </div>
@@ -276,7 +276,7 @@ export default function BlogPage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-4 py-2 rounded-xl text-xs font-bold border border-white/10 text-white/40 hover:border-white/20 hover:text-white/70 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+              className="px-4 py-2 rounded-xl text-xs font-bold border border-white/10 text-white/60 hover:border-white/20 hover:text-white/70 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
               Previous
             </button>
             <span className="text-xs text-white/25 px-3">
@@ -285,7 +285,7 @@ export default function BlogPage() {
             <button
               onClick={() => setPage((p) => Math.min(meta.last_page, p + 1))}
               disabled={page === meta.last_page}
-              className="px-4 py-2 rounded-xl text-xs font-bold border border-white/10 text-white/40 hover:border-white/20 hover:text-white/70 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+              className="px-4 py-2 rounded-xl text-xs font-bold border border-white/10 text-white/60 hover:border-white/20 hover:text-white/70 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
               Next
             </button>
           </div>

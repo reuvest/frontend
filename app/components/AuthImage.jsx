@@ -44,7 +44,7 @@ export function AuthImage({ url, alt, className, onBlobReady }) {
 
   if (error) {
     return (
-      <div className={`flex flex-col items-center justify-center gap-1 bg-white/5 text-white/30 ${className}`}>
+      <div className={`flex flex-col items-center justify-center gap-1 bg-white/5 text-white/55 ${className}`}>
         <span className="text-lg">⚠</span>
         <span className="text-[10px]">Failed to load</span>
       </div>

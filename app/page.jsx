@@ -145,8 +145,8 @@ function SectionHeading({ children, light = false }) {
 function StatBadge({ value, label }) {
   return (
     <div className="text-center px-2 py-3 rounded-2xl bg-white/5 border border-white/10">
-      <p className="text-lg sm:text-2xl font-bold text-amber-400 leading-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{value}</p>
-      <p className="text-[10px] sm:text-xs text-white/40 mt-0.5 leading-snug">{label}</p>
+      <p className="text-lg sm:text-2xl font-bold text-amber-600 leading-tight" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>{value}</p>
+      <p className="text-[10px] sm:text-xs text-white/60 mt-0.5 leading-snug">{label}</p>
     </div>
   );
 }
@@ -160,7 +160,7 @@ export default async function Homepage() {
       <JsonLd />
       <Suspense fallback={null}><RefCapture /></Suspense>
 
-      <main className="bg-[#FDFAF5]" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+      <main className="bg-[#FDFAF5]" style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
 
         {/* ══════════════════════════════════════════
             HERO
@@ -179,7 +179,7 @@ export default async function Homepage() {
           </div>
 
           <div className="relative z-10 w-full max-w-4xl mx-auto px-5 sm:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs font-bold mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-600 text-xs font-bold mb-6">
             <BadgeCheck size={12} />
             <span>Fully verified land · Legally backed</span>
           </div>
@@ -280,7 +280,7 @@ export default async function Homepage() {
                 },
               ].map((s) => (
                 <div key={s.step} className="bg-white rounded-2xl p-6 border border-stone-100 shadow-sm relative overflow-hidden group hover:shadow-md hover:-translate-y-1 transition-all">
-                  <span className="absolute top-4 right-5 text-5xl font-black text-stone-50" style={{ fontFamily: "'Playfair Display', serif" }}>{s.step}</span>
+                  <span className="absolute top-4 right-5 text-5xl font-black text-stone-300" style={{ fontFamily: "'Playfair Display', serif" }}>{s.step}</span>
                   <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"
                     style={{ background: `${s.accent}18`, color: s.accent }}>
                     {s.icon}
@@ -307,7 +307,7 @@ export default async function Homepage() {
             <div className="text-center mb-10">
               <SectionLabel>Returns & ROI</SectionLabel>
               <SectionHeading light>What Your Investment Can Earn</SectionHeading>
-              <p className="text-white/40 mt-3 text-sm max-w-lg mx-auto">
+              <p className="text-white/60 mt-3 text-sm max-w-lg mx-auto">
                 Nigeria's land market is driven by rapid urbanisation, infrastructure
                 investment and rising demand in tier-1 cities.
               </p>
@@ -324,12 +324,12 @@ export default async function Homepage() {
                     {r.icon}
                   </div>
                   <p className="text-2xl font-bold text-white mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>{r.value}</p>
-                  <p className="text-xs font-bold uppercase tracking-widest text-white/40 mb-2">{r.label}</p>
-                  <p className="text-xs text-white/30 leading-relaxed">{r.note}</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-white/60 mb-2">{r.label}</p>
+                  <p className="text-xs text-white/55 leading-relaxed">{r.note}</p>
                 </div>
               ))}
             </div>
-            <p className="text-center text-xs text-white/20 max-w-lg mx-auto">
+            <p className="text-center text-xs text-white/50 max-w-lg mx-auto">
               ⚠ Projected returns are based on historical market data and are not guaranteed.
               Land investment involves risk. Please read our investment disclosure before committing funds.
             </p>
@@ -415,7 +415,7 @@ export default async function Homepage() {
                       {d.icon}
                     </div>
                     <p className="text-sm font-bold text-white">{d.label}</p>
-                    <p className="text-xs text-white/30 mt-0.5">{d.sub}</p>
+                    <p className="text-xs text-white/55 mt-0.5">{d.sub}</p>
                   </div>
                 ))}
               </div>
@@ -497,7 +497,7 @@ export default async function Homepage() {
                 <SectionHeading light>Featured Properties</SectionHeading>
               </div>
               <Link href="/lands"
-                className="flex items-center gap-1.5 text-amber-500 hover:text-amber-400 text-sm font-semibold transition-colors">
+                className="flex items-center gap-1.5 text-amber-500 hover:text-amber-600 text-sm font-semibold transition-colors">
                 View all <ArrowRight size={14} />
               </Link>
             </div>
@@ -545,7 +545,7 @@ export default async function Homepage() {
             <div className="text-center mb-10">
               <SectionLabel>Regulatory & Compliance</SectionLabel>
               <SectionHeading light>Built on a Foundation of Trust</SectionHeading>
-              <p className="text-white/40 mt-3 text-sm max-w-lg mx-auto">
+              <p className="text-white/60 mt-3 text-sm max-w-lg mx-auto">
                 {appname} operates within Nigeria's regulatory framework so your
                 investment is always on solid legal ground.
               </p>
@@ -600,7 +600,7 @@ export default async function Homepage() {
                 <blockquote key={i} className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200 shadow-sm">
                   <div className="flex gap-0.5 mb-3">
                     {[...Array(t.rating)].map((_, j) => (
-                      <Star key={j} size={13} className="fill-amber-400 text-amber-400" />
+                      <Star key={j} size={13} className="fill-amber-400 text-amber-600" />
                     ))}
                   </div>
                   <p className="text-[#3D4D43] leading-relaxed mb-3 text-sm italic">"{t.text}"</p>

@@ -62,7 +62,7 @@ function StatCard({ icon, label, value, sub, accent = "amber" }) {
         {icon}
       </div>
       <div className="min-w-0">
-        <p className="text-xs text-white/30 uppercase tracking-widest font-bold mb-1">{label}</p>
+        <p className="text-xs text-white/55 uppercase tracking-widest font-bold mb-1">{label}</p>
         <p className="text-2xl font-bold text-white tabular-nums">{value ?? "—"}</p>
         {sub && <p className="text-xs text-white/25 mt-0.5">{sub}</p>}
       </div>
@@ -172,7 +172,7 @@ export default function ComplianceDashboard() {
   return (
     <div
       className="min-h-screen bg-[#0D1F1A] relative"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}
     >
       {/* Background grid */}
       <div
@@ -190,7 +190,7 @@ export default function ComplianceDashboard() {
         {/* Back */}
         <Link
           href="/admin"
-          className="inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors mb-6 sm:mb-8"
+          className="inline-flex items-center gap-1.5 text-xs text-white/55 hover:text-white/60 transition-colors mb-6 sm:mb-8"
         >
           <ArrowLeft size={13} /> Back to Dashboard
         </Link>
@@ -201,17 +201,17 @@ export default function ComplianceDashboard() {
             <p className="text-xs font-bold tracking-[0.2em] uppercase text-red-400 mb-2">Compliance</p>
             <h1
               className="text-3xl sm:text-4xl font-bold text-white"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
             >
               Sanctions & PEP Review
             </h1>
-            <p className="text-white/40 mt-1 text-sm">
+            <p className="text-white/60 mt-1 text-sm">
               OFAC · UN · EU sanctions screening — PEP self-declarations
             </p>
           </div>
           <button
             onClick={fetchAll}
-            className="inline-flex items-center gap-2 text-xs font-semibold text-white/40 hover:text-white/70 transition-colors border border-white/10 hover:border-white/20 px-3 py-2 rounded-xl"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-white/60 hover:text-white/70 transition-colors border border-white/10 hover:border-white/20 px-3 py-2 rounded-xl"
           >
             <RefreshCw size={13} /> Refresh
           </button>
@@ -254,7 +254,7 @@ export default function ComplianceDashboard() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-24 border border-white/10 rounded-2xl">
             <Shield size={40} className="mx-auto mb-4 text-white/10" />
-            <p className="text-white/30">No pending screenings — all clear</p>
+            <p className="text-white/55">No pending screenings — all clear</p>
           </div>
         ) : (
           <>
@@ -262,7 +262,7 @@ export default function ComplianceDashboard() {
             <div className="hidden md:block rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
               <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr_1fr_80px] gap-4 px-6 py-3 border-b border-white/10 bg-white/5">
                 {["User", "Trigger", "Status", "Matches", "Date", ""].map(h => (
-                  <span key={h} className="text-xs font-bold uppercase tracking-widest text-white/30">{h}</span>
+                  <span key={h} className="text-xs font-bold uppercase tracking-widest text-white/55">{h}</span>
                 ))}
               </div>
               {filtered.map((s, i) => (
@@ -274,14 +274,14 @@ export default function ComplianceDashboard() {
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-white truncate">{s.user?.name}</p>
-                    <p className="text-xs text-white/30 mt-0.5 truncate">{s.user?.email}</p>
+                    <p className="text-xs text-white/55 mt-0.5 truncate">{s.user?.email}</p>
                   </div>
                   <TriggerBadge trigger={s.trigger} />
                   <StatusBadge status={s.status} />
                   <p className="text-sm text-white/60 tabular-nums">
                     {Array.isArray(s.matches) ? s.matches.length : 0} match{s.matches?.length !== 1 ? "es" : ""}
                   </p>
-                  <p className="text-sm text-white/40">{new Date(s.created_at).toLocaleDateString()}</p>
+                  <p className="text-sm text-white/60">{new Date(s.created_at).toLocaleDateString()}</p>
                   <button
                     onClick={() => openModal(s.id)}
                     className="flex items-center gap-1.5 text-xs font-semibold text-amber-500 hover:text-amber-400 transition-colors"
@@ -299,18 +299,18 @@ export default function ComplianceDashboard() {
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-bold text-white truncate">{s.user?.name}</p>
-                      <p className="text-xs text-white/30 truncate">{s.user?.email}</p>
+                      <p className="text-xs text-white/55 truncate">{s.user?.email}</p>
                     </div>
                     <StatusBadge status={s.status} />
                   </div>
                   <div className="flex items-center gap-2 mb-3 flex-wrap">
                     <TriggerBadge trigger={s.trigger} />
-                    <span className="text-xs text-white/30">
+                    <span className="text-xs text-white/55">
                       {Array.isArray(s.matches) ? s.matches.length : 0} match{s.matches?.length !== 1 ? "es" : ""}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-white/30">{new Date(s.created_at).toLocaleDateString()}</p>
+                    <p className="text-xs text-white/55">{new Date(s.created_at).toLocaleDateString()}</p>
                     <button
                       onClick={() => openModal(s.id)}
                       className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-500 hover:text-amber-400 transition-colors px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20"
@@ -346,11 +346,11 @@ export default function ComplianceDashboard() {
                 <div className="min-w-0 flex-1 pr-3">
                   <h2
                     className="text-lg sm:text-xl font-bold text-white"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                    style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                   >
                     Screening Review
                   </h2>
-                  <p className="text-white/40 text-xs mt-0.5 truncate">
+                  <p className="text-white/60 text-xs mt-0.5 truncate">
                     {selected.user?.name} · {selected.user?.email}
                   </p>
                 </div>
@@ -375,11 +375,11 @@ export default function ComplianceDashboard() {
                   </div>
                   <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-                      <p className="text-xs text-white/30 mb-1">Trigger</p>
+                      <p className="text-xs text-white/55 mb-1">Trigger</p>
                       <TriggerBadge trigger={selected.trigger} />
                     </div>
                     <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-                      <p className="text-xs text-white/30 mb-1">Screened At</p>
+                      <p className="text-xs text-white/55 mb-1">Screened At</p>
                       <p className="text-sm font-semibold text-white">
                         {new Date(selected.created_at).toLocaleString()}
                       </p>
@@ -387,11 +387,11 @@ export default function ComplianceDashboard() {
                     {selected.reviewed_at && (
                       <>
                         <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-                          <p className="text-xs text-white/30 mb-1">Reviewed By</p>
+                          <p className="text-xs text-white/55 mb-1">Reviewed By</p>
                           <p className="text-sm font-semibold text-white">{selected.reviewed_by ?? "—"}</p>
                         </div>
                         <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-                          <p className="text-xs text-white/30 mb-1">Reviewed At</p>
+                          <p className="text-xs text-white/55 mb-1">Reviewed At</p>
                           <p className="text-sm font-semibold text-white">
                             {new Date(selected.reviewed_at).toLocaleString()}
                           </p>
@@ -401,7 +401,7 @@ export default function ComplianceDashboard() {
                   </div>
                   {selected.notes && (
                     <div className="mt-2 bg-white/5 rounded-xl p-3 border border-white/5">
-                      <p className="text-xs text-white/30 mb-1">Review Notes</p>
+                      <p className="text-xs text-white/55 mb-1">Review Notes</p>
                       <p className="text-sm text-white/70 leading-relaxed">{selected.notes}</p>
                     </div>
                   )}
@@ -428,7 +428,7 @@ export default function ComplianceDashboard() {
                                 </span>
                               )}
                               {match.source && (
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-white/30">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-white/55">
                                   {match.source === "self_declared" ? "Self-Declared" : match.source.toUpperCase()}
                                 </span>
                               )}
@@ -437,7 +437,7 @@ export default function ComplianceDashboard() {
                               <span className={`text-xs font-bold tabular-nums ${
                                 match.score >= 90 ? "text-red-400" :
                                 match.score >= 70 ? "text-amber-400" :
-                                "text-white/40"
+                                "text-white/60"
                               }`}>
                                 {match.score}% match
                               </span>
@@ -448,31 +448,31 @@ export default function ComplianceDashboard() {
                           <div className="px-4 py-3 grid grid-cols-2 gap-x-6 gap-y-2 text-xs">
                             {match.matched_name && (
                               <div>
-                                <p className="text-white/30 mb-0.5">Matched Name</p>
+                                <p className="text-white/55 mb-0.5">Matched Name</p>
                                 <p className="text-white font-semibold">{match.matched_name}</p>
                               </div>
                             )}
                             {match.queried_name && (
                               <div>
-                                <p className="text-white/30 mb-0.5">Queried Name</p>
+                                <p className="text-white/55 mb-0.5">Queried Name</p>
                                 <p className="text-white font-semibold">{match.queried_name}</p>
                               </div>
                             )}
                             {match.program && (
                               <div>
-                                <p className="text-white/30 mb-0.5">Program / Role</p>
+                                <p className="text-white/55 mb-0.5">Program / Role</p>
                                 <p className="text-white font-semibold">{match.program}</p>
                               </div>
                             )}
                             {match.entry_type && (
                               <div>
-                                <p className="text-white/30 mb-0.5">Entry Type</p>
+                                <p className="text-white/55 mb-0.5">Entry Type</p>
                                 <p className="text-white font-semibold capitalize">{match.entry_type}</p>
                               </div>
                             )}
                             {match.list && (
                               <div className="col-span-2">
-                                <p className="text-white/30 mb-0.5">Sanctions List</p>
+                                <p className="text-white/55 mb-0.5">Sanctions List</p>
                                 <p className="text-white font-semibold uppercase font-mono">{match.list}</p>
                               </div>
                             )}
@@ -487,7 +487,7 @@ export default function ComplianceDashboard() {
                 {!selected.reviewed_at && (
                   <section className="space-y-4 pt-1">
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-widest text-white/40 mb-2">
+                      <label className="block text-xs font-bold uppercase tracking-widest text-white/60 mb-2">
                         Review Notes <span className="normal-case font-normal text-white/25">(required, min 10 chars)</span>
                       </label>
                       <textarea
@@ -528,7 +528,7 @@ export default function ComplianceDashboard() {
                     {/* Re-screen */}
                     <button
                       onClick={() => handleRescreen(selected.user?.id)}
-                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold text-white/40 hover:text-white/70 border border-white/10 hover:border-white/20 transition-all"
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold text-white/60 hover:text-white/70 border border-white/10 hover:border-white/20 transition-all"
                     >
                       <RefreshCw size={13} /> Queue Re-screen
                     </button>

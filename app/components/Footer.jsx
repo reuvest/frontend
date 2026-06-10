@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { MapPin, Mail, Phone } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import Image from "next/image";
 
 const appname = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
 
@@ -80,7 +81,7 @@ export default function Footer() {
             <span className="text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>crafted by</span>
             <span
               style={{
-                fontFamily: "'Great Vibes', cursive",
+                fontFamily: "var(--font-great-vibes), cursive",
                 fontSize: "1.25rem",
                 background: "linear-gradient(90deg, #C8873A, #E8A850, #C8873A)",
                 backgroundSize: "200% auto",
@@ -103,12 +104,8 @@ function BrandBlock({ user, appname }) {
   return (
     <div>
       <Link href={user ? "/dashboard" : "/"} className="inline-flex items-center mb-4 group">
-        <img
-          src="/reu_ng_logo.png"
-          alt={`${appname} logo`}
-          className="h-16 w-auto transition-opacity group-hover:opacity-80"
-          style={{ maxWidth: "180px", filter: "brightness(2.1)" }}
-        />
+        <Image src="/reu_ng_logo.png" alt={`${appname} logo`} width={160} height={128}
+          className="h-10 w-auto transition-opacity group-hover:opacity-80" />
       </Link>
 
       <p className="text-sm leading-relaxed mb-5 max-w-xs" style={{ color: "rgba(255,255,255,0.7)" }}>
@@ -140,7 +137,7 @@ function LinkColumns({ user }) {
           <div key={col.heading}>
             <p
               className="text-[10px] font-black uppercase tracking-[0.2em] mb-3"
-              style={{ color: "rgba(255,255,255,0.40)" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
               {col.heading}
             </p>

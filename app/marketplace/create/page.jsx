@@ -20,7 +20,7 @@ function DarkInput({ className = "", ...props }) {
 function FormField({ label, hint, children }) {
   return (
     <div>
-      <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">{label}</label>
+      <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">{label}</label>
       {children}
       {hint && <p className="text-xs text-white/25 mt-1.5">{hint}</p>}
     </div>
@@ -110,16 +110,16 @@ export default function CreateListingPage() {
 
       <div className="relative z-10 max-w-xl mx-auto px-5 py-10">
         <Link href="/marketplace"
-          className="inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors mb-8">
+          className="inline-flex items-center gap-1.5 text-xs text-white/55 hover:text-white/60 transition-colors mb-8">
           <ArrowLeft size={13} /> Back to Marketplace
         </Link>
 
         <div className="mb-8">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">P2P Exchange</p>
-          <h1 className="text-4xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h1 className="text-4xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             List Units for Sale
           </h1>
-          <p className="text-white/40 mt-1 text-sm">Set your price and let buyers come to you</p>
+          <p className="text-white/60 mt-1 text-sm">Set your price and let buyers come to you</p>
         </div>
 
         {fetching ? (
@@ -129,7 +129,7 @@ export default function CreateListingPage() {
         ) : myLands.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
             <Package size={36} className="text-white/10 mx-auto mb-3" />
-            <p className="text-white/40 text-sm mb-4">You don't own any land units yet.</p>
+            <p className="text-white/60 text-sm mb-4">You don't own any land units yet.</p>
             <Link href="/lands"
               className="inline-flex items-center gap-1.5 text-sm font-bold text-amber-500 hover:text-amber-400 transition-colors">
               Browse Properties
@@ -223,7 +223,7 @@ export default function CreateListingPage() {
 
                 {totalNaira !== null && (
                   <div className="rounded-xl bg-emerald-500/5 border border-emerald-500/15 px-4 py-3 flex items-center justify-between">
-                    <span className="text-xs text-white/40">Total listing value</span>
+                    <span className="text-xs text-white/60">Total listing value</span>
                     <span className="text-base font-bold text-emerald-400"
                       style={{ fontFamily: "'Playfair Display', serif" }}>
                       ₦{totalNaira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}
@@ -265,7 +265,7 @@ export default function CreateListingPage() {
             <div className="flex items-start gap-2.5 rounded-xl border border-white/5 bg-white/[0.03] px-4 py-3">
               <AlertCircle size={13} className="text-white/20 shrink-0 mt-0.5" />
               <p className="text-xs text-white/25 leading-relaxed">
-                A <span className="text-white/40 font-semibold">1% platform fee</span> is deducted from the
+                A <span className="text-white/60 font-semibold">1% platform fee</span> is deducted from the
                 sale proceeds when the trade completes. You keep 99% of the agreed price.
               </p>
             </div>

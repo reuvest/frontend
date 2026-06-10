@@ -73,7 +73,7 @@ function ResultCard({ result, onReset }) {
           {valid ? "Certificate Verified" : "Certificate Invalid"}
         </h2>
 
-        <p className="text-xs text-white/30 leading-relaxed">
+        <p className="text-xs text-white/55 leading-relaxed">
           {valid
             ? "This certificate number is authentic and its digital signature matches our records."
             : "No active certificate found for this number, or the record has been tampered with."}
@@ -97,10 +97,10 @@ function ResultCard({ result, onReset }) {
 
           {/* Owner */}
           <div className="text-center mb-5 pb-5 border-b border-white/5">
-            <p className="text-xs text-white/30 italic mb-2">Issued to</p>
+            <p className="text-xs text-white/55 italic mb-2">Issued to</p>
             <p
               className="text-xl font-bold text-white"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
             >
               {d.owner_name}
             </p>
@@ -123,11 +123,11 @@ function ResultCard({ result, onReset }) {
                 key={label}
                 className="flex items-start justify-between gap-4 py-2.5 border-b border-white/5 last:border-0"
               >
-                <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white/30 shrink-0 w-36 mt-0.5">
+                <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white/55 shrink-0 w-36 mt-0.5">
                   {label}
                 </span>
                 <span className={`text-sm text-right break-all ${
-                  mono ? "font-mono text-white/40 text-xs" : "text-white/75"
+                  mono ? "font-mono text-white/60 text-xs" : "text-white/75"
                 }`}>
                   {value ?? "—"}
                 </span>
@@ -148,7 +148,7 @@ function ResultCard({ result, onReset }) {
       <div className="px-6 py-4 border-t border-white/5" style={{ background: "rgba(0,0,0,0.1)" }}>
         <button
           onClick={onReset}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold border border-white/10 text-white/40 hover:bg-white/5 hover:text-white/60 transition-all"
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold border border-white/10 text-white/60 hover:bg-white/5 hover:text-white/60 transition-all"
         >
           <Search size={12} /> Verify another certificate
         </button>
@@ -222,7 +222,7 @@ function VerifyCertPageInner() {
   return (
     <div
       className="min-h-screen bg-[#0D1F1A] flex flex-col items-center justify-start px-4 py-12"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}
     >
       {/* Background */}
       <div
@@ -250,11 +250,11 @@ function VerifyCertPageInner() {
           </Link>
           <h1
             className="text-2xl font-bold text-white mt-3 mb-1"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
             Certificate Verification
           </h1>
-          <p className="text-xs text-white/30 leading-relaxed">
+          <p className="text-xs text-white/55 leading-relaxed">
             Enter a {appname} certificate number to verify its authenticity
             and check the current holder&apos;s details.
           </p>
@@ -322,7 +322,7 @@ function VerifyCertPageInner() {
         {loading && (
           <div className="text-center py-8">
             <Loader2 size={28} className="text-amber-500/50 animate-spin mx-auto mb-3" />
-            <p className="text-white/30 text-xs tracking-widest uppercase">Verifying…</p>
+            <p className="text-white/55 text-xs tracking-widest uppercase">Verifying…</p>
           </div>
         )}
 

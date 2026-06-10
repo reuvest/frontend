@@ -228,10 +228,10 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-4">
             <CheckCircle size={26} className="text-emerald-500" />
           </div>
-          <p className="text-xl text-white font-bold mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <p className="text-xl text-white font-bold mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             You're Verified
           </p>
-          <p className="text-white/30 text-sm">All identity checks passed successfully.</p>
+          <p className="text-white/55 text-sm">All identity checks passed successfully.</p>
         </motion.div>
       )}
 
@@ -246,11 +246,11 @@ export default function KycPanel({ kycStatus: kycStatusProp, setKycStatus: setKy
             <div>
               <h2
                 className="text-lg text-white font-bold leading-tight"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
               >
                 {meta.title}
               </h2>
-              <p className="text-white/30 text-xs mt-0.5">{meta.subtitle}</p>
+              <p className="text-white/55 text-xs mt-0.5">{meta.subtitle}</p>
             </div>
             <span className="ml-auto text-xs text-white/20 font-medium tabular-nums sm:hidden">
               {step + 1}/{STEPS.length}

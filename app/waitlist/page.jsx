@@ -76,7 +76,7 @@ function AvatarStack() {
           </div>
         ))}
       </div>
-      <p className="text-xs text-white/40">Join smart investors securing their future</p>
+      <p className="text-xs text-white/60">Join smart investors securing their future</p>
     </div>
   );
 }
@@ -160,7 +160,7 @@ function CheckPositionPanel({ onClose }) {
         </div>
         <button
           onClick={onClose}
-          className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/[0.01]0 transition-all"
+          className="w-7 h-7 rounded-lg flex items-center justify-center text-white/55 hover:text-white hover:bg-white/[0.01]0 transition-all"
           aria-label="Close"
         >
           <X size={14} />
@@ -195,7 +195,7 @@ function CheckPositionPanel({ onClose }) {
 
             {/* Position badge */}
             <div className="text-center py-2">
-              <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-2">
+              <p className="text-xs font-bold uppercase tracking-widest text-white/55 mb-2">
                 Your position
               </p>
               <div
@@ -234,7 +234,7 @@ function CheckPositionPanel({ onClose }) {
             {result.referral_code && (
               <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-bold uppercase tracking-widest text-white/30">
+                  <p className="text-xs font-bold uppercase tracking-widest text-white/55">
                     Referrals
                   </p>
                   <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
@@ -265,7 +265,7 @@ function CheckPositionPanel({ onClose }) {
 
                 {/* Referral link */}
                 <div className="flex gap-2">
-                  <div className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-[11px] text-white/40 font-mono truncate">
+                  <div className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-[11px] text-white/60 font-mono truncate">
                     {/* FIX: uses referralUrl() helper — SSR-safe */}
                     {referralUrl(result.referral_code)}
                   </div>
@@ -282,7 +282,7 @@ function CheckPositionPanel({ onClose }) {
 
             <button
               onClick={reset}
-              className="w-full py-2.5 rounded-xl text-xs font-semibold text-white/30 border border-white/10 hover:border-white/20 hover:text-white/60 transition-all"
+              className="w-full py-2.5 rounded-xl text-xs font-semibold text-white/55 border border-white/10 hover:border-white/20 hover:text-white/60 transition-all"
             >
               Check a different email
             </button>
@@ -296,7 +296,7 @@ function CheckPositionPanel({ onClose }) {
               </div>
             )}
 
-            <p className="text-xs text-white/40 leading-relaxed">
+            <p className="text-xs text-white/60 leading-relaxed">
               Enter the email you used to join and we'll show your position and referral link.
             </p>
 
@@ -419,7 +419,7 @@ export default function WaitlistPage() {
     return (
       <main
         className="min-h-screen bg-[#0D1F1A] flex items-center justify-center px-5 py-16"
-        style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
+        style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}
       >
         <div className="pointer-events-none fixed inset-0 overflow-hidden">
           <div className="absolute top-[-10%] left-[-5%] w-[55vw] h-[55vw] rounded-full opacity-20"
@@ -438,7 +438,7 @@ export default function WaitlistPage() {
 
           <h1
             className="text-4xl font-bold text-white mb-3"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
             You're on the list!
           </h1>
@@ -456,7 +456,7 @@ export default function WaitlistPage() {
 
           {userRefCode && (
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5 mb-6 text-left">
-              <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3">
+              <p className="text-xs font-bold uppercase tracking-widest text-white/55 mb-3">
                 Your referral link — move up faster
               </p>
               <div className="flex gap-2">
@@ -480,7 +480,7 @@ export default function WaitlistPage() {
           )}
 
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5 mb-6 text-left space-y-3">
-            <p className="text-xs font-bold uppercase tracking-widest text-white/30">What happens next</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-white/55">What happens next</p>
             {[
               "We'll email you market insights while you wait",
               "Only the first 500 investors get founding perks",
@@ -500,7 +500,7 @@ export default function WaitlistPage() {
 
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-white/30 hover:text-white/60 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-white/55 hover:text-white/60 transition-colors"
           >
             ← Back to homepage
           </Link>
@@ -513,7 +513,7 @@ export default function WaitlistPage() {
   return (
     <main
       className="min-h-screen bg-[#0D1F1A]"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}
     >
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-5%] w-[55vw] h-[55vw] rounded-full opacity-20"
@@ -555,18 +555,18 @@ export default function WaitlistPage() {
                 <div key={s.label} className="text-center p-3 rounded-2xl bg-white/5 border border-white/10">
                   <p
                     className="text-xl font-bold text-amber-400 mb-0.5"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                    style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                   >
                     {s.value}
                   </p>
-                  <p className="text-[10px] text-white/30 uppercase tracking-wider">{s.label}</p>
+                  <p className="text-[10px] text-white/55 uppercase tracking-wider">{s.label}</p>
                 </div>
               ))}
             </div>
 
             {/* Perks */}
             <div className="space-y-3 mb-8">
-              <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3">
+              <p className="text-xs font-bold uppercase tracking-widest text-white/55 mb-3">
                 Founding investor perks
               </p>
               {PERKS.map((p) => (
@@ -612,18 +612,18 @@ export default function WaitlistPage() {
               </div>
               <h2
                 className="text-2xl font-bold text-white"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
               >
                 Reserve your spot
               </h2>
-              <p className="text-sm text-white/40 mt-1">Takes 30 seconds. No credit card required.</p>
+              <p className="text-sm text-white/60 mt-1">Takes 30 seconds. No credit card required.</p>
             </div>
 
             {/* Already joined? toggle */}
             {!showCheck && (
               <button
                 onClick={() => setShowCheck(true)}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold border border-white/10 bg-white/5 text-white/40 hover:border-amber-500/30 hover:text-amber-400 hover:bg-amber-500/8 transition-all mb-5"
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold border border-white/10 bg-white/5 text-white/60 hover:border-amber-500/30 hover:text-amber-400 hover:bg-amber-500/8 transition-all mb-5"
               >
                 <Search size={12} />
                 Already joined? Check your position
@@ -646,7 +646,7 @@ export default function WaitlistPage() {
               {/* Name */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">
                     First Name
                   </label>
                   <input
@@ -664,7 +664,7 @@ export default function WaitlistPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">
                     Last Name
                   </label>
                   <input
@@ -684,7 +684,7 @@ export default function WaitlistPage() {
 
               {/* Email */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">
+                <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">
                   Email Address
                 </label>
                 <input
@@ -703,7 +703,7 @@ export default function WaitlistPage() {
 
               {/* Budget */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">
+                <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">
                   Investment Budget
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -715,7 +715,7 @@ export default function WaitlistPage() {
                       className={`py-3 px-2 rounded-xl text-xs font-semibold border transition-all text-center ${
                         form.budget === opt.value
                           ? "border-amber-500/60 bg-amber-500/15 text-amber-400"
-                          : "border-white/10 bg-white/5 text-white/40 hover:border-white/20 hover:text-white/70"
+                          : "border-white/10 bg-white/5 text-white/60 hover:border-white/20 hover:text-white/70"
                       }`}
                     >
                       {opt.label}
@@ -727,7 +727,7 @@ export default function WaitlistPage() {
 
               {/* City */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">
+                <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">
                   Preferred City
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -739,7 +739,7 @@ export default function WaitlistPage() {
                       className={`py-3 px-3 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 ${
                         form.city === opt.value
                           ? "border-amber-500/60 bg-amber-500/15 text-amber-400"
-                          : "border-white/10 bg-white/5 text-white/40 hover:border-white/20 hover:text-white/70"
+                          : "border-white/10 bg-white/5 text-white/60 hover:border-white/20 hover:text-white/70"
                       }`}
                     >
                       <MapPin size={10} className={form.city === opt.value ? "text-amber-500" : "text-white/20"} />

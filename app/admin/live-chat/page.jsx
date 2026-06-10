@@ -132,7 +132,7 @@ function QueueItem({ ticket, isActive, onClick }) {
           </span>
         </div>
       </div>
-      <p className="text-xs text-white/40 truncate mb-2">{ticket.subject}</p>
+      <p className="text-xs text-white/60 truncate mb-2">{ticket.subject}</p>
       <div className="flex items-center gap-2">
         <span
           className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider"
@@ -202,8 +202,8 @@ function EmptyState() {
         style={{ background: "rgba(200,135,58,0.08)", border: "1px solid rgba(200,135,58,0.15)" }}>
         <MessageSquare size={24} className="text-amber-500/40" />
       </div>
-      <p className="text-white/40 text-sm font-medium mb-1"
-        style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+      <p className="text-white/60 text-sm font-medium mb-1"
+        style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
         No active chat
       </p>
       <p className="text-white/20 text-xs leading-relaxed max-w-48">
@@ -423,7 +423,7 @@ export default function AgentChatPage() {
 
   return (
     <div className="h-dvh bg-[#0A1A12] flex flex-col overflow-hidden"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
 
       {/* ── Top bar ── */}
       <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-white/6 bg-[#0D1F1A] shrink-0">
@@ -432,12 +432,12 @@ export default function AgentChatPage() {
           {mobilePanel === "chat" && activeTicket ? (
             <button
               onClick={() => setMobilePanel("queue")}
-              className="sm:hidden w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40">
+              className="sm:hidden w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/60">
               <ArrowLeft size={14} />
             </button>
           ) : (
             <Link href="/admin"
-              className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/40 hover:text-white transition-all">
+              className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/60 hover:text-white transition-all">
               <ArrowLeft size={14} />
             </Link>
           )}
@@ -446,7 +446,7 @@ export default function AgentChatPage() {
               Agent Dashboard
             </p>
             <p className="text-sm font-bold text-white"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               {mobilePanel === "chat" && activeTicket
                 ? <span className="sm:hidden">{activeTicket.user?.name}</span>
                 : null}
@@ -464,7 +464,7 @@ export default function AgentChatPage() {
               className={`sm:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-bold ${
                 pendingCount > 0
                   ? "border-amber-500/30 bg-amber-500/10 text-amber-400"
-                  : "border-white/10 bg-white/5 text-white/30"
+                  : "border-white/10 bg-white/5 text-white/55"
               }`}>
               <Inbox size={11} /> {pendingCount}
             </button>
@@ -472,7 +472,7 @@ export default function AgentChatPage() {
           <div className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold ${
             pendingCount > 0
               ? "border-amber-500/30 bg-amber-500/10 text-amber-400"
-              : "border-white/10 bg-white/5 text-white/30"
+              : "border-white/10 bg-white/5 text-white/55"
           }`}>
             <Inbox size={11} /> {pendingCount} in queue
           </div>
@@ -578,7 +578,7 @@ export default function AgentChatPage() {
                       {activeTicket.user?.name}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <p className="text-[11px] text-white/30">{activeTicket.reference}</p>
+                      <p className="text-[11px] text-white/55">{activeTicket.reference}</p>
                       <span className="w-1 h-1 rounded-full bg-white/[0.01]5" />
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-md"
                         style={{
@@ -614,7 +614,7 @@ export default function AgentChatPage() {
                   }}>
                   {activeTicket.category}
                 </span>
-                <p className="text-xs text-white/40 truncate">{activeTicket.subject}</p>
+                <p className="text-xs text-white/60 truncate">{activeTicket.subject}</p>
                 <p className="text-[10px] font-mono text-white/20 shrink-0 ml-auto">{activeTicket.reference}</p>
               </div>
 
@@ -652,8 +652,8 @@ export default function AgentChatPage() {
                     className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
                     style={{ background: draft.trim() ? "linear-gradient(135deg, #C8873A, #E8A850)" : "rgba(255,255,255,0.05)" }}>
                     {sending
-                      ? <Loader2 size={15} className={draft.trim() ? "text-[#0D1F1A] animate-spin" : "text-white/30 animate-spin"} />
-                      : <Send size={15} className={draft.trim() ? "text-[#0D1F1A]" : "text-white/30"} />}
+                      ? <Loader2 size={15} className={draft.trim() ? "text-[#0D1F1A] animate-spin" : "text-white/55 animate-spin"} />
+                      : <Send size={15} className={draft.trim() ? "text-[#0D1F1A]" : "text-white/55"} />}
                   </button>
                 </div>
                 <p className="text-[10px] text-white/15 mt-1.5 text-center hidden sm:block">

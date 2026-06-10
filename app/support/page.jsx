@@ -39,7 +39,7 @@ const inp =
   `focus:border-amber-500/60 focus:ring-2 focus:ring-amber-500/15 transition-all duration-200`;
 
 const sel = inp + " appearance-none cursor-pointer";
-const lbl = "block text-[10px] font-bold text-white/30 uppercase tracking-[0.15em] mb-2";
+const lbl = "block text-[10px] font-bold text-white/55 uppercase tracking-[0.15em] mb-2";
 
 /* ── Category config ───────────────────────────────────────────────────────── */
 const CATEGORIES = [
@@ -48,7 +48,7 @@ const CATEGORIES = [
   { value: "withdrawal", label: "Withdrawals",          icon: <Landmark size={13} />,       color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20"          },
   { value: "kyc",        label: "KYC Verification",    icon: <Shield size={13} />,         color: "text-amber-400 bg-amber-500/10 border-amber-500/20"       },
   { value: "investment", label: "Land & Investment",   icon: <TrendingUp size={13} />,     color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
-  { value: "other",      label: "Other",                icon: <MoreHorizontal size={13} />, color: "text-white/40 bg-white/5 border-white/10"                 },
+  { value: "other",      label: "Other",                icon: <MoreHorizontal size={13} />, color: "text-white/60 bg-white/5 border-white/10"                 },
 ];
 
 const catCfg = (v) => CATEGORIES.find(c => c.value === v) || CATEGORIES[5];
@@ -58,8 +58,8 @@ const statusCfg = (s = "") => ({
   open:     { cls: "text-amber-400 bg-amber-500/10 border-amber-500/20",       dot: "#F59E0B", icon: <Clock size={10} />,       label: "Open"     },
   waiting:  { cls: "text-blue-400 bg-blue-500/10 border-blue-500/20",          dot: "#60A5FA", icon: <AlertCircle size={10} />, label: "Waiting"  },
   resolved: { cls: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20", dot: "#34D399", icon: <CheckCircle size={10} />, label: "Resolved" },
-  closed:   { cls: "text-white/30 bg-white/5 border-white/10",                 dot: "#6B7280", icon: <XCircle size={10} />,     label: "Closed"   },
-}[s] || { cls: "text-white/30 bg-white/5 border-white/10", dot: "#6B7280", icon: <XCircle size={10} />, label: "Closed" });
+  closed:   { cls: "text-white/55 bg-white/5 border-white/10",                 dot: "#6B7280", icon: <XCircle size={10} />,     label: "Closed"   },
+}[s] || { cls: "text-white/55 bg-white/5 border-white/10", dot: "#6B7280", icon: <XCircle size={10} />, label: "Closed" });
 
 const priorityCfg = (p = "") => ({
   high:   { cls: "text-red-400 bg-red-500/10 border-red-500/20",      label: "High"   },
@@ -99,7 +99,7 @@ function Pill({ active, onClick, children, "data-tab": dataTab }) {
       onClick={onClick}
       data-tab={dataTab}
       className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${
-        active ? "text-[#0A1A13] shadow-lg" : "border border-white/[0.08] text-white/40 hover:text-white hover:bg-white/[0.08]"
+        active ? "text-[#0A1A13] shadow-lg" : "border border-white/[0.08] text-white/60 hover:text-white hover:bg-white/[0.08]"
       }`}
       style={active ? { background: grad } : {}}
     >
@@ -291,7 +291,7 @@ export default function SupportPage() {
                 Help Center
               </p>
               <h1 className="text-3xl font-bold text-white leading-none"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                 Support
               </h1>
               <p className="text-sm mt-1.5" style={{ color: DIMMED }}>
@@ -518,7 +518,7 @@ function NewTicketForm({ onSuccess }) {
           <FileText size={18} style={{ color: AMBER }} />
         </div>
         <div>
-          <h2 className="font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h2 className="font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Open a Support Ticket
           </h2>
           <p className="text-xs mt-0.5" style={{ color: DIMMED }}>
@@ -807,7 +807,7 @@ const FAQ_CATEGORY_ICONS = {
   withdrawal: { icon: <Landmark size={13} />,   color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20"         },
   kyc:        { icon: <Shield size={13} />,     color: "text-amber-400 bg-amber-500/10 border-amber-500/20"      },
   investment: { icon: <TrendingUp size={13} />, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"},
-  general:    { icon: <HelpCircle size={13} />, color: "text-white/40 bg-white/5 border-white/10"                },
+  general:    { icon: <HelpCircle size={13} />, color: "text-white/60 bg-white/5 border-white/10"                },
 };
 
 function FaqView({ onContact }) {
@@ -975,7 +975,7 @@ function GuestContactForm() {
           <CheckCircle size={36} className="text-emerald-400" />
         </div>
         <div>
-          <h2 className="font-bold text-white text-xl" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h2 className="font-bold text-white text-xl" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Message received!
           </h2>
           <p className="text-sm mt-2" style={{ color: MUTED }}>
@@ -1009,7 +1009,7 @@ function GuestContactForm() {
             <MailOpen size={18} style={{ color: AMBER }} />
           </div>
           <div>
-            <h2 className="font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               Contact Support
             </h2>
             <p className="text-xs mt-0.5" style={{ color: DIMMED }}>No account needed · We reply within 24 hours</p>

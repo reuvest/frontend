@@ -114,7 +114,7 @@ function FormSection({ title, icon, children }) {
 function FormField({ label, children }) {
   return (
     <div>
-      <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">{label}</label>
+      <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">{label}</label>
       {children}
     </div>
   );
@@ -608,20 +608,20 @@ export default function EditLand() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#0D1F1A] relative" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+    <div className="min-h-screen bg-[#0D1F1A] relative" style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
 
       <div className="relative z-10 max-w-3xl mx-auto px-6 py-10">
         <Link href="/admin/lands"
-          className="inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors mb-8">
+          className="inline-flex items-center gap-1.5 text-xs text-white/55 hover:text-white/60 transition-colors mb-8">
           <ArrowLeft size={13} /> Back to Lands
         </Link>
 
         <div className="mb-8">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">Admin Panel</p>
-          <h1 className="text-4xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Edit Land</h1>
-          <p className="text-white/40 mt-1 text-sm truncate">{form.title}</p>
+          <h1 className="text-4xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>Edit Land</h1>
+          <p className="text-white/60 mt-1 text-sm truncate">{form.title}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -666,7 +666,7 @@ export default function EditLand() {
               />
               <div className="flex items-center justify-between mt-1">
                 {priceKobo ? (
-                  <p className="text-xs text-white/30">= ₦{(Number(priceKobo) / 100).toLocaleString()}</p>
+                  <p className="text-xs text-white/55">= ₦{(Number(priceKobo) / 100).toLocaleString()}</p>
                 ) : <span />}
                 {priceKobo !== currentPriceKobo && (
                   <p className="text-xs text-amber-400/70">
@@ -688,7 +688,7 @@ export default function EditLand() {
                   { key: "launch_price_kobo",      label: "Launch Price"      },
                 ].map(({ key, label }) => (
                   <div key={key} className="grid grid-cols-[140px_1fr] gap-3 items-center">
-                    <span className="text-xs text-white/40">{label}</span>
+                    <span className="text-xs text-white/60">{label}</span>
                     <div>
                       <DarkInput
                         type="text"
@@ -722,7 +722,7 @@ export default function EditLand() {
           {/* ── Location Coordinates ───────────────────────────────────────── */}
           <FormSection title="Location Coordinates" icon={<Layers size={15} className="text-amber-500" />}>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-sm text-white/40">
+              <p className="text-sm text-white/60">
                 Mode: <span className="text-white/70 font-semibold">{usePolygon ? "Polygon" : "Point"}</span>
                 {initialHasPolygon && <span className="text-white/25 text-xs ml-2">(originally polygon)</span>}
               </p>
@@ -875,7 +875,7 @@ export default function EditLand() {
           <FormSection title="Images" icon={<FileText size={15} className="text-amber-500" />}>
             {existingImages.length > 0 && (
               <div>
-                <p className="text-xs text-white/30 uppercase tracking-widest font-bold mb-2">Current Images</p>
+                <p className="text-xs text-white/55 uppercase tracking-widest font-bold mb-2">Current Images</p>
                 <div className="grid grid-cols-3 gap-3">
                   {existingImages.map((img) => (
                     <div key={img.id} className="relative rounded-xl overflow-hidden aspect-video border border-white/10 group">
@@ -896,7 +896,7 @@ export default function EditLand() {
                   <span className="text-xs text-amber-500/70">Compressing…</span>
                 </>
               ) : (
-                <span className="text-xs text-white/30">+ Add more images</span>
+                <span className="text-xs text-white/55">+ Add more images</span>
               )}
               <input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" />
             </label>

@@ -46,8 +46,8 @@ function StatCard({ icon, label, value, accent, sub }) {
         style={{ background: `${accent}20`, color: accent }}>
         {icon}
       </div>
-      <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-1">{label}</p>
-      <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+      <p className="text-xs font-bold uppercase tracking-widest text-white/55 mb-1">{label}</p>
+      <p className="text-2xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
         {value}
       </p>
       {sub && <p className="text-xs text-white/25 mt-1">{sub}</p>}
@@ -64,7 +64,7 @@ function InvitedBadge({ invited }) {
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border border-white/10 bg-white/5 text-white/30">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border border-white/10 bg-white/5 text-white/55">
       <Clock size={9} /> Waiting
     </span>
   );
@@ -166,7 +166,7 @@ export default function AdminWaitlistPage() {
   const hasFilters = filterCity || filterBudget || filterInvited || search;
 
   return (
-    <div className="min-h-screen bg-[#0D1F1A] relative" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+    <div className="min-h-screen bg-[#0D1F1A] relative" style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
       {/* Background */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
@@ -175,7 +175,7 @@ export default function AdminWaitlistPage() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
 
-        <Link href="/admin" className="inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors mb-6">
+        <Link href="/admin" className="inline-flex items-center gap-1.5 text-xs text-white/55 hover:text-white/60 transition-colors mb-6">
           <ArrowLeft size={13} /> Back to Dashboard
         </Link>
 
@@ -183,13 +183,13 @@ export default function AdminWaitlistPage() {
         <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
           <div>
             <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">Admin Panel</p>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               Waitlist
             </h1>
-            <p className="text-white/40 mt-1 text-sm">{pagination.total} people waiting for access</p>
+            <p className="text-white/60 mt-1 text-sm">{pagination.total} people waiting for access</p>
           </div>
           <button onClick={() => { fetchEntries(); fetchStats(); }}
-            className="group flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white/30 border border-white/10 hover:border-white/20 hover:text-white/60 hover:bg-white/5 transition-all">
+            className="group flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white/55 border border-white/10 hover:border-white/20 hover:text-white/60 hover:bg-white/5 transition-all">
             <RefreshCw size={12} className="group-hover:rotate-180 transition-transform duration-500" />
             Refresh
           </button>
@@ -202,7 +202,7 @@ export default function AdminWaitlistPage() {
             <StatCard icon={<CheckCircle size={18} />} label="Invited"  value={stats.invited}  accent="#2D7A55" sub={`${stats.total - stats.invited} remaining`} />
             <StatCard icon={<TrendingUp size={18} />}  label="Referred" value={stats.with_referrals} accent="#8B5CF6" sub="Have at least 1 referral" />
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3 flex items-center gap-1.5">
+              <p className="text-xs font-bold uppercase tracking-widest text-white/55 mb-3 flex items-center gap-1.5">
                 <MapPin size={12} className="text-amber-500" /> By City
               </p>
               <div className="space-y-1.5">
@@ -250,7 +250,7 @@ export default function AdminWaitlistPage() {
 
           {hasFilters && (
             <button onClick={clearFilters}
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-white/40 hover:text-white/70 text-sm transition-all">
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-white/60 hover:text-white/70 text-sm transition-all">
               <X size={13} /> Clear
             </button>
           )}
@@ -264,7 +264,7 @@ export default function AdminWaitlistPage() {
               { label: "Status",  key: "filterInvited", val: filterInvited, set: setFilterInvited, opts: [["", "All"], ["true", "Invited"], ["false", "Waiting"]] },
             ].map(f => (
               <div key={f.key}>
-                <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">{f.label}</label>
+                <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">{f.label}</label>
                 <select value={f.val} onChange={e => f.set(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 text-white rounded-xl px-3 py-2.5 text-sm outline-none focus:border-amber-500/40 appearance-none">
                   {f.opts.map(([v, l]) => <option key={v} value={v} className="bg-[#0D1F1A]">{l}</option>)}
@@ -282,7 +282,7 @@ export default function AdminWaitlistPage() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-24 border border-white/10 rounded-2xl">
             <Sparkles size={36} className="mx-auto mb-4 text-white/10" />
-            <p className="text-white/30">No waitlist entries found</p>
+            <p className="text-white/55">No waitlist entries found</p>
           </div>
         ) : (
           <>
@@ -290,7 +290,7 @@ export default function AdminWaitlistPage() {
             <div className="hidden md:block rounded-2xl border border-white/10 bg-white/5 overflow-hidden mb-5">
               <div className="grid grid-cols-[40px_2fr_1.5fr_1fr_1fr_1fr_1fr_120px] gap-3 px-5 py-3 border-b border-white/10 bg-white/5">
                 {["#", "Name", "Email", "City", "Budget", "Referrals", "Status", "Actions"].map(h => (
-                  <span key={h} className="text-[10px] font-bold uppercase tracking-widest text-white/30">{h}</span>
+                  <span key={h} className="text-[10px] font-bold uppercase tracking-widest text-white/55">{h}</span>
                 ))}
               </div>
               {filtered.map((entry, i) => (
@@ -302,7 +302,7 @@ export default function AdminWaitlistPage() {
                   <span className="text-xs font-bold text-amber-500/60 tabular-nums">#{entry.position}</span>
 
                   <p className="text-sm font-semibold text-white truncate">{entry.name}</p>
-                  <p className="text-xs text-white/40 truncate">{entry.email}</p>
+                  <p className="text-xs text-white/60 truncate">{entry.email}</p>
 
                   <span className="text-xs text-white/50">
                     {CITY_LABELS[entry.city] || entry.city || "—"}
@@ -361,7 +361,7 @@ export default function AdminWaitlistPage() {
                         <InvitedBadge invited={entry.invited} />
                       </div>
                       <p className="text-sm font-bold text-white truncate">{entry.name}</p>
-                      <p className="text-xs text-white/30 truncate">{entry.email}</p>
+                      <p className="text-xs text-white/55 truncate">{entry.email}</p>
                     </div>
                     <div className="flex gap-1 shrink-0">
                       {!entry.invited && (
@@ -385,7 +385,7 @@ export default function AdminWaitlistPage() {
                       { label: "Referrals", value: entry.referral_count ?? 0 },
                     ].map(s => (
                       <div key={s.label} className="bg-white/5 rounded-lg p-2">
-                        <p className="text-[10px] text-white/30 mb-0.5">{s.label}</p>
+                        <p className="text-[10px] text-white/55 mb-0.5">{s.label}</p>
                         <p className="text-xs font-bold text-white">{s.value}</p>
                       </div>
                     ))}
@@ -397,7 +397,7 @@ export default function AdminWaitlistPage() {
             {/* Pagination */}
             {pagination.last_page > 1 && (
               <div className="flex items-center justify-between">
-                <p className="text-xs text-white/30">Page {pagination.current_page} of {pagination.last_page}</p>
+                <p className="text-xs text-white/55">Page {pagination.current_page} of {pagination.last_page}</p>
                 <div className="flex gap-2">
                   <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={pagination.current_page === 1}
                     className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 transition-all disabled:opacity-30">

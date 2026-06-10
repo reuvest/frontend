@@ -526,7 +526,7 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
           </div>
         </div>
         <button type="button" onClick={onRetake}
-          className="flex items-center gap-2 text-sm text-white/30 hover:text-amber-500 font-semibold transition-colors py-1">
+          className="flex items-center gap-2 text-sm text-white/55 hover:text-amber-500 font-semibold transition-colors py-1">
           <RotateCcw size={13} /> Retake
         </button>
       </div>
@@ -630,7 +630,7 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
               <AlertCircle size={24} className="text-orange-400" />
             </div>
             <p className="text-orange-300 font-bold text-sm leading-relaxed">{retryMsg}</p>
-            <p className="text-white/40 text-xs">Please perform the action clearly and slowly.</p>
+            <p className="text-white/60 text-xs">Please perform the action clearly and slowly.</p>
           </motion.div>
         )}
 
@@ -676,9 +676,9 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
               {phase === "requesting"
                 ? <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
                     className="w-6 h-6 border-2 border-amber-500 border-t-transparent rounded-full" />
-                : <Video size={24} className="text-white/30" />}
+                : <Video size={24} className="text-white/55" />}
             </div>
-            <p className="text-white/40 text-sm">{phase === "requesting" ? "Starting camera…" : "Camera ready"}</p>
+            <p className="text-white/60 text-sm">{phase === "requesting" ? "Starting camera…" : "Camera ready"}</p>
           </div>
         )}
 

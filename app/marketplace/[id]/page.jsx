@@ -27,7 +27,7 @@ function StatusBadge({ status, large }) {
   const map = {
     active:           { label: "Active",           cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
     in_escrow:        { label: "In Escrow",        cls: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
-    sold:             { label: "Sold",              cls: "bg-white/5 text-white/30 border-white/10" },
+    sold:             { label: "Sold",              cls: "bg-white/5 text-white/55 border-white/10" },
     cancelled:        { label: "Cancelled",        cls: "bg-red-500/10 text-red-400 border-red-500/20" },
     awaiting_payment: { label: "Awaiting Payment", cls: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
     paid:             { label: "Paid",             cls: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
@@ -159,7 +159,7 @@ function OfferForm({ listing, onSuccess }) {
       {/* Units with stepper */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs text-white/30 uppercase tracking-widest font-bold">
+          <label className="text-xs text-white/55 uppercase tracking-widest font-bold">
             Units
           </label>
           <span className="text-[10px] text-white/20">
@@ -179,7 +179,7 @@ function OfferForm({ listing, onSuccess }) {
 
       {/* Price per unit */}
       <div>
-        <label className="text-xs text-white/30 uppercase tracking-widest font-bold block mb-1.5">
+        <label className="text-xs text-white/55 uppercase tracking-widest font-bold block mb-1.5">
           Price / Unit (₦)
         </label>
         <input
@@ -272,7 +272,7 @@ function OffersList({ listing, onUpdate }) {
             <StatusBadge status={offer.status} />
           </div>
           {offer.message && (
-            <p className="text-xs text-white/40 italic border-t border-white/5 pt-2 mt-2">
+            <p className="text-xs text-white/60 italic border-t border-white/5 pt-2 mt-2">
               &ldquo;{offer.message}&rdquo;
             </p>
           )}
@@ -387,7 +387,7 @@ function ChatPanel({ listing, currentUser }) {
                     : "bg-white/[0.06] text-white/75"
                 } ${m._optimistic ? "opacity-60" : ""}`}>
                   {!isMe && (
-                    <p className="text-[10px] font-bold text-white/30 mb-0.5">
+                    <p className="text-[10px] font-bold text-white/55 mb-0.5">
                       {m.sender?.name ?? "Seller"}
                     </p>
                   )}
@@ -482,7 +482,7 @@ function EscrowPanel({ escrow, currentUser, onUpdate }) {
       </div>
 
       <div className="flex items-center justify-between rounded-xl bg-emerald-500/5 border border-emerald-500/15 px-4 py-3">
-        <span className="text-xs text-white/40">Seller receives</span>
+        <span className="text-xs text-white/60">Seller receives</span>
         <span className="text-base font-bold text-emerald-400">
           ₦{(escrow.seller_receives_kobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
         </span>
@@ -500,7 +500,7 @@ function EscrowPanel({ escrow, currentUser, onUpdate }) {
 
       {isBuyer && escrow.status === "awaiting_payment" && (
         <div className="space-y-3 border-t border-white/5 pt-4">
-          <p className="text-xs text-white/40">
+          <p className="text-xs text-white/60">
             Enter your transaction PIN to pay from your wallet balance.
           </p>
           <input
@@ -595,7 +595,7 @@ export default function ListingDetailPage() {
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-10">
         <Link href="/marketplace"
-          className="inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors mb-8">
+          className="inline-flex items-center gap-1.5 text-xs text-white/55 hover:text-white/60 transition-colors mb-8">
           <ArrowLeft size={13} /> Back to Marketplace
         </Link>
 
@@ -641,7 +641,7 @@ export default function ListingDetailPage() {
                   ))}
                 </div>
 
-                <div className="flex items-center gap-2 text-xs text-white/30">
+                <div className="flex items-center gap-2 text-xs text-white/55">
                   <User size={11} />
                   <span>Listed by <span className="text-white/50 font-semibold">{listing.seller?.name}</span></span>
                   {listing.expires_at && (
@@ -736,7 +736,7 @@ export default function ListingDetailPage() {
                               refresh();
                             } catch { toast.error("Failed to withdraw"); }
                           }}
-                          className="w-full py-2 rounded-lg border border-white/10 text-white/40 text-xs font-bold hover:bg-white/5 transition-all">
+                          className="w-full py-2 rounded-lg border border-white/10 text-white/60 text-xs font-bold hover:bg-white/5 transition-all">
                           Withdraw Offer
                         </button>
                       )}
@@ -749,7 +749,7 @@ export default function ListingDetailPage() {
             {!currentUser && (
               <div className="rounded-2xl border border-white/10 bg-white/5 p-5 text-center">
                 <Lock size={24} className="text-white/20 mx-auto mb-3" />
-                <p className="text-sm text-white/40 mb-4">
+                <p className="text-sm text-white/60 mb-4">
                   Sign in to make offers and chat with the seller
                 </p>
                 <Link href="/login"
@@ -762,7 +762,7 @@ export default function ListingDetailPage() {
 
             {/* Platform info */}
             <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5 space-y-3">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-white/30">How It Works</p>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-white/55">How It Works</p>
               {[
                 [TrendingUp,   "Make an offer at your price"],
                 [CheckCircle,  "Seller accepts → escrow created"],

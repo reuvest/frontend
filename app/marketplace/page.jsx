@@ -15,7 +15,7 @@ function StatusBadge({ status }) {
   const map = {
     active:    { label: "Active",    cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
     in_escrow: { label: "In Escrow", cls: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
-    sold:      { label: "Sold",      cls: "bg-white/5 text-white/30 border-white/10" },
+    sold:      { label: "Sold",      cls: "bg-white/5 text-white/55 border-white/10" },
   };
   const s = map[status] ?? map.active;
   return (
@@ -61,18 +61,18 @@ function ListingCard({ listing }) {
 
         <div className="flex items-end justify-between mb-3">
           <div>
-            <p className="text-xs text-white/30 mb-0.5">Asking price / unit</p>
+            <p className="text-xs text-white/55 mb-0.5">Asking price / unit</p>
             <p className="text-xl font-bold text-amber-400" style={{ fontFamily: "'Playfair Display', serif" }}>
               {formatNaira(listing.asking_price_kobo)}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-white/30 mb-0.5">Units</p>
+            <p className="text-xs text-white/55 mb-0.5">Units</p>
             <p className="text-lg font-bold text-white">{listing.units_for_sale}</p>
           </div>
         </div>
 
-        <div className="flex items-center justify-between text-xs text-white/30">
+        <div className="flex items-center justify-between text-xs text-white/55">
           <span>Seller: {listing.seller?.name ?? "—"}</span>
           <span className="flex items-center gap-1 text-amber-500/60 font-semibold group-hover:text-amber-500 transition-colors">
             View <ArrowRight size={11} />
@@ -88,12 +88,12 @@ function FiltersPanel({ filters, onChange, onReset }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-black uppercase tracking-widest text-white/40">Filters</p>
+        <p className="text-xs font-black uppercase tracking-widest text-white/60">Filters</p>
         <button onClick={onReset} className="text-xs text-white/25 hover:text-white/50 transition-colors">Reset</button>
       </div>
 
       <div>
-        <label className="block text-xs text-white/30 uppercase tracking-widest font-bold mb-2">Sort By</label>
+        <label className="block text-xs text-white/55 uppercase tracking-widest font-bold mb-2">Sort By</label>
         <select value={filters.sort} onChange={(e) => onChange("sort", e.target.value)}
           className="w-full bg-[#0D1F1A] border border-white/10 text-white px-3 py-2.5 rounded-xl text-sm outline-none">
           <option value="newest">Newest</option>
@@ -104,7 +104,7 @@ function FiltersPanel({ filters, onChange, onReset }) {
       </div>
 
       <div>
-        <label className="block text-xs text-white/30 uppercase tracking-widest font-bold mb-2">Min Price (₦)</label>
+        <label className="block text-xs text-white/55 uppercase tracking-widest font-bold mb-2">Min Price (₦)</label>
         <input type="number" min={0} value={filters.min_price}
           onChange={(e) => onChange("min_price", e.target.value)}
           placeholder="0"
@@ -112,7 +112,7 @@ function FiltersPanel({ filters, onChange, onReset }) {
       </div>
 
       <div>
-        <label className="block text-xs text-white/30 uppercase tracking-widest font-bold mb-2">Max Price (₦)</label>
+        <label className="block text-xs text-white/55 uppercase tracking-widest font-bold mb-2">Max Price (₦)</label>
         <input type="number" min={0} value={filters.max_price}
           onChange={(e) => onChange("max_price", e.target.value)}
           placeholder="No limit"
@@ -183,10 +183,10 @@ export default function MarketplacePage() {
         <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
           <div>
             <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">P2P Exchange</p>
-            <h1 className="text-4xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h1 className="text-4xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               Land Marketplace
             </h1>
-            <p className="text-white/40 mt-1 text-sm">Buy and sell verified land units directly with other investors</p>
+            <p className="text-white/60 mt-1 text-sm">Buy and sell verified land units directly with other investors</p>
           </div>
           <Link href="/marketplace/create"
             className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-[#0D1F1A] text-sm transition-all hover:scale-105"
@@ -204,7 +204,7 @@ export default function MarketplacePage() {
               className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/40 text-white placeholder-white/20 pl-10 pr-4 py-3 rounded-xl text-sm outline-none transition-all" />
             {search && (
               <button onClick={() => setSearch("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60">
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/55 hover:text-white/60">
                 <X size={13} />
               </button>
             )}
@@ -237,7 +237,7 @@ export default function MarketplacePage() {
             ) : filtered.length === 0 ? (
               <div className="text-center py-20">
                 <Package size={40} className="text-white/10 mx-auto mb-4" />
-                <p className="text-white/30 text-sm">No listings found</p>
+                <p className="text-white/55 text-sm">No listings found</p>
                 {search && (
                   <button onClick={() => setSearch("")} className="mt-2 text-xs text-amber-500 hover:text-amber-400">
                     Clear search
@@ -255,14 +255,14 @@ export default function MarketplacePage() {
                 {meta && meta.last_page > 1 && (
                   <div className="flex justify-center gap-2 mt-8">
                     <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}
-                      className="px-4 py-2 rounded-xl border border-white/10 text-white/40 text-sm disabled:opacity-30 hover:border-white/20 transition-all">
+                      className="px-4 py-2 rounded-xl border border-white/10 text-white/60 text-sm disabled:opacity-30 hover:border-white/20 transition-all">
                       Previous
                     </button>
-                    <span className="px-4 py-2 text-white/30 text-sm">
+                    <span className="px-4 py-2 text-white/55 text-sm">
                       {page} / {meta.last_page}
                     </span>
                     <button disabled={page >= meta.last_page} onClick={() => setPage((p) => p + 1)}
-                      className="px-4 py-2 rounded-xl border border-white/10 text-white/40 text-sm disabled:opacity-30 hover:border-white/20 transition-all">
+                      className="px-4 py-2 rounded-xl border border-white/10 text-white/60 text-sm disabled:opacity-30 hover:border-white/20 transition-all">
                       Next
                     </button>
                   </div>

@@ -7,6 +7,7 @@ import { Menu, X, LogOut, ChevronRight } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import NotificationBell from "./NotificationBell";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 const appname = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
 
@@ -58,16 +59,8 @@ export default function Header() {
             className="flex items-center shrink-0 group"
             aria-label={`${appname} Home`}
           >
-            <img
-              src="/reu_ng_logo.png"
-              alt={`${appname} logo`}
-              className="h-16 w-auto transition-opacity group-hover:opacity-80"
-              style={{
-                maxWidth: "160px",
-                filter: "brightness(1.2)",
-                background: "transparent",
-              }}
-            />
+          <Image src="/reu_ng_logo.png" alt={`${appname} logo`} width={160} height={128}
+            priority className="h-10 w-auto transition-opacity group-hover:opacity-80" />
           </Link>
 
           {user && (
@@ -86,7 +79,7 @@ export default function Header() {
                       className={`relative px-3 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                         active
                           ? "text-white bg-white/[0.08]"
-                          : "text-white/40 hover:text-white/80 hover:bg-white/5"
+                          : "text-white/60 hover:text-white/80 hover:bg-white/5"
                       }`}
                     >
                       {link.name}
@@ -106,7 +99,7 @@ export default function Header() {
                 <button
                   onClick={handleLogout}
                   aria-label="Logout"
-                  className="flex items-center gap-1.5 text-sm text-white/30 hover:text-red-400 transition-colors px-3 py-2 rounded-lg hover:bg-red-500/8"
+                  className="flex items-center gap-1.5 text-sm text-white/55 hover:text-red-400 transition-colors px-3 py-2 rounded-lg hover:bg-red-500/8"
                 >
                   <LogOut size={13} />
                   <span>Logout</span>
@@ -157,16 +150,12 @@ export default function Header() {
                 onClick={() => setMenuOpen(false)}
                 aria-label={`${appname} Home`}
               >
-                <img
-                  src="/reu_ng_logo.png"
-                  alt={`${appname} logo`}
-                  className="h-10 w-auto"
-                  style={{ maxWidth: "130px", filter: "brightness(2.1)" }}
-                />
+              <Image src="/reu_ng_logo.png" alt={`${appname} logo`} width={130} height={104}
+                className="h-8 w-auto" />
               </Link>
               <button
                 onClick={() => setMenuOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/[0.01]0 text-white/40 hover:text-white transition-all"
+                className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/[0.01]0 text-white/60 hover:text-white transition-all"
               >
                 <X size={14} />
               </button>
@@ -183,7 +172,7 @@ export default function Header() {
                     className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                       active
                         ? "bg-white/[0.08] text-white"
-                        : "text-white/40 hover:bg-white/5 hover:text-white/70"
+                        : "text-white/60 hover:bg-white/5 hover:text-white/70"
                     }`}
                   >
                     <span>{link.name}</span>

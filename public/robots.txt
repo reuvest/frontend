@@ -1,0 +1,24 @@
+# robots.txt — REU.ng
+
+User-agent: *
+Allow: /
+
+# Auth & account flows — no indexing value
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+
+# Authenticated app pages
+Disallow: /dashboard
+Disallow: /wallet
+Disallow: /portfolio
+Disallow: /settings
+Disallow: /profile
+
+# Next.js internals
+Disallow: /_next/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://reu.ng/sitemap.xml

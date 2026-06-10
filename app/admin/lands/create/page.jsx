@@ -61,7 +61,7 @@ function FormSection({ title, icon, children }) {
 function FormField({ label, children }) {
   return (
     <div>
-      <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">{label}</label>
+      <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">{label}</label>
       {children}
     </div>
   );
@@ -412,22 +412,22 @@ export default function CreateLand() {
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
 
       <div className="relative z-10 max-w-3xl mx-auto px-6 py-10">
         <Link href="/admin/lands"
-          className="inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors mb-8">
+          className="inline-flex items-center gap-1.5 text-xs text-white/55 hover:text-white/60 transition-colors mb-8">
           <ArrowLeft size={13} /> Back to Lands
         </Link>
 
         <div className="mb-8">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">Admin Panel</p>
-          <h1 className="text-4xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h1 className="text-4xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Create Land
           </h1>
-          <p className="text-white/40 mt-1 text-sm">Add a new property listing to the platform</p>
+          <p className="text-white/60 mt-1 text-sm">Add a new property listing to the platform</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -456,7 +456,7 @@ export default function CreateLand() {
               <FormField label="Price per Unit (Kobo)">
                 <DarkInput name="price_per_unit_kobo" value={form.price_per_unit_kobo} onChange={handleChange} placeholder="e.g. 50000000" required />
                 {form.price_per_unit_kobo && (
-                  <p className="text-xs text-white/30 mt-1">= ₦{(Number(form.price_per_unit_kobo) / 100).toLocaleString()}</p>
+                  <p className="text-xs text-white/55 mt-1">= ₦{(Number(form.price_per_unit_kobo) / 100).toLocaleString()}</p>
                 )}
               </FormField>
               <FormField label="Total Units">
@@ -480,7 +480,7 @@ export default function CreateLand() {
                   { key: "launch_price_kobo",     label: "Launch Price"     },
                 ].map(({ key, label }) => (
                   <div key={key} className="grid grid-cols-[140px_1fr] gap-3 items-center">
-                    <span className="text-xs text-white/40">{label}</span>
+                    <span className="text-xs text-white/60">{label}</span>
                     <div>
                       <DarkInput
                         type="text"
@@ -506,7 +506,7 @@ export default function CreateLand() {
           {/* ── Coordinates ────────────────────────────────────────────────── */}
           <FormSection title="Location Coordinates" icon={<Layers size={15} className="text-amber-500" />}>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm text-white/40">
+              <p className="text-sm text-white/60">
                 Using: <span className="text-white/70 font-semibold">{usePolygon ? "Polygon" : "Point (lat/lng)"}</span>
               </p>
               <button type="button" onClick={toggleCoordinateMode}
@@ -722,7 +722,7 @@ export default function CreateLand() {
               ) : (
                 <>
                   <Plus size={20} className="text-white/20 mb-1" />
-                  <span className="text-xs text-white/30">Click to select images</span>
+                  <span className="text-xs text-white/55">Click to select images</span>
                 </>
               )}
               <input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" />

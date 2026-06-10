@@ -100,7 +100,7 @@ export default function TransactionPin() {
       {/* Info banner */}
       <div className="flex items-start gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
         <KeyRound size={15} className="text-amber-500 shrink-0 mt-0.5" />
-        <p className="text-xs text-white/40 leading-relaxed">
+        <p className="text-xs text-white/60 leading-relaxed">
           {hasPin
             ? "Enter your current PIN to set a new one. Your PIN is used to authorise all transactions."
             : "Set a 4-digit PIN to secure your transactions. You'll need it every time you buy or sell."}
@@ -165,7 +165,7 @@ export default function TransactionPin() {
 function PinField({ label, children }) {
   return (
     <div>
-      <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-3">
+      <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-3">
         {label}
       </label>
       {children}

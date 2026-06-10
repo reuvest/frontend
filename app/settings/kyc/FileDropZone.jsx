@@ -155,7 +155,7 @@ export default function FileDropZone({
 
   return (
     <div>
-      <label className="block text-xs font-bold text-white/30 uppercase tracking-widest mb-2">
+      <label className="block text-xs font-bold text-white/55 uppercase tracking-widest mb-2">
         {label} {required && <span className="text-red-400">*</span>}
       </label>
 
@@ -241,7 +241,7 @@ export default function FileDropZone({
             style={{ height: "clamp(110px, 26vw, 148px)" }}
           >
             <ImageIcon size={18} className="text-white/20 mb-2" />
-            <p className="text-white/40 text-sm font-medium">Choose from gallery</p>
+            <p className="text-white/60 text-sm font-medium">Choose from gallery</p>
             <p className="text-white/20 text-xs mt-1 text-center px-4">
               JPG, PNG or WebP · max {MAX_MB} MB
             </p>

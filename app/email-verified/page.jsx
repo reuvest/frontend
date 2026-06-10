@@ -5,7 +5,7 @@ export default function EmailVerified() {
   return (
     <div
       className="min-h-screen bg-[#0D1F1A] flex items-center justify-center px-4 py-10 relative overflow-hidden"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}
     >
       {/* Background */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -19,7 +19,7 @@ export default function EmailVerified() {
         <div className="mb-6">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-1">Sproutvest</p>
           <h1 className="text-2xl sm:text-3xl font-bold text-white"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Land Investment
           </h1>
         </div>
@@ -36,7 +36,7 @@ export default function EmailVerified() {
           </div>
 
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Email Verified!
           </h2>
           <p className="text-white/50 text-sm mb-7 leading-relaxed">

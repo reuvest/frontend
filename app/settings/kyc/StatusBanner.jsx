@@ -52,10 +52,10 @@ export default function StatusBanner({ kyc, onResubmit }) {
             <p className="font-bold text-xs tracking-wide uppercase">{c.title}</p>
           </div>
 
-          {c.body && <p className="text-white/40 text-sm leading-relaxed">{c.body}</p>}
+          {c.body && <p className="text-white/60 text-sm leading-relaxed">{c.body}</p>}
 
           {kyc.rejection_reason && (
-            <p className="text-white/40 text-sm leading-relaxed">
+            <p className="text-white/60 text-sm leading-relaxed">
               <span className="text-white/25">Reason: </span>{kyc.rejection_reason}
             </p>
           )}

@@ -129,10 +129,10 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0D1F1A] flex items-center justify-center"
-        style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+        style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
         <div className="text-center">
           <div className="w-10 h-10 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white/40 text-sm">Loading dashboard...</p>
+          <p className="text-white/60 text-sm">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -242,7 +242,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
 
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
@@ -256,10 +256,10 @@ export default function AdminDashboard() {
           <div>
             <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">Admin Panel</p>
             <h1 className="text-3xl sm:text-4xl font-bold text-white"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               Dashboard
             </h1>
-            <p className="text-white/40 mt-1 text-sm">Manage your platform from one central location</p>
+            <p className="text-white/60 mt-1 text-sm">Manage your platform from one central location</p>
           </div>
           <Link href="/admin/lands/create"
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-[#0D1F1A] text-sm transition-all hover:scale-105"
@@ -279,9 +279,9 @@ export default function AdminDashboard() {
                   style={{ background: `${card.accent}20`, color: card.accent }}>
                   {card.icon}
                 </div>
-                <p className="text-white/40 text-xs font-semibold uppercase tracking-widest mb-1">{card.label}</p>
+                <p className="text-white/60 text-xs font-semibold uppercase tracking-widest mb-1">{card.label}</p>
                 <p className="text-3xl font-bold text-white mb-4"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   {card.value}
                 </p>
                 <div className="flex gap-4 flex-wrap">
@@ -309,11 +309,11 @@ export default function AdminDashboard() {
                   <MapPin size={18} className="text-amber-500" />
                 </div>
                 <h2 className="font-bold text-white text-base sm:text-lg"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   Land Management
                 </h2>
               </div>
-              <span className="text-xs text-white/30 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+              <span className="text-xs text-white/55 bg-white/5 px-3 py-1 rounded-full border border-white/10">
                 {stats.lands.total} total
               </span>
             </div>
@@ -331,7 +331,7 @@ export default function AdminDashboard() {
                   <ShieldCheck size={18} className="text-purple-400" />
                 </div>
                 <h2 className="font-bold text-white text-base sm:text-lg"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   KYC Verification
                 </h2>
               </div>
@@ -355,11 +355,11 @@ export default function AdminDashboard() {
                   <Users size={18} className="text-cyan-400" />
                 </div>
                 <h2 className="font-bold text-white text-base sm:text-lg"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   User Management
                 </h2>
               </div>
-              <span className="text-xs text-white/30 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+              <span className="text-xs text-white/55 bg-white/5 px-3 py-1 rounded-full border border-white/10">
                 {stats.users.total} users
               </span>
             </div>
@@ -377,7 +377,7 @@ export default function AdminDashboard() {
                   <MessageSquare size={18} className="text-emerald-400" />
                 </div>
                 <h2 className="font-bold text-white text-base sm:text-lg"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   Support
                 </h2>
               </div>
@@ -401,11 +401,11 @@ export default function AdminDashboard() {
                   <FileText size={18} className="text-orange-400" />
                 </div>
                 <h2 className="font-bold text-white text-base sm:text-lg"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   Blog Management
                 </h2>
               </div>
-              <span className="text-xs text-white/30 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+              <span className="text-xs text-white/55 bg-white/5 px-3 py-1 rounded-full border border-white/10">
                 {stats.blog.total} posts
               </span>
             </div>
@@ -423,11 +423,11 @@ export default function AdminDashboard() {
                   <Gift size={18} className="text-emerald-400" />
                 </div>
                 <h2 className="font-bold text-white text-base sm:text-lg"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   Referral System
                 </h2>
               </div>
-              <span className="text-xs text-white/30 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+              <span className="text-xs text-white/55 bg-white/5 px-3 py-1 rounded-full border border-white/10">
                 {stats.referrals.total} total
               </span>
             </div>
@@ -445,7 +445,7 @@ export default function AdminDashboard() {
                   <Wallet size={18} className="text-emerald-400" />
                 </div>
                 <h2 className="font-bold text-white text-base sm:text-lg"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   Withdrawals
                 </h2>
               </div>
@@ -469,7 +469,7 @@ export default function AdminDashboard() {
                   <Shield size={18} className="text-red-400" />
                 </div>
                 <h2 className="font-bold text-white text-base sm:text-lg"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   Compliance
                 </h2>
               </div>
@@ -505,7 +505,7 @@ export default function AdminDashboard() {
                   <HeadphonesIcon size={18} className="text-emerald-400" />
                 </div>
                 <h2 className="font-bold text-white text-base sm:text-lg"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   Live Support
                 </h2>
               </div>
@@ -515,7 +515,7 @@ export default function AdminDashboard() {
                   {stats.liveChat.queued} in queue
                 </span>
               ) : (
-                <span className="text-xs text-white/30 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                <span className="text-xs text-white/55 bg-white/5 px-3 py-1 rounded-full border border-white/10">
                   Queue empty
                 </span>
               )}
@@ -549,7 +549,7 @@ export default function AdminDashboard() {
           <div className="relative z-10">
             <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-1">Shortcuts</p>
             <h2 className="text-xl font-bold text-white mb-5"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               Quick Actions
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-3">
@@ -598,7 +598,7 @@ function ManagementRow({ href, icon, title, subtitle, accent, highlight }) {
         </div>
         <div>
           <p className="text-sm font-semibold text-white/80 group-hover:text-white transition-colors">{title}</p>
-          <p className="text-xs text-white/30">{subtitle}</p>
+          <p className="text-xs text-white/55">{subtitle}</p>
         </div>
       </div>
       <ArrowRight size={14} className="text-white/20 group-hover:text-white/50 group-hover:translate-x-1 transition-all shrink-0" />

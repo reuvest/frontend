@@ -84,7 +84,7 @@ export default function ProfileSettings() {
               <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={14} />
               <input
                 type="text" value={user?.name || ""} disabled
-                className="w-full bg-white/[0.03] border border-white/[0.08] text-white/40 pl-10 pr-4 py-3 rounded-xl text-sm cursor-not-allowed"
+                className="w-full bg-white/[0.03] border border-white/[0.08] text-white/60 pl-10 pr-4 py-3 rounded-xl text-sm cursor-not-allowed"
               />
             </div>
           </Field>
@@ -94,7 +94,7 @@ export default function ProfileSettings() {
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={14} />
               <input
                 type="email" value={user?.email || ""} disabled
-                className="w-full bg-white/[0.03] border border-white/[0.08] text-white/40 pl-10 pr-4 py-3 rounded-xl text-sm cursor-not-allowed"
+                className="w-full bg-white/[0.03] border border-white/[0.08] text-white/60 pl-10 pr-4 py-3 rounded-xl text-sm cursor-not-allowed"
               />
             </div>
             {user?.email_verified_at && (
@@ -221,7 +221,7 @@ export default function ProfileSettings() {
 function Field({ label, children }) {
   return (
     <div>
-      <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">{label}</label>
+      <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">{label}</label>
       {children}
     </div>
   );

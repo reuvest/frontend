@@ -27,7 +27,7 @@ export default function ReferralRedirect({ code }) {
   return (
     <div
       className="min-h-screen bg-[#0D1F1A] flex flex-col items-center justify-center gap-5"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}
     >
       {/* Spinner */}
       <svg
@@ -40,7 +40,7 @@ export default function ReferralRedirect({ code }) {
         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
       </svg>
 
-      <p className="text-white/40 text-sm">Loading...</p>
+      <p className="text-white/60 text-sm">Loading...</p>
     </div>
   );
 }

@@ -24,9 +24,9 @@ const koboToNaira = (k) =>
 function BreakdownRow({ label, value, green, strikethrough, muted }) {
   return (
     <div className="flex justify-between items-center py-1">
-      <span className={`text-xs ${muted ? "text-white/30" : "text-white/50"}`}>{label}</span>
+      <span className={`text-xs ${muted ? "text-white/55" : "text-white/50"}`}>{label}</span>
       <span className={`text-xs font-semibold ${
-        strikethrough ? "line-through text-white/30" :
+        strikethrough ? "line-through text-white/55" :
         green         ? "text-emerald-400"           :
         "text-white"
       }`}>{value}</span>
@@ -306,14 +306,14 @@ export default function Portfolio() {
       <div className="min-h-screen flex items-center justify-center bg-[#0D1F1A]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
         <div className="text-center">
           <div className="w-12 h-12 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white/40 text-sm tracking-widest uppercase">Loading portfolio</p>
+          <p className="text-white/60 text-sm tracking-widest uppercase">Loading portfolio</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0D1F1A] relative" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+    <div className="min-h-screen bg-[#0D1F1A] relative" style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
       <div className="fixed inset-0 opacity-[0.03] pointer-events-none z-0"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
 
@@ -321,10 +321,10 @@ export default function Portfolio() {
 
         <div>
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">Investments</p>
-          <h1 className="text-4xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h1 className="text-4xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Your Portfolio
           </h1>
-          <p className="text-white/40 mt-1 text-sm">Track your land holdings and transactions</p>
+          <p className="text-white/60 mt-1 text-sm">Track your land holdings and transactions</p>
         </div>
 
         {/* Summary Cards */}
@@ -347,9 +347,9 @@ export default function Portfolio() {
         {lands.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-white/5 p-10 text-center">
             <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
-              <Layers size={22} className="text-white/30" />
+              <Layers size={22} className="text-white/55" />
             </div>
-            <p className="text-white/40 mb-5">You haven&apos;t purchased any land yet</p>
+            <p className="text-white/60 mb-5">You haven&apos;t purchased any land yet</p>
             <Link href="/lands"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-[#0D1F1A] text-sm transition-all hover:scale-[1.02]"
               style={{ background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" }}>
@@ -361,7 +361,7 @@ export default function Portfolio() {
             {lands.map((land) => (
               <div key={land.land_id}
                 className="rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-white/20 transition-all">
-                <h2 className="font-bold text-white text-lg mb-4" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                <h2 className="font-bold text-white text-lg mb-4" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   {land.land_name}
                 </h2>
                 <div className="space-y-2 mb-5">
@@ -402,13 +402,13 @@ export default function Portfolio() {
             <TrendingUp size={15} className="text-amber-500" />
             <h3 className="text-sm font-bold uppercase tracking-widest text-white/70">Transaction History</h3>
             {transactions.length > 0 && (
-              <span className="ml-auto text-xs text-white/30">{transactions.length} transactions</span>
+              <span className="ml-auto text-xs text-white/55">{transactions.length} transactions</span>
             )}
           </div>
 
           <div className="p-5">
             {transactions.length === 0 ? (
-              <p className="text-center text-white/30 py-8 text-sm">No transactions yet</p>
+              <p className="text-center text-white/55 py-8 text-sm">No transactions yet</p>
             ) : (
               <>
                 <div className="space-y-3">
@@ -428,7 +428,7 @@ export default function Portfolio() {
                             <p className={`text-sm font-semibold ${isPurchase ? "text-emerald-400" : "text-red-400"}`}>
                               {t.type} · {t.land}
                             </p>
-                            <p className="text-xs text-white/30">
+                            <p className="text-xs text-white/55">
                               {isPurchase ? "+" : "-"}{t.units} unit{t.units !== 1 ? "s" : ""} · {formatDate(t.date)}
                             </p>
                           </div>
@@ -437,7 +437,7 @@ export default function Portfolio() {
                           <p className={`font-bold text-sm ${isPurchase ? "text-emerald-400" : "text-red-400"}`}>
                             ₦{formatNaira(t.amount)}
                           </p>
-                          <p className="text-xs text-white/30">{t.status}</p>
+                          <p className="text-xs text-white/55">{t.status}</p>
                         </div>
                       </div>
                     );
@@ -447,7 +447,7 @@ export default function Portfolio() {
                 {totalPages > 1 && (
                   <div className="flex items-center justify-center gap-2 mt-6">
                     <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}
-                      className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                      className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
                       <ChevronLeft size={14} />
                     </button>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -455,14 +455,14 @@ export default function Portfolio() {
                         className={`w-8 h-8 rounded-lg text-sm font-bold transition-all ${
                           currentPage === page
                             ? "text-[#0D1F1A]"
-                            : "bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/[0.01]0"
+                            : "bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/[0.01]0"
                         }`}
                         style={currentPage === page ? { background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" } : {}}>
                         {page}
                       </button>
                     ))}
                     <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
-                      className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                      className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
                       <ChevronRight size={14} />
                     </button>
                   </div>
@@ -482,12 +482,12 @@ export default function Portfolio() {
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
               <div>
                 <p className="text-xs font-bold uppercase tracking-widest text-amber-600 mb-0.5">{modal.type}</p>
-                <h2 className="text-xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                <h2 className="text-xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   {modal.land?.land_name}
                 </h2>
               </div>
               <button onClick={closeModal}
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/40 hover:text-white transition-all">
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/60 hover:text-white transition-all">
                 <X size={14} />
               </button>
             </div>
@@ -496,7 +496,7 @@ export default function Portfolio() {
 
               {/* ── Units input with stepper ───────────────────────────────── */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">
+                <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">
                   Number of Units
                   {maxUnits > 0 && (
                     <span className="ml-2 normal-case text-white/20 font-normal">
@@ -614,7 +614,7 @@ export default function Portfolio() {
                       <div className="border-t border-white/10 mt-2 pt-2">
                         <div className="flex justify-between items-center">
                           <span className="text-xs font-bold uppercase tracking-wider text-white/50">You pay</span>
-                          <span className="text-xl font-bold text-amber-400" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                          <span className="text-xl font-bold text-amber-400" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                             ₦{preview.total_due_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}
                           </span>
                         </div>
@@ -628,7 +628,7 @@ export default function Portfolio() {
                   ) : (
                     <>
                       <p className="text-xs text-amber-500/70 uppercase tracking-widest mb-1">Total to Pay</p>
-                      <p className="text-2xl font-bold text-amber-400" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                      <p className="text-2xl font-bold text-amber-400" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                         ₦{((Number(modal.units) * Number(modal.land?.price_per_unit_kobo || 0)) / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
                       </p>
                     </>
@@ -640,7 +640,7 @@ export default function Portfolio() {
               {modal.type === "sell" && sellTotal > 0 && (
                 <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
                   <p className="text-xs text-amber-500/70 uppercase tracking-widest mb-1">You&apos;ll Receive</p>
-                  <p className="text-2xl font-bold text-amber-400" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  <p className="text-2xl font-bold text-amber-400" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                     ₦{formatNaira(sellTotal)}
                   </p>
                 </div>
@@ -648,7 +648,7 @@ export default function Portfolio() {
 
               {/* PIN */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">Transaction PIN</label>
+                <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">Transaction PIN</label>
                 <input
                   type="password"
                   inputMode="numeric"
@@ -700,7 +700,7 @@ function SummaryCard({ title, value, positive, signed, prefix }) {
     : "text-amber-400";
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-      <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-1">{title}</p>
+      <p className="text-xs font-bold uppercase tracking-widest text-white/55 mb-1">{title}</p>
       <p className={`text-xl font-bold ${color}`}>{prefix}{value}</p>
     </div>
   );
@@ -709,7 +709,7 @@ function SummaryCard({ title, value, positive, signed, prefix }) {
 function Row({ label, value, accent }) {
   return (
     <div className="flex justify-between items-center">
-      <span className="text-xs text-white/30 uppercase tracking-wider">{label}</span>
+      <span className="text-xs text-white/55 uppercase tracking-wider">{label}</span>
       <span className={`text-sm font-semibold ${accent ? "text-amber-400" : "text-white"}`}>{value}</span>
     </div>
   );

@@ -193,7 +193,7 @@ export default function ReferralDashboard() {
             Dashboard
           </p>
           <h1 className="text-3xl font-bold text-white">Referral Program</h1>
-          <p className="text-[#4a6660] mt-1 text-sm">Share your link and earn rewards</p>
+          <p className="text-[#7aab97] mt-1 text-sm">Share your link and earn rewards</p>
         </div>
 
         {/* ── Referral Link Card ── */}
@@ -262,12 +262,12 @@ export default function ReferralDashboard() {
                 >
                   {card.icon}
                 </div>
-                <p className="text-xs text-[#3f5e56] uppercase tracking-widest font-bold mb-1">
+                <p className="text-xs text-[#8ab9a9] uppercase tracking-widest font-bold mb-1">
                   {card.label}
                 </p>
                 <p
                   className="text-xl sm:text-2xl font-bold text-white break-all"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                 >
                   {display}
                 </p>
@@ -284,7 +284,7 @@ export default function ReferralDashboard() {
             </div>
             <h2
               className="font-bold text-white text-lg"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
             >
               Rewards Balance
             </h2>
@@ -298,13 +298,13 @@ export default function ReferralDashboard() {
                 <div className="w-7 h-7 rounded-lg bg-[#132818] flex items-center justify-center" style={{ boxShadow: "0 0 0 1px #1a3a22" }}>
                   <DollarSign size={14} className="text-emerald-400" />
                 </div>
-                <p className="text-xs font-bold uppercase tracking-widest text-[#3f5e56]">
+                <p className="text-xs font-bold uppercase tracking-widest text-[#8ab9a9]">
                   Cashback
                 </p>
               </div>
               <p
                 className="text-2xl font-bold text-white mb-1"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
               >
                 ₦{koboToNaira(summary.totalKobo)}
               </p>
@@ -330,17 +330,17 @@ export default function ReferralDashboard() {
                 <div className="w-7 h-7 rounded-lg bg-[#111e28] flex items-center justify-center" style={{ boxShadow: "0 0 0 1px #192e3a" }}>
                   <span className="text-sky-400 text-sm">🎟️</span>
                 </div>
-                <p className="text-xs font-bold uppercase tracking-widest text-[#3f5e56]">
+                <p className="text-xs font-bold uppercase tracking-widest text-[#8ab9a9]">
                   Discounts
                 </p>
               </div>
               <p
                 className="text-2xl font-bold text-white mb-1"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
               >
                 {summary.discountCount}
               </p>
-              <p className="text-xs text-[#3f5e56]">
+              <p className="text-xs text-[#8ab9a9]">
                 {summary.discountCount === 1 ? "voucher" : "vouchers"} available
               </p>
               <div className="mt-3 flex flex-wrap gap-1.5">
@@ -351,7 +351,7 @@ export default function ReferralDashboard() {
                       key={r.id}
                       className={`text-xs px-2 py-0.5 rounded-md font-mono ${
                         r.claimed
-                          ? "bg-[#192a25] text-[#3f5e56]"  
+                          ? "bg-[#192a25] text-[#8ab9a9]"  
                           : "bg-[#111e28] text-sky-300"     
                       }`}
                     >
@@ -367,17 +367,17 @@ export default function ReferralDashboard() {
                 <div className="w-7 h-7 rounded-lg bg-[#241a0e] flex items-center justify-center" style={{ boxShadow: "0 0 0 1px #3d2c14" }}>
                   <Zap size={14} className="text-amber-400" />
                 </div>
-                <p className="text-xs font-bold uppercase tracking-widest text-[#3f5e56]">
+                <p className="text-xs font-bold uppercase tracking-widest text-[#8ab9a9]">
                   Bonus Units
                 </p>
               </div>
               <p
                 className="text-2xl font-bold text-white mb-1"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
               >
                 {summary.bonusUnits.toLocaleString()}
               </p>
-              <p className="text-xs text-[#3f5e56]">units accumulated</p>
+              <p className="text-xs text-[#8ab9a9]">units accumulated</p>
             </div>
           </div>
         </div>
@@ -391,7 +391,7 @@ export default function ReferralDashboard() {
               </div>
               <h2
                 className="font-bold text-white text-lg"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
               >
                 Your Rewards
               </h2>
@@ -412,25 +412,25 @@ export default function ReferralDashboard() {
                       <p className="text-sm font-semibold text-white">
                         {cfg.icon} {cfg.label}
                       </p>
-                      <p className="text-xs text-[#4a6660] mt-0.5">
+                      <p className="text-xs text-[#7aab97] mt-0.5">
                         {reward.reward_type === "cashback"    && `₦${koboToNaira(reward.amount_kobo)}`}
                         {reward.reward_type === "discount"    && `${reward.discount_percentage}% off your next purchase`}
                         {reward.reward_type === "bonus_units" && `${reward.units} bonus units`}
                       </p>
                       {reward.referral?.referred_user?.name && (
-                        <p className="text-xs text-[#3f5e56] mt-1">
+                        <p className="text-xs text-[#8ab9a9] mt-1">
                           From: {reward.referral.referred_user.name}
                         </p>
                       )}
                       {reward.claimed && reward.claimed_at && (
-                        <p className="text-xs text-[#3f5e56] mt-0.5">
+                        <p className="text-xs text-[#8ab9a9] mt-0.5">
                           Claimed {new Date(reward.claimed_at).toLocaleDateString()}
                         </p>
                       )}
                     </div>
                     <div className="shrink-0">
                       {reward.claimed ? (
-                        <span className="flex items-center gap-1.5 text-xs text-[#3f5e56] border border-[#1e3530] px-3 py-1.5 rounded-lg whitespace-nowrap">
+                        <span className="flex items-center gap-1.5 text-xs text-[#8ab9a9] border border-[#1e3530] px-3 py-1.5 rounded-lg whitespace-nowrap">
                           <Check size={12} /> Claimed
                         </span>
                       ) : (
@@ -458,7 +458,7 @@ export default function ReferralDashboard() {
               </div>
               <h2
                 className="font-bold text-white text-lg"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
               >
                 Your Referrals
               </h2>
@@ -467,13 +467,13 @@ export default function ReferralDashboard() {
             {/* Desktop header */}
             <div className="hidden sm:grid grid-cols-[1.5fr_1.5fr_1fr_1fr] gap-4 px-6 py-3 border-b border-[#193028] bg-[#142D25]">
               {["Name", "Email", "Status", "Joined"].map((h) => (
-                <span key={h} className="text-xs font-bold uppercase tracking-widest text-[#3f5e56]">{h}</span>
+                <span key={h} className="text-xs font-bold uppercase tracking-widest text-[#8ab9a9]">{h}</span>
               ))}
             </div>
             {/* Mobile header */}
             <div className="grid grid-cols-2 gap-4 px-4 py-3 border-b border-[#193028] bg-[#142D25] sm:hidden">
               {["Name", "Status"].map((h) => (
-                <span key={h} className="text-xs font-bold uppercase tracking-widest text-[#3f5e56]">{h}</span>
+                <span key={h} className="text-xs font-bold uppercase tracking-widest text-[#8ab9a9]">{h}</span>
               ))}
             </div>
 
@@ -487,9 +487,9 @@ export default function ReferralDashboard() {
                 {/* Desktop row */}
                 <div className="hidden sm:grid grid-cols-[1.5fr_1.5fr_1fr_1fr] gap-4 px-6 py-4 items-center">
                   <p className="text-sm font-semibold text-white">{referral.referred_user?.name ?? "—"}</p>
-                  <p className="text-sm text-[#4a6660] truncate">{referral.referred_user?.email ?? "—"}</p>
+                  <p className="text-sm text-[#7aab97] truncate">{referral.referred_user?.email ?? "—"}</p>
                   <StatusBadge status={referral.status} />
-                  <p className="text-sm text-[#4a6660]">
+                  <p className="text-sm text-[#7aab97]">
                     {referral.referred_user?.created_at
                       ? new Date(referral.referred_user.created_at).toLocaleDateString()
                       : "—"}
@@ -499,7 +499,7 @@ export default function ReferralDashboard() {
                 <div className="sm:hidden px-4 py-4 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-white truncate">{referral.referred_user?.name ?? "—"}</p>
-                    <p className="text-xs text-[#3f5e56] mt-0.5">
+                    <p className="text-xs text-[#8ab9a9] mt-0.5">
                       {referral.referred_user?.created_at
                         ? new Date(referral.referred_user.created_at).toLocaleDateString()
                         : "—"}
@@ -515,11 +515,11 @@ export default function ReferralDashboard() {
             <div className="text-5xl mb-4">🎁</div>
             <h3
               className="text-xl font-bold text-white mb-2"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
             >
               No Referrals Yet
             </h3>
-            <p className="text-[#4a6660] text-sm mb-6">
+            <p className="text-[#7aab97] text-sm mb-6">
               Share your referral link with friends to earn rewards!
             </p>
             <button

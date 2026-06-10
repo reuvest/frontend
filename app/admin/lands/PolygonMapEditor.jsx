@@ -196,7 +196,7 @@ export default function PolygonMapEditor({ polygon, onChange }) {
             type="button"
             onClick={() => setInputMode(tab.id)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              inputMode === tab.id ? "bg-white/[0.01]0 text-white" : "text-white/40 hover:text-white/70"
+              inputMode === tab.id ? "bg-white/[0.01]0 text-white" : "text-white/60 hover:text-white/70"
             }`}
           >
             {tab.label}
@@ -216,8 +216,8 @@ export default function PolygonMapEditor({ polygon, onChange }) {
 
       {/* Draw mode hint */}
       {inputMode === "draw" && (
-        <div className="text-xs text-white/30 bg-white/5 border border-white/5 rounded-xl p-3 space-y-1">
-          <p className="font-semibold text-white/40 mb-1.5">How to draw:</p>
+        <div className="text-xs text-white/55 bg-white/5 border border-white/5 rounded-xl p-3 space-y-1">
+          <p className="font-semibold text-white/60 mb-1.5">How to draw:</p>
           <p>1. Click the polygon icon (⬟) in the map controls</p>
           <p>2. Click the map to add points</p>
           <p>3. Click the first point again to close the shape</p>
@@ -232,7 +232,7 @@ export default function PolygonMapEditor({ polygon, onChange }) {
         <div className="space-y-3">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-white/30 uppercase tracking-widest font-bold mb-2">Paste GeoJSON</label>
+              <label className="block text-xs text-white/55 uppercase tracking-widest font-bold mb-2">Paste GeoJSON</label>
               <textarea
                 value={manualInput}
                 onChange={(e) => setManualInput(e.target.value)}
@@ -250,7 +250,7 @@ export default function PolygonMapEditor({ polygon, onChange }) {
               </button>
             </div>
             <div>
-              <label className="block text-xs text-white/30 uppercase tracking-widest font-bold mb-2">Add Points</label>
+              <label className="block text-xs text-white/55 uppercase tracking-widest font-bold mb-2">Add Points</label>
               <PointInput onAdd={handleAddPoint} />
               {pointsList.length > 0 && (
                 <div className="mt-2 max-h-36 overflow-y-auto space-y-1 border border-white/10 rounded-xl p-2 bg-white/5">
@@ -283,9 +283,9 @@ export default function PolygonMapEditor({ polygon, onChange }) {
       {/* File upload */}
       {inputMode === "upload" && (
         <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-          <label className="block text-xs text-white/30 uppercase tracking-widest font-bold mb-3">Upload GeoJSON File</label>
+          <label className="block text-xs text-white/55 uppercase tracking-widest font-bold mb-3">Upload GeoJSON File</label>
           <label className="flex flex-col items-center justify-center h-20 border-2 border-dashed border-white/15 hover:border-amber-500/40 rounded-xl cursor-pointer transition-all">
-            <span className="text-xs text-white/30">Click to select .json or .geojson</span>
+            <span className="text-xs text-white/55">Click to select .json or .geojson</span>
             <input type="file" accept=".json,.geojson" onChange={handleFileUpload} className="hidden" />
           </label>
           <p className="text-xs text-white/20 mt-2">Supports: GeoJSON Polygon, Feature, or FeatureCollection</p>
@@ -295,10 +295,10 @@ export default function PolygonMapEditor({ polygon, onChange }) {
       {/* Current polygon preview */}
       {polygon && (
         <details className="group">
-          <summary className="text-xs text-white/25 cursor-pointer hover:text-white/40 transition-colors select-none">
+          <summary className="text-xs text-white/25 cursor-pointer hover:text-white/60 transition-colors select-none">
             View raw GeoJSON ▸
           </summary>
-          <pre className="mt-2 text-[10px] font-mono text-white/30 bg-white/5 border border-white/5 rounded-xl p-3 overflow-x-auto">
+          <pre className="mt-2 text-[10px] font-mono text-white/55 bg-white/5 border border-white/5 rounded-xl p-3 overflow-x-auto">
             {JSON.stringify(polygon, null, 2)}
           </pre>
         </details>

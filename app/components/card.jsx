@@ -30,18 +30,18 @@ export function Card({ title, description, image, location, price, units, href, 
       )}
       <div className="p-5">
         {location && (
-          <p className="text-xs text-white/30 mb-1.5 flex items-center gap-1">
+          <p className="text-xs text-white/55 mb-1.5 flex items-center gap-1">
             <span className="inline-block w-1 h-1 rounded-full bg-amber-500"/>
             {location}
           </p>
         )}
         <h3 className="text-base font-bold text-white group-hover:text-amber-400 transition-colors mb-2 line-clamp-1"
           style={{ fontFamily: "Playfair Display, Georgia, serif" }}>{title}</h3>
-        {description && <p className="text-sm text-white/40 mb-4 line-clamp-2 leading-relaxed">{description}</p>}
+        {description && <p className="text-sm text-white/60 mb-4 line-clamp-2 leading-relaxed">{description}</p>}
         <div className="flex items-center justify-between">
           <div>
-            {price && <p className="text-sm font-bold text-amber-400">{price} <span className="font-normal text-white/30 text-xs">/ unit</span></p>}
-            {units!==undefined && <p className="text-xs text-white/30 mt-0.5">{units.toLocaleString()} units available</p>}
+            {price && <p className="text-sm font-bold text-amber-400">{price} <span className="font-normal text-white/55 text-xs">/ unit</span></p>}
+            {units!==undefined && <p className="text-xs text-white/55 mt-0.5">{units.toLocaleString()} units available</p>}
           </div>
           {href && (
             <div className="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-[#0D1F1A] transition-all">

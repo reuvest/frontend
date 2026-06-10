@@ -6,7 +6,7 @@ export const inputCls =
 export const selectCls = inputCls + " appearance-none cursor-pointer";
 
 export const labelCls =
-  "block text-xs font-bold text-white/30 uppercase tracking-widest mb-2";
+  "block text-xs font-bold text-white/55 uppercase tracking-widest mb-2";
 
 export const btnPrimary =
   "w-full flex items-center justify-center gap-2 font-bold text-sm px-5 py-4 rounded-xl " +

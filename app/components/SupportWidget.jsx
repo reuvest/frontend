@@ -36,7 +36,7 @@ const statusCfg = (s = "") => {
   if (s === "open")     return { cls: "bg-amber-500/15 text-amber-400 border-amber-500/25",   dot: "bg-amber-400"   };
   if (s === "waiting")  return { cls: "bg-blue-500/15 text-blue-400 border-blue-500/25",      dot: "bg-blue-400"    };
   if (s === "resolved") return { cls: "bg-emerald-500/15 text-emerald-400 border-emerald-500/25", dot: "bg-emerald-400" };
-  return                       { cls: "bg-white/[0.01]0 text-white/40 border-white/15",            dot: "bg-white/[0.03]0"    };
+  return                       { cls: "bg-white/[0.01]0 text-white/60 border-white/15",            dot: "bg-white/[0.03]0"    };
 };
 
 /* ── Shared input style ────────────────────────────────────────────────────── */
@@ -102,7 +102,7 @@ export default function SupportWidget() {
                 </div>
                 <div>
                   <p className="text-white text-sm font-bold leading-none">{appname} Support</p>
-                  <p className="text-white/30 text-xs mt-0.5 flex items-center gap-1">
+                  <p className="text-white/55 text-xs mt-0.5 flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
                     Online · Replies instantly
                   </p>
@@ -110,12 +110,12 @@ export default function SupportWidget() {
               </div>
               <div className="flex items-center gap-1">
                 <Link href="/support" onClick={() => setOpen(false)}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg text-white/30 hover:text-white hover:bg-white/[0.08] transition-all"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg text-white/55 hover:text-white hover:bg-white/[0.08] transition-all"
                   title="Open full support page">
                   <ExternalLink size={13} />
                 </Link>
                 <button onClick={() => setOpen(false)}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg text-white/30 hover:text-white hover:bg-white/[0.08] transition-all">
+                  className="w-7 h-7 flex items-center justify-center rounded-lg text-white/55 hover:text-white hover:bg-white/[0.08] transition-all">
                   <X size={14} />
                 </button>
               </div>
@@ -132,7 +132,7 @@ export default function SupportWidget() {
                   className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold transition-all ${
                     tab === t.id
                       ? "text-amber-500 border-b-2 border-amber-500"
-                      : "text-white/30 hover:text-white/60"
+                      : "text-white/55 hover:text-white/60"
                   }`}
                   style={{ marginBottom: tab === t.id ? "-1px" : 0 }}>
                   {t.icon}{t.label}
@@ -207,7 +207,7 @@ function ChatTab({ user, onEscalate }) {
       <div className="px-3 pt-2.5 pb-1 flex gap-1.5 flex-wrap border-b border-white/5">
         {FAQ_PREVIEWS.map(q => (
           <button key={q} onClick={() => send(q)}
-            className="text-[10px] px-2.5 py-1 rounded-lg border border-white/10 text-white/40 hover:text-amber-400 hover:border-amber-500/30 transition-all bg-white/[0.03]">
+            className="text-[10px] px-2.5 py-1 rounded-lg border border-white/10 text-white/60 hover:text-amber-400 hover:border-amber-500/30 transition-all bg-white/[0.03]">
             {q}
           </button>
         ))}
@@ -323,10 +323,10 @@ function FaqTab() {
           <button onClick={() => setExpanded(expanded === i ? null : i)}
             className="w-full flex items-center justify-between px-3.5 py-3 text-left gap-2">
             <span className="text-xs font-semibold text-white/70 leading-snug">{f.question}</span>
-            <ChevronDown size={13} className={`text-white/30 shrink-0 transition-transform ${expanded === i ? "rotate-180" : ""}`} />
+            <ChevronDown size={13} className={`text-white/55 shrink-0 transition-transform ${expanded === i ? "rotate-180" : ""}`} />
           </button>
           {expanded === i && (
-            <div className="px-3.5 pb-3 text-xs text-white/40 leading-relaxed border-t border-white/5 pt-2.5">
+            <div className="px-3.5 pb-3 text-xs text-white/60 leading-relaxed border-t border-white/5 pt-2.5">
               {f.answer}
             </div>
           )}
@@ -368,7 +368,7 @@ function TicketTab({ user }) {
       </div>
       <div>
         <p className="font-bold text-white text-sm">Ticket submitted!</p>
-        <p className="text-white/30 text-xs mt-1">We'll respond to your email within 24 hours.</p>
+        <p className="text-white/55 text-xs mt-1">We'll respond to your email within 24 hours.</p>
       </div>
       <Link href="/support" className="text-xs text-amber-500 hover:text-amber-400 font-semibold">
         Track your ticket →
@@ -381,7 +381,7 @@ function TicketTab({ user }) {
       <form onSubmit={handleSubmit} className="space-y-3">
         {/* Subject */}
         <div>
-          <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1.5">Subject</label>
+          <label className="block text-[10px] font-bold text-white/55 uppercase tracking-widest mb-1.5">Subject</label>
           <input name="subject" value={form.subject} onChange={handleChange}
             placeholder="Brief description of your issue" required
             className={inp + " text-xs py-2.5"} />
@@ -389,7 +389,7 @@ function TicketTab({ user }) {
 
         {/* Category */}
         <div>
-          <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1.5">Category</label>
+          <label className="block text-[10px] font-bold text-white/55 uppercase tracking-widest mb-1.5">Category</label>
           <div className="relative">
             <select name="category" value={form.category} onChange={handleChange} required
               className={sel + " text-xs py-2.5"}>
@@ -398,13 +398,13 @@ function TicketTab({ user }) {
                 <option key={c.value} value={c.value}>{c.label}</option>
               ))}
             </select>
-            <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+            <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/55 pointer-events-none" />
           </div>
         </div>
 
         {/* Message */}
         <div>
-          <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1.5">Message</label>
+          <label className="block text-[10px] font-bold text-white/55 uppercase tracking-widest mb-1.5">Message</label>
           <textarea name="message" value={form.message} onChange={handleChange}
             placeholder="Describe your issue in detail…" rows={4} required
             className={inp + " text-xs py-2.5 resize-none"} />
@@ -412,11 +412,11 @@ function TicketTab({ user }) {
 
         {/* Attachment */}
         <div>
-          <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1.5">
+          <label className="block text-[10px] font-bold text-white/55 uppercase tracking-widest mb-1.5">
             Attachment <span className="normal-case font-normal">(optional, max 5MB)</span>
           </label>
           <button type="button" onClick={() => fileRef.current?.click()}
-            className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-dashed border-white/15 hover:border-amber-500/30 text-white/30 hover:text-amber-400 text-xs transition-all bg-white/[0.02]">
+            className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-dashed border-white/15 hover:border-amber-500/30 text-white/55 hover:text-amber-400 text-xs transition-all bg-white/[0.02]">
             <Paperclip size={12} />
             {file ? file.name : "Attach screenshot or file"}
           </button>
@@ -494,11 +494,11 @@ function GuestSupportBubble() {
               </div>
               <div>
                 <p className="text-white text-sm font-bold leading-none">Contact Support</p>
-                <p className="text-white/30 text-xs mt-0.5">We respond within 24 hours</p>
+                <p className="text-white/55 text-xs mt-0.5">We respond within 24 hours</p>
               </div>
             </div>
             <button onClick={() => setOpen(false)}
-              className="w-7 h-7 flex items-center justify-center rounded-lg text-white/30 hover:text-white hover:bg-white/[0.08] transition-all">
+              className="w-7 h-7 flex items-center justify-center rounded-lg text-white/55 hover:text-white hover:bg-white/[0.08] transition-all">
               <X size={14} />
             </button>
           </div>
@@ -511,7 +511,7 @@ function GuestSupportBubble() {
                 </div>
                 <div>
                   <p className="font-bold text-white text-sm">Message received!</p>
-                  <p className="text-white/30 text-xs mt-1">We'll reply to your email within 24 hours.</p>
+                  <p className="text-white/55 text-xs mt-1">We'll reply to your email within 24 hours.</p>
                   {reference && (
                     <p className="text-amber-500/70 text-xs mt-2 font-mono">Ref: {reference}</p>
                   )}
@@ -524,7 +524,7 @@ function GuestSupportBubble() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-3">
-                <p className="text-xs text-white/30 mb-3">
+                <p className="text-xs text-white/55 mb-3">
                   Not logged in?{" "}
                   <Link href="/login" className="text-amber-500 hover:text-amber-400">Sign in</Link>
                   {" "}for AI chat & ticket tracking.
@@ -533,12 +533,12 @@ function GuestSupportBubble() {
                 {/* Name + Email */}
                 <div className="grid grid-cols-2 gap-2.5">
                   <div>
-                    <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1.5">Name</label>
+                    <label className="block text-[10px] font-bold text-white/55 uppercase tracking-widest mb-1.5">Name</label>
                     <input name="name" value={form.name} onChange={handleChange} required
                       placeholder="Your name" className={inp + " text-xs py-2.5"} />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1.5">Email</label>
+                    <label className="block text-[10px] font-bold text-white/55 uppercase tracking-widest mb-1.5">Email</label>
                     <input name="email" type="email" value={form.email} onChange={handleChange} required
                       placeholder="you@email.com" className={inp + " text-xs py-2.5"} />
                   </div>
@@ -546,7 +546,7 @@ function GuestSupportBubble() {
 
                 {/* Category */}
                 <div>
-                  <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1.5">Topic</label>
+                  <label className="block text-[10px] font-bold text-white/55 uppercase tracking-widest mb-1.5">Topic</label>
                   <div className="relative">
                     <select name="category" value={form.category} onChange={handleChange} required
                       className={sel + " text-xs py-2.5"}>
@@ -555,20 +555,20 @@ function GuestSupportBubble() {
                         <option key={c.value} value={c.value}>{c.label}</option>
                       ))}
                     </select>
-                    <ChevronDown size={11} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+                    <ChevronDown size={11} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/55 pointer-events-none" />
                   </div>
                 </div>
 
                 {/* Subject */}
                 <div>
-                  <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1.5">Subject</label>
+                  <label className="block text-[10px] font-bold text-white/55 uppercase tracking-widest mb-1.5">Subject</label>
                   <input name="subject" value={form.subject} onChange={handleChange} required
                     placeholder="Brief summary" className={inp + " text-xs py-2.5"} />
                 </div>
 
                 {/* Message */}
                 <div>
-                  <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1.5">Message</label>
+                  <label className="block text-[10px] font-bold text-white/55 uppercase tracking-widest mb-1.5">Message</label>
                   <textarea name="message" value={form.message} onChange={handleChange} required
                     rows={3} placeholder="Describe your issue…"
                     className={inp + " text-xs py-2.5 resize-none"} />
@@ -576,7 +576,7 @@ function GuestSupportBubble() {
 
                 {/* Attachment */}
                 <button type="button" onClick={() => fileRef.current?.click()}
-                  className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-dashed border-white/15 hover:border-amber-500/30 text-white/30 hover:text-amber-400 text-xs transition-all">
+                  className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-dashed border-white/15 hover:border-amber-500/30 text-white/55 hover:text-amber-400 text-xs transition-all">
                   <Paperclip size={12} />
                   {file ? file.name : "Attach screenshot (optional)"}
                 </button>

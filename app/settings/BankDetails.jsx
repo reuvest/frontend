@@ -112,7 +112,7 @@ export default function BankDetails() {
 
         <div className="flex items-start gap-2.5 rounded-xl border border-white/10 bg-white/5 p-3.5 mt-2">
           <Lock size={13} className="text-amber-500 shrink-0 mt-0.5" />
-          <p className="text-xs text-white/40 leading-relaxed">
+          <p className="text-xs text-white/60 leading-relaxed">
             Bank details are locked after being set once. Contact support to change them.
           </p>
         </div>
@@ -201,7 +201,7 @@ export default function BankDetails() {
 function Field({ label, children }) {
   return (
     <div>
-      <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">{label}</label>
+      <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">{label}</label>
       {children}
     </div>
   );

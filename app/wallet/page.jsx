@@ -199,12 +199,12 @@ export default function WalletPage() {
   };
 
   const getStatusStyle = (status) => {
-    if (!status) return "bg-white/5 border-white/10 text-white/30";
+    if (!status) return "bg-white/5 border-white/10 text-white/55";
     const s = status.toLowerCase();
     if (s.includes("complete")) return "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
     if (s.includes("pend"))     return "bg-amber-500/10 border-amber-500/20 text-amber-400";
     if (s.includes("fail") || s.includes("reject")) return "bg-red-500/10 border-red-500/20 text-red-400";
-    return "bg-white/5 border-white/10 text-white/30";
+    return "bg-white/5 border-white/10 text-white/55";
   };
 
   const formatDate = (d) =>
@@ -223,7 +223,7 @@ export default function WalletPage() {
         style={{ fontFamily: "'DM Sans', sans-serif" }}>
         <div className="text-center">
           <div className="w-12 h-12 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white/40 text-sm tracking-widest uppercase">Loading wallet</p>
+          <p className="text-white/60 text-sm tracking-widest uppercase">Loading wallet</p>
         </div>
       </div>
     );
@@ -242,10 +242,10 @@ export default function WalletPage() {
               : <WifiOff    size={28} className="text-white/20" />}
           </div>
           <h2 className="text-xl font-bold text-white mb-2"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             {isServer ? "Server Error" : "Connection Error"}
           </h2>
-          <p className="text-white/40 text-sm mb-2 leading-relaxed">
+          <p className="text-white/60 text-sm mb-2 leading-relaxed">
             {isServer
               ? "The server returned an error. Please try again or contact support."
               : "Unable to load your wallet. Please check your connection and try again."}
@@ -271,7 +271,7 @@ export default function WalletPage() {
   /* ─── RENDER ────────────────────────────────────────────────────────── */
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
 
       {/* Dot grid */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-0"
@@ -283,10 +283,10 @@ export default function WalletPage() {
         <div>
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">Finance</p>
           <h1 className="text-4xl font-bold text-white"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             My Wallet
           </h1>
-          <p className="text-white/40 mt-1 text-sm">Manage your funds securely</p>
+          <p className="text-white/60 mt-1 text-sm">Manage your funds securely</p>
         </div>
 
         {/* Balance Card */}
@@ -329,7 +329,7 @@ export default function WalletPage() {
                 className={`flex-1 py-4 text-sm font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${
                   activeTab === tab.id
                     ? "text-amber-500 border-b-2 border-amber-500 bg-amber-500/5"
-                    : "text-white/30 hover:text-white/60 hover:bg-white/5"
+                    : "text-white/55 hover:text-white/60 hover:bg-white/5"
                 }`}>
                 {tab.icon}{tab.label}
               </button>
@@ -344,7 +344,7 @@ export default function WalletPage() {
 
                 {/* Gateway selector */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-3">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-3">
                     Payment Gateway
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -364,7 +364,7 @@ export default function WalletPage() {
                           {active && (
                             <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-amber-500" />
                           )}
-                          <span className={active ? "text-amber-400" : "text-white/30"}>
+                          <span className={active ? "text-amber-400" : "text-white/55"}>
                             {gw.icon}
                           </span>
                           <span className="min-w-0">
@@ -415,11 +415,11 @@ export default function WalletPage() {
 
                 {/* Amount */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">
                     Amount (₦)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 font-semibold">₦</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/55 font-semibold">₦</span>
                     <input
                       type="number" min={1000} value={depositAmount}
                       onChange={(e) => setDepositAmount(e.target.value)}
@@ -431,7 +431,7 @@ export default function WalletPage() {
                  <div className="flex flex-wrap gap-2 mt-3">
                   {QUICK_AMOUNTS.map((a) => (
                     <button key={a} type="button" onClick={() => setDepositAmount(a.toString())}
-                      className="px-3 py-1.5 text-xs font-bold bg-white/5 border border-white/10 hover:border-amber-500/30 hover:text-amber-400 text-white/40 rounded-lg transition-all">
+                      className="px-3 py-1.5 text-xs font-bold bg-white/5 border border-white/10 hover:border-amber-500/30 hover:text-amber-400 text-white/60 rounded-lg transition-all">
                       ₦{a.toLocaleString()}
                     </button>
                   ))}
@@ -439,7 +439,7 @@ export default function WalletPage() {
                   <button
                     type="button"
                     onClick={() => setDepositAmount((prev) => String((Number(prev) || 0) + 1000))}
-                    className="px-3 py-1.5 text-xs font-bold bg-white/5 border border-white/10 hover:border-amber-500/30 hover:text-amber-400 text-white/40 rounded-lg transition-all"
+                    className="px-3 py-1.5 text-xs font-bold bg-white/5 border border-white/10 hover:border-amber-500/30 hover:text-amber-400 text-white/60 rounded-lg transition-all"
                   >
                     +₦1,000
                   </button>
@@ -460,7 +460,7 @@ export default function WalletPage() {
                     <div className="border-t border-amber-500/20 pt-2 flex justify-between items-center">
                       <span className="text-xs font-bold uppercase tracking-wider text-amber-500/70">Total</span>
                       <span className="text-xl font-bold text-amber-400"
-                        style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                        style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                         ₦{totalPreview.toLocaleString()}
                       </span>
                     </div>
@@ -481,15 +481,15 @@ export default function WalletPage() {
                 <div className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4">
                   <AlertCircle size={15} className="text-amber-500 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-white/30 mb-0.5">Available Balance</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-white/55 mb-0.5">Available Balance</p>
                     <p className="text-amber-400 font-bold">₦{(balance / 100).toLocaleString()}</p>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">Amount (₦)</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">Amount (₦)</label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 font-semibold">₦</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/55 font-semibold">₦</span>
                     <input
                       type="number" min={1000} max={balance / 100} value={withdrawAmount}
                       onChange={(e) => setWithdrawAmount(e.target.value)}
@@ -501,7 +501,7 @@ export default function WalletPage() {
                   <div className="flex flex-wrap gap-2 mt-3">
                     {QUICK_AMOUNTS.filter((a) => a <= balance / 100).map((a) => (
                       <button key={a} type="button" onClick={() => setWithdrawAmount(a.toString())}
-                        className="px-3 py-1.5 text-xs font-bold bg-white/5 border border-white/10 hover:border-amber-500/30 hover:text-amber-400 text-white/40 rounded-lg transition-all">
+                        className="px-3 py-1.5 text-xs font-bold bg-white/5 border border-white/10 hover:border-amber-500/30 hover:text-amber-400 text-white/60 rounded-lg transition-all">
                         ₦{a.toLocaleString()}
                       </button>
                     ))}
@@ -516,7 +516,7 @@ export default function WalletPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">Transaction PIN</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">Transaction PIN</label>
                   <input
                     type="password" inputMode="numeric" maxLength={4} value={pin}
                     onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
@@ -543,7 +543,7 @@ export default function WalletPage() {
             <Wallet size={15} className="text-amber-500" />
             <h3 className="text-sm font-bold uppercase tracking-widest text-white/70">Transaction History</h3>
             {transactions.length > 0 && (
-              <span className="ml-auto text-xs text-white/30">{transactions.length} records</span>
+              <span className="ml-auto text-xs text-white/55">{transactions.length} records</span>
             )}
           </div>
 
@@ -553,7 +553,7 @@ export default function WalletPage() {
                 <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-3">
                   <Wallet size={18} className="text-white/20" />
                 </div>
-                <p className="text-white/30 text-sm">No transactions yet</p>
+                <p className="text-white/55 text-sm">No transactions yet</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -581,7 +581,7 @@ export default function WalletPage() {
                             <p className="text-sm font-bold text-white leading-none">{t.type}</p>
                             {/* Show gateway tag when present */}
                             {t.gateway && (
-                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-white/5 border border-white/10 text-white/30 uppercase tracking-wide">
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-white/5 border border-white/10 text-white/55 uppercase tracking-wide">
                                 {t.gateway}
                               </span>
                             )}
@@ -590,7 +590,7 @@ export default function WalletPage() {
                               {t.status}
                             </span>
                           </div>
-                          <p className="text-xs text-white/30 mt-1">{formatDate(txDate)}</p>
+                          <p className="text-xs text-white/55 mt-1">{formatDate(txDate)}</p>
                         </div>
                         <p className={`font-bold text-sm tabular-nums shrink-0 ${
                           isDeposit ? "text-emerald-400" : "text-blue-400"

@@ -74,7 +74,7 @@ export default function SetNewPassword() {
   return (
     <div
       className="min-h-screen bg-[#0D1F1A] flex items-center justify-center px-4 py-12 relative overflow-hidden"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}
     >
       {/* Background */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -90,7 +90,7 @@ export default function SetNewPassword() {
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2"> 
              {process.env.NEXT_PUBLIC_APP_NAME}
           </p>
-          <h1 className="text-3xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h1 className="text-3xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Land Investment
           </h1>
         </div>
@@ -102,10 +102,10 @@ export default function SetNewPassword() {
             <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/20 flex items-center justify-center mb-4">
               <Lock className="text-amber-500" size={26} />
             </div>
-            <h2 className="text-2xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-2xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               Set New Password
             </h2>
-            <p className="text-white/40 text-sm mt-2 text-center">
+            <p className="text-white/60 text-sm mt-2 text-center">
               Choose a strong password for your account
             </p>
           </div>
@@ -125,7 +125,7 @@ export default function SetNewPassword() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* New Password */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-widest text-white/40 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-widest text-white/60 mb-2">
                 New Password
               </label>
               <div className="relative">
@@ -166,7 +166,7 @@ export default function SetNewPassword() {
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-widest text-white/40 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-widest text-white/60 mb-2">
                 Confirm Password
               </label>
               <div className="relative">

@@ -74,7 +74,7 @@ export default function AdminLands() {
 
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
       <div className="absolute bottom-0 left-0 w-[35vw] h-[35vw] rounded-full opacity-10 pointer-events-none"
@@ -82,17 +82,17 @@ export default function AdminLands() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-10">
 
-        <Link href="/admin" className="inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors mb-8">
+        <Link href="/admin" className="inline-flex items-center gap-1.5 text-xs text-white/55 hover:text-white/60 transition-colors mb-8">
           ← Back to Dashboard
         </Link>
 
         <div className="flex items-start justify-between flex-wrap gap-4 mb-10">
           <div>
             <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">Admin Panel</p>
-            <h1 className="text-4xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h1 className="text-4xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               Manage Lands
             </h1>
-            <p className="text-white/40 mt-1 text-sm">{lands.length} total properties</p>
+            <p className="text-white/60 mt-1 text-sm">{lands.length} total properties</p>
           </div>
           <Link
             href="/admin/lands/create"
@@ -110,7 +110,7 @@ export default function AdminLands() {
         ) : lands.length === 0 ? (
           <div className="text-center py-24 border border-white/10 rounded-2xl">
             <MapPin size={40} className="mx-auto mb-4 text-white/10" />
-            <p className="text-white/30 mb-6">No lands created yet</p>
+            <p className="text-white/55 mb-6">No lands created yet</p>
             <Link href="/admin/lands/create"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-[#0D1F1A] text-sm"
               style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)" }}>
@@ -121,7 +121,7 @@ export default function AdminLands() {
           <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
             <div className="grid grid-cols-[2fr_1.2fr_1.2fr_1fr_1fr_160px] gap-4 px-6 py-3 border-b border-white/10 bg-white/5">
               {["Title", "Location", "Price / Unit", "Units", "Status", "Actions"].map((h) => (
-                <span key={h} className="text-xs font-bold uppercase tracking-widest text-white/30">{h}</span>
+                <span key={h} className="text-xs font-bold uppercase tracking-widest text-white/55">{h}</span>
               ))}
             </div>
 
@@ -148,7 +148,7 @@ export default function AdminLands() {
                 <div className="flex items-center gap-1.5 text-sm">
                   <span className="text-emerald-400 font-semibold">{land.available_units}</span>
                   <span className="text-white/20">/</span>
-                  <span className="text-white/40">{land.total_units}</span>
+                  <span className="text-white/60">{land.total_units}</span>
                 </div>
 
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border w-fit ${
@@ -161,7 +161,7 @@ export default function AdminLands() {
                 </span>
 
                 <div className="flex items-center gap-1">
-                  <ActionBtn href={`/lands/${land.id}`} icon={<Eye size={13} />} label="View" color="text-white/40 hover:text-white" />
+                  <ActionBtn href={`/lands/${land.id}`} icon={<Eye size={13} />} label="View" color="text-white/60 hover:text-white" />
                   <ActionBtn href={`/admin/lands/${land.id}/edit`} icon={<Pencil size={13} />} label="Edit" color="text-purple-400 hover:text-purple-300" />
                   <button onClick={() => openPriceModal(land)} title="Update Price"
                     className="w-7 h-7 rounded-lg flex items-center justify-center text-amber-500/70 hover:text-amber-400 hover:bg-amber-500/10 transition-all">
@@ -186,35 +186,35 @@ export default function AdminLands() {
       {showModal && selectedLand && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0f2820] shadow-2xl overflow-hidden"
-            style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+            style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
             <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-amber-500/15 flex items-center justify-center">
                   <TrendingUp size={17} className="text-amber-500" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-white text-base" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  <h2 className="font-bold text-white text-base" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                     Update Price
                   </h2>
-                  <p className="text-xs text-white/30 mt-0.5 truncate max-w-45">{selectedLand.title}</p>
+                  <p className="text-xs text-white/55 mt-0.5 truncate max-w-45">{selectedLand.title}</p>
                 </div>
               </div>
               <button onClick={() => setShowModal(false)}
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/40 hover:text-white transition-all">
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/60 hover:text-white transition-all">
                 <X size={15} />
               </button>
             </div>
 
             <div className="p-6 space-y-5">
               <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                <p className="text-xs text-white/30 mb-1">Current Price</p>
-                <p className="text-2xl font-bold text-amber-400" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                <p className="text-xs text-white/55 mb-1">Current Price</p>
+                <p className="text-2xl font-bold text-amber-400" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                   {formatNaira(currentPrice(selectedLand))}
                 </p>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-white/40 mb-2">New Price (₦)</label>
+                <label className="block text-xs font-bold uppercase tracking-widest text-white/60 mb-2">New Price (₦)</label>
                 <input type="number" value={newPrice} onChange={(e) => setNewPrice(e.target.value)}
                   min="0" step="0.01"
                   className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 text-white placeholder-white/20 px-4 py-3.5 rounded-xl text-sm outline-none transition-all"
@@ -222,7 +222,7 @@ export default function AdminLands() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-white/40 mb-2">Effective Date</label>
+                <label className="block text-xs font-bold uppercase tracking-widest text-white/60 mb-2">Effective Date</label>
                 <input type="date" value={priceDate} onChange={(e) => setPriceDate(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 text-white px-4 py-3.5 rounded-xl text-sm outline-none transition-all scheme-dark" />
               </div>

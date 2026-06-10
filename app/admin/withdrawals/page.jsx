@@ -64,12 +64,12 @@ function RejectModal({ withdrawal, onClose, onDone }) {
         <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-red-400/70 mb-0.5">Reject Withdrawal</p>
-            <p className="text-white font-bold" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <p className="text-white font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               {fmtNaira(withdrawal.amount_kobo)}
             </p>
           </div>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/40 hover:text-white transition-all">
+            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/60 hover:text-white transition-all">
             <X size={14} />
           </button>
         </div>
@@ -85,7 +85,7 @@ function RejectModal({ withdrawal, onClose, onDone }) {
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-white/30 mb-2">
+            <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">
               Rejection Reason *
             </label>
             <textarea
@@ -135,13 +135,13 @@ function WithdrawalDrawer({ withdrawal, onClose, onApprove, onReject, approving 
         {/* Header */}
         <div className="px-6 py-5 border-b border-white/[0.07] flex items-center justify-between sticky top-0 bg-[#0D1F1A] z-10">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/30 mb-0.5">Withdrawal Details</p>
-            <p className="text-xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/55 mb-0.5">Withdrawal Details</p>
+            <p className="text-xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               {fmtNaira(withdrawal.amount_kobo)}
             </p>
           </div>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/40 hover:text-white transition-all">
+            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/60 hover:text-white transition-all">
             <X size={14} />
           </button>
         </div>
@@ -150,7 +150,7 @@ function WithdrawalDrawer({ withdrawal, onClose, onApprove, onReject, approving 
 
           {/* Status */}
           <div className="flex items-center justify-between">
-            <span className="text-xs text-white/30">Status</span>
+            <span className="text-xs text-white/55">Status</span>
             <StatusBadge status={withdrawal.status} />
           </div>
 
@@ -176,7 +176,7 @@ function WithdrawalDrawer({ withdrawal, onClose, onApprove, onReject, approving 
               ["Bank",          withdrawal.user?.bank_name       || "—"],
             ].map(([label, value]) => (
               <div key={label} className="flex items-start justify-between gap-3">
-                <span className="text-[11px] text-white/30 shrink-0">{label}</span>
+                <span className="text-[11px] text-white/55 shrink-0">{label}</span>
                 <span className="text-[11px] text-white/70 text-right font-mono">{value}</span>
               </div>
             ))}
@@ -191,7 +191,7 @@ function WithdrawalDrawer({ withdrawal, onClose, onApprove, onReject, approving 
               ["Reviewed",    fmtDate(withdrawal.reviewed_at)],
             ].map(([label, value]) => (
               <div key={label} className="flex items-start justify-between gap-3">
-                <span className="text-[11px] text-white/30 shrink-0">{label}</span>
+                <span className="text-[11px] text-white/55 shrink-0">{label}</span>
                 <span className="text-[11px] text-white/70 text-right break-all font-mono">{value || "—"}</span>
               </div>
             ))}
@@ -262,7 +262,7 @@ function StatCard({ label, value, sub, accent, icon }) {
         {icon}
       </div>
       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/25 mb-1">{label}</p>
-      <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{value}</p>
+      <p className="text-2xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>{value}</p>
       {sub && <p className="text-[11px] text-white/25 mt-1">{sub}</p>}
     </div>
   );
@@ -361,7 +361,7 @@ export default function AdminWithdrawalsPage() {
 
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
 
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
@@ -373,7 +373,7 @@ export default function AdminWithdrawalsPage() {
 
         {/* Nav */}
         <Link href="/admin"
-          className="inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors mb-6">
+          className="inline-flex items-center gap-1.5 text-xs text-white/55 hover:text-white/60 transition-colors mb-6">
           <ArrowLeft size={13} /> Back to Dashboard
         </Link>
 
@@ -382,7 +382,7 @@ export default function AdminWithdrawalsPage() {
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.26em] text-amber-500/60 mb-2">Admin Panel</p>
             <h1 className="text-3xl sm:text-4xl font-bold text-white"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               Withdrawals
             </h1>
             <p className="hover:border-white/[0.35] text-sm mt-1">{pagination.total} total requests</p>
@@ -485,15 +485,15 @@ export default function AdminWithdrawalsPage() {
 
                   {/* Amount */}
                   <p className="text-sm font-bold text-amber-400 tabular-nums"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                    style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                     {fmtNaira(w.amount_kobo)}
                   </p>
 
                   {/* Reference */}
-                  <p className="text-[11px] font-mono text-white/30 truncate">{w.reference}</p>
+                  <p className="text-[11px] font-mono text-white/55 truncate">{w.reference}</p>
 
                   {/* Date */}
-                  <p className="text-xs text-white/30">{fmtDate(w.created_at)}</p>
+                  <p className="text-xs text-white/55">{fmtDate(w.created_at)}</p>
 
                   {/* Status */}
                   <StatusBadge status={w.status} />
@@ -539,13 +539,13 @@ export default function AdminWithdrawalsPage() {
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-white truncate">{w.user?.name}</p>
-                      <p className="text-xs text-white/30 truncate">{w.user?.email}</p>
+                      <p className="text-xs text-white/55 truncate">{w.user?.email}</p>
                     </div>
                     <StatusBadge status={w.status} />
                   </div>
                   <div className="flex items-center justify-between">
                     <p className="text-lg font-bold text-amber-400"
-                      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                      style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                       {fmtNaira(w.amount_kobo)}
                     </p>
                     <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
@@ -579,12 +579,12 @@ export default function AdminWithdrawalsPage() {
                 <div className="flex gap-2">
                   <button onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={pagination.current_page === 1}
-                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 transition-all">
+                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 transition-all">
                     <ChevronLeft size={15} />
                   </button>
                   <button onClick={() => setPage((p) => Math.min(pagination.last_page, p + 1))}
                     disabled={pagination.current_page === pagination.last_page}
-                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 transition-all">
+                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 transition-all">
                     <ChevronRight size={15} />
                   </button>
                 </div>

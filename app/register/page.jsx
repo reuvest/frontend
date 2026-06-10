@@ -10,6 +10,7 @@ import {
   Gift, CheckCircle, AlertCircle,
 } from "lucide-react";
 import api from "../../utils/api";
+import Image from "next/image";
 
 const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
 
@@ -179,7 +180,7 @@ function RegisterForm() {
   return (
     <div
       className="min-h-screen bg-[#071410] flex items-stretch relative overflow-hidden"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}
     >
       {/* Left decorative panel */}
       <div className="hidden lg:flex lg:w-[44%] xl:w-[42%] relative flex-col justify-center p-12 overflow-hidden">
@@ -194,15 +195,16 @@ function RegisterForm() {
           style={{ background: "radial-gradient(circle, #C8873A 0%, transparent 65%)" }} />
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-6">
-          <img src="/reu_ng_logo.png" alt={APP_NAME} className="h-20 w-auto" style={{ maxWidth: "180px ", filter: "brightness(2.1)" }} />
+            <Image src="/reu_ng_logo.png" alt={APP_NAME} width={160} height={128}
+              className="h-20 w-auto" />
           </div>
           <h2 className="text-4xl xl:text-5xl font-bold text-white leading-[1.1] mb-6"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Build real<br />
             <span style={{ color: "#C8873A" }}>wealth</span> in<br />
             Nigerian land.
           </h2>
-          <p className="text-white/40 text-sm leading-relaxed max-w-xs">
+          <p className="text-white/60 text-sm leading-relaxed max-w-xs">
             Invest in fully verified land plots across Nigeria — starting from just ₦5,000.
           </p>
         </div>
@@ -221,11 +223,12 @@ function RegisterForm() {
 
           {/* Mobile logo */}
           <div className="flex lg:hidden items-center justify-center gap-2.5 mb-4">
-            <img src="/reu_ng_logo.png" alt={APP_NAME} className="h-20 w-auto" style={{ maxWidth: "180px ", filter: "brightness(2.1)" }} />
+            <Image src="/reu_ng_logo.png" alt={APP_NAME} width={160} height={128}
+              className="h-20 w-auto" />
           </div>
 
           <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-1.5" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h1 className="text-3xl font-bold text-white mb-1.5" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               Create account
             </h1>
             <p className="hover:border-white/[0.35] text-sm">Start your investment journey today</p>
@@ -474,7 +477,7 @@ function RegisterForm() {
                           )}
                         </div>
                       </div>
-                      <span className="text-[12px] leading-relaxed text-white/30 group-hover:text-white/45 transition-colors select-none">
+                      <span className="text-[12px] leading-relaxed text-white/55 group-hover:text-white/45 transition-colors select-none">
                         I agree to the{" "}
                         <Link href="/terms" className="text-amber-500/70 hover:text-amber-400 underline underline-offset-2 transition-colors">
                           Terms of Service
@@ -488,7 +491,7 @@ function RegisterForm() {
             
                   <div className="flex gap-3 mt-2">
                     <button type="button" onClick={() => setStep(1)}
-                      className="px-5 py-4 rounded-2xl text-sm font-semibold text-white/40 hover:text-white/70 border border-white/[0.08] hover:border-white/18 transition-all">
+                      className="px-5 py-4 rounded-2xl text-sm font-semibold text-white/60 hover:text-white/70 border border-white/[0.08] hover:border-white/18 transition-all">
                       Back
                     </button>
                     <motion.button type="submit" disabled={loading || !isFormValid}
@@ -520,7 +523,7 @@ function RegisterForm() {
             <div className="flex-1 h-px bg-white/7" />
           </div>
 
-          <p className="text-center text-sm text-white/30">
+          <p className="text-center text-sm text-white/55">
             Already have an account?{" "}
             <Link href="/login" className="text-amber-500 hover:text-amber-400 font-semibold transition-colors">
               Sign in

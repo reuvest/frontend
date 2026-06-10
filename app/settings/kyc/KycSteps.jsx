@@ -280,7 +280,7 @@ export default function KycSteps({
                   ].join(" ")}>
                     {opt.label}
                   </span>
-                  <span className="text-white/30 text-xs">{opt.sub}</span>
+                  <span className="text-white/55 text-xs">{opt.sub}</span>
                 </button>
               ))}
             </div>
@@ -445,7 +445,7 @@ export default function KycSteps({
             <div key={heading} className="rounded-xl border border-white/10 overflow-hidden">
               <div className="flex items-center gap-2 px-4 py-2.5 bg-white/5 border-b border-white/5">
                 <span className="text-amber-500">{icon}</span>
-                <p className="text-xs font-bold text-white/30 uppercase tracking-widest">{heading}</p>
+                <p className="text-xs font-bold text-white/55 uppercase tracking-widest">{heading}</p>
               </div>
               <div className="px-4 divide-y divide-white/3">
                 {rows.map(([l, v]) => <ReviewRow key={l} label={l} value={v} />)}

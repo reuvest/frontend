@@ -43,7 +43,7 @@ function Seal({ size = 96 }) {
 function DetailRow({ label, value, mono = false, highlight = false }) {
   return (
     <div className="flex items-start justify-between gap-4 py-2.5 border-b border-white/5 last:border-0">
-      <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white/30 shrink-0 w-40 mt-0.5">
+      <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white/55 shrink-0 w-40 mt-0.5">
         {label}
       </span>
       <span className={`text-sm text-right break-all ${
@@ -123,7 +123,7 @@ export default function CertificatePage() {
         style={{ fontFamily: "'DM Sans', sans-serif" }}>
         <div className="text-center">
           <div className="w-12 h-12 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white/30 text-sm tracking-widest uppercase">Loading certificate</p>
+          <p className="text-white/55 text-sm tracking-widest uppercase">Loading certificate</p>
         </div>
       </div>
     );
@@ -148,7 +148,7 @@ export default function CertificatePage() {
 
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative"
-      style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+      style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
 
       {/* Background dot grid */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
@@ -165,7 +165,7 @@ export default function CertificatePage() {
         {/* Nav */}
         <div className="flex items-center justify-between mb-8">
           <Link href="/portfolio"
-            className="inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors">
+            className="inline-flex items-center gap-1.5 text-xs text-white/55 hover:text-white/60 transition-colors">
             <ArrowLeft size={13} /> Back to Portfolio
           </Link>
 
@@ -224,11 +224,11 @@ export default function CertificatePage() {
             </p>
 
             <h1 className="text-2xl font-bold text-white mb-1"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               Certificate of Investment
             </h1>
 
-            <p className="text-xs text-white/30 tracking-wider">
+            <p className="text-xs text-white/55 tracking-wider">
               FRACTIONAL LAND INVESTMENT · VERIFIED DIGITAL CERTIFICATE
             </p>
 
@@ -250,27 +250,27 @@ export default function CertificatePage() {
           <div className="px-8 py-8">
 
             <div className="text-center mb-8">
-              <p className="text-xs text-white/30 italic mb-3">This is to certify that</p>
+              <p className="text-xs text-white/55 italic mb-3">This is to certify that</p>
 
               <p className="text-3xl font-bold text-amber-400 mb-3"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                 {cert.owner_name}
               </p>
 
-              <p className="text-xs text-white/30 italic mb-3">
+              <p className="text-xs text-white/55 italic mb-3">
                 {isRevoked ? "was the registered holder of" : "is the registered holder of"}
               </p>
 
               <p className="text-5xl font-bold text-white mb-3"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                 {Number(cert.units).toLocaleString()}
               </p>
-              <p className="text-xs font-black tracking-[0.25em] text-white/40">UNITS</p>
+              <p className="text-xs font-black tracking-[0.25em] text-white/60">UNITS</p>
 
-              <p className="text-xs text-white/30 italic mt-4 mb-1">in</p>
+              <p className="text-xs text-white/55 italic mt-4 mb-1">in</p>
 
               <p className="text-lg font-bold text-amber-400/90">{cert.property_title}</p>
-              <p className="text-xs text-white/30 mt-1 flex items-center justify-center gap-1">
+              <p className="text-xs text-white/55 mt-1 flex items-center justify-center gap-1">
                 <MapPin size={10} /> {cert.property_location}
               </p>
             </div>
@@ -300,7 +300,7 @@ export default function CertificatePage() {
                   Digital Signature
                 </span>
               </div>
-              <p className="font-mono text-[10px] text-white/30 break-all leading-relaxed">
+              <p className="font-mono text-[10px] text-white/55 break-all leading-relaxed">
                 {cert.digital_signature}
               </p>
             </div>
