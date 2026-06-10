@@ -85,10 +85,11 @@ export default function Footer() {
                 fontSize: "1.25rem",
                 background: "linear-gradient(90deg, #C8873A, #E8A850, #C8873A)",
                 backgroundSize: "200% auto",
+                backgroundRepeat: "no-repeat",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
-                animation: "shimmer 3s linear infinite",
+                animation: "shimmer 3s ease-in-out infinite",
               }}
             >
               La Jade

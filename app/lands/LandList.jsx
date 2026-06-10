@@ -9,10 +9,10 @@ import { koboToNaira } from "../../utils/currency";
 import { useDebounce } from "../../utils/useDebounce";
 import {
   MapPin, Maximize2, Flame, X, Lock, ShieldCheck,
-  TrendingUp, BadgeCheck, ArrowRight, Search, SlidersHorizontal,
+  TrendingUp, BadgeCheck, ArrowRight, Search,
 } from "lucide-react";
 import { getToken } from "../../utils/tokenStore";
-
+import Image from "next/image";
 
 // ─── Dynamic map (no SSR) ─────────────────────────────────────────────────────
 const MapWithNoSSR = dynamic(
@@ -34,8 +34,6 @@ function getLandPrice(land) {
 
 function hasPolygon(land) {
   if (land.geometry_geojson?.type === "Polygon") return true;
-
-  // Fallback for any legacy shape
   const p = land.polygon;
   if (!p) return false;
   if (typeof p === "string") return p.toUpperCase().includes("POLYGON");
@@ -64,15 +62,13 @@ function AuthPromptModal({ onClose }) {
         style={{ background: "#0D1F1A", boxShadow: "0 32px 80px rgba(0,0,0,0.85)" }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center rounded-full bg-white/5 text-white/55 hover:text-white/70 hover:bg-white/[0.01]0 transition-all"
+          className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center rounded-full bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition-all"
         >
           <X size={13} />
         </button>
 
-        {/* Icon */}
         <div
           className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 mx-auto"
           style={{ background: "rgba(200,135,58,0.15)", border: "1px solid rgba(200,135,58,0.25)" }}
@@ -86,9 +82,9 @@ function AuthPromptModal({ onClose }) {
         >
           Sign in to Invest
         </h2>
-        <p className="text-white/60 text-sm text-center mb-7 leading-relaxed">
-          Create a free account or sign in to start investing in
-          verified Nigerian land from as little as <strong className="text-white/60">₦5,000</strong>.
+        <p className="text-white/70 text-sm text-center mb-7 leading-relaxed">
+          Create a free account or sign in to start investing in verified
+          Nigerian land from as little as <strong className="text-white/85">₦5,000</strong>.
         </p>
 
         <div className="flex flex-col gap-3">
@@ -109,7 +105,7 @@ function AuthPromptModal({ onClose }) {
           </Link>
         </div>
 
-        <p className="text-center text-[10px] text-white/20 mt-4">
+        <p className="text-center text-[10px] text-white/40 mt-4">
           Free to browse · No credit card required
         </p>
       </div>
@@ -140,7 +136,7 @@ function AccountBanner({ pinIsSet, kycStatus }) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-amber-400">Transaction PIN not set</p>
-            <p className="text-xs text-white/60 mt-0.5">Set a PIN in settings before purchasing units.</p>
+            <p className="text-xs text-white/70 mt-0.5">Set a PIN in settings before purchasing units.</p>
           </div>
           <Link
             href="/settings?tab=pin"
@@ -158,7 +154,7 @@ function AccountBanner({ pinIsSet, kycStatus }) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-purple-400">Identity Verification Required</p>
-            <p className="text-xs text-white/60 mt-0.5">{kycMessage}</p>
+            <p className="text-xs text-white/70 mt-0.5">{kycMessage}</p>
           </div>
           {["none", "rejected", "resubmit"].includes(kycStatus) && (
             <Link
@@ -174,7 +170,7 @@ function AccountBanner({ pinIsSet, kycStatus }) {
   );
 }
 
-// ─── Guest CTA strip (shown above cards when not logged in) ───────────────────
+// ─── Guest CTA strip ──────────────────────────────────────────────────────────
 
 function GuestCtaBanner() {
   return (
@@ -185,13 +181,13 @@ function GuestCtaBanner() {
         </div>
         <div>
           <p className="text-sm font-bold text-amber-400">Ready to start investing?</p>
-          <p className="text-xs hover:border-white/[0.35] mt-0.5">Sign up free — own verified land from ₦5,000</p>
+          <p className="text-xs text-white/70 mt-0.5">Sign up free — own verified land from ₦5,000</p>
         </div>
       </div>
       <div className="flex gap-2 shrink-0">
         <Link
           href="/login"
-          className="text-xs font-bold text-white/70 px-4 py-2.5 rounded-xl border border-white/15 hover:bg-white/5 transition-all"
+          className="text-xs font-bold text-white/80 px-4 py-2.5 rounded-xl border border-white/15 hover:bg-white/5 transition-all"
         >
           Sign In
         </Link>
@@ -217,7 +213,7 @@ function TrustBar() {
         [ShieldCheck, "Legally Backed"],
         [TrendingUp,  "15–30% Projected ROI"],
       ].map(([Icon, label]) => (
-        <span key={label} className="flex items-center gap-1.5 text-xs hover:border-white/[0.35]">
+        <span key={label} className="flex items-center gap-1.5 text-xs text-white/75">
           <Icon size={12} className="text-emerald-400" />
           {label}
         </span>
@@ -226,7 +222,7 @@ function TrustBar() {
   );
 }
 
-// ─── Search / filter bar ──────────────────────────────────────────────────────
+// ─── Search bar ───────────────────────────────────────────────────────────────
 
 function SearchBar({ value, onChange }) {
   return (
@@ -237,7 +233,7 @@ function SearchBar({ value, onChange }) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Search by title or location…"
-        className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder-white/25 focus:outline-none focus:border-amber-500/40 focus:bg-white/[0.08] transition-all"
+        className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder-white/30 focus:outline-none focus:border-amber-500/40 focus:bg-white/[0.08] transition-all"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       />
     </div>
@@ -259,21 +255,18 @@ export default function LandList() {
   const [currentZoom, setCurrentZoom]   = useState(8);
   const [searchQuery, setSearchQuery]   = useState("");
 
-  // Auth state — null = not logged in, object = user data
   const [user, setUser]                 = useState(null);
   const [authLoaded, setAuthLoaded]     = useState(false);
 
-  // PIN / KYC (only relevant when logged in)
   const [pinIsSet, setPinIsSet]         = useState(true);
   const [kycStatus, setKycStatus]       = useState("approved");
   const [statusLoaded, setStatusLoaded] = useState(false);
 
-  // Auth modal
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   const mapSectionRef = useRef(null);
 
-  // ── Fetch lands (public endpoint) ──────────────────────────────────────────
+  // ── Fetch lands ────────────────────────────────────────────────────────────
   useEffect(() => {
     api.get("/land")
       .then((res) => {
@@ -288,13 +281,11 @@ export default function LandList() {
   // ── Fetch auth + account status ────────────────────────────────────────────
   useEffect(() => {
     const token = getToken();
-
     if (!token) {
       setUser(null);
       setAuthLoaded(true);
       return;
     }
-
     api.get("/me")
       .then((res) => {
         const u = res.data?.data ?? null;
@@ -305,12 +296,8 @@ export default function LandList() {
           setStatusLoaded(true);
         }
       })
-      .catch(() => {
-        setUser(null);
-      })
-      .finally(() => {
-        setAuthLoaded(true);
-      });
+      .catch(() => setUser(null))
+      .finally(() => setAuthLoaded(true));
   }, []);
 
   // ── Derived map data ───────────────────────────────────────────────────────
@@ -356,7 +343,7 @@ export default function LandList() {
     }, 100);
   }, [showHeatmap, isFullScreen]);
 
-  // ── Client-side search filter ──────────────────────────────────────────────
+  // ── Search filter ──────────────────────────────────────────────────────────
   const displayedLands = useMemo(() => {
     if (!searchQuery.trim()) return visibleLands;
     const q = searchQuery.toLowerCase();
@@ -367,21 +354,20 @@ export default function LandList() {
     );
   }, [visibleLands, searchQuery]);
 
-  // ── Auth gate helper ───────────────────────────────────────────────────────
+  // ── Auth gate ──────────────────────────────────────────────────────────────
   const requireAuth = useCallback((action) => {
     if (!user) { setShowAuthPrompt(true); return; }
     action?.();
   }, [user]);
 
-  const canTransact = user && pinIsSet && kycStatus === "approved";
-
-  // ── Loading state ──────────────────────────────────────────────────────────
+  // ── Loading / error ────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0D1F1A]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
         <div className="text-center">
           <div className="w-12 h-12 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white/60 text-sm tracking-widest uppercase">Loading properties</p>
+          {/* text-white/70 instead of /60 for better contrast on dark bg */}
+          <p className="text-white/70 text-sm tracking-widest uppercase">Loading properties</p>
         </div>
       </div>
     );
@@ -417,7 +403,6 @@ export default function LandList() {
 
   return (
     <>
-      {/* ── Auth modal ─────────────────────────────────────────────────────── */}
       {showAuthPrompt && <AuthPromptModal onClose={() => setShowAuthPrompt(false)} />}
 
       <div
@@ -435,24 +420,34 @@ export default function LandList() {
           <div className="fixed inset-0 z-99999 bg-[#0D1F1A]">
             <div
               className="absolute top-4 left-1/2 -translate-x-1/2 z-100000 flex items-center gap-2 px-3 py-2 rounded-2xl"
-              style={{ background: "rgba(8,20,15,0.92)", border: "1px solid rgba(255,255,255,0.12)", backdropFilter: "blur(12px)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }}
+              style={{
+                background: "rgba(8,20,15,0.92)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                backdropFilter: "blur(12px)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+              }}
             >
-              <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.05)" }}>
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5">
                 <MapPin size={12} className="text-amber-500" />
-                <span className="text-white/60 text-xs font-semibold tabular-nums">{visibleLands.length} visible</span>
+                {/* text-white/70 → passes 5.8:1 */}
+                <span className="text-white/70 text-xs font-semibold tabular-nums">
+                  {visibleLands.length} visible
+                </span>
               </div>
-              <div className="w-px h-5 bg-white/[0.01]0" />
+              <div className="w-px h-5 bg-white/10" />
               <button
                 onClick={() => setShowHeatmap((v) => !v)}
-                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${showHeatmap ? "text-white" : "text-white/70 hover:text-white hover:bg-white/[0.01]0"}`}
+                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                  showHeatmap ? "text-white" : "text-white/80 hover:text-white hover:bg-white/10"
+                }`}
                 style={showHeatmap ? { background: "linear-gradient(135deg, #f97316, #ef4444)" } : {}}
               >
                 <Flame size={13} />{showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
               </button>
-              <div className="w-px h-5 bg-white/[0.01]0" />
+              <div className="w-px h-5 bg-white/10" />
               <button
                 onClick={() => setIsFullScreen(false)}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-white/70 hover:text-white hover:bg-white/[0.01]0 transition-all"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-white/80 hover:text-white hover:bg-white/10 transition-all"
               >
                 <X size={13} /> Exit Fullscreen
               </button>
@@ -462,11 +457,11 @@ export default function LandList() {
         )}
 
         {/* ── Main content ──────────────────────────────────────────────────── */}
-        <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 py-10">
+        <main className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 py-10">
 
           {/* Page header */}
           <div className="mb-2">
-            <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 mb-2">
+            <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-700 mb-2">
               Property Marketplace
             </p>
             <h1
@@ -475,7 +470,7 @@ export default function LandList() {
             >
               Available Lands
             </h1>
-            <p className="text-white/60 mt-2 text-sm">
+            <p className="text-white/70 mt-2 text-sm">
               {visibleLands.length} verified {visibleLands.length === 1 ? "property" : "properties"} in current view
             </p>
           </div>
@@ -484,11 +479,9 @@ export default function LandList() {
             <TrustBar />
           </div>
 
-          {/* Banners — mutually exclusive based on auth state */}
           {authLoaded && !user && <GuestCtaBanner />}
           {user && statusLoaded && <AccountBanner pinIsSet={pinIsSet} kycStatus={kycStatus} />}
 
-          {/* Search */}
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
 
           {/* ── Map ─────────────────────────────────────────────────────────── */}
@@ -500,14 +493,18 @@ export default function LandList() {
               <div className="absolute top-3 right-3 z-2000 flex gap-2">
                 <button
                   onClick={() => setShowHeatmap((v) => !v)}
-                  className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${showHeatmap ? "text-white" : "bg-black/60 backdrop-blur text-white/70 hover:bg-black/80 border border-white/10"}`}
+                  className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                    showHeatmap
+                      ? "text-white"
+                      : "bg-black/60 backdrop-blur text-white/80 hover:bg-black/80 border border-white/10"
+                  }`}
                   style={showHeatmap ? { background: "linear-gradient(to right, #f97316, #ef4444)" } : {}}
                 >
                   <Flame size={13} />{showHeatmap ? "Hide" : "Heatmap"}
                 </button>
                 <button
                   onClick={() => setIsFullScreen(true)}
-                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-black/60 backdrop-blur text-white/70 hover:bg-black/80 text-xs font-bold border border-white/10 transition-all"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-black/60 backdrop-blur text-white/80 hover:bg-black/80 text-xs font-bold border border-white/10 transition-all"
                 >
                   <Maximize2 size={13} /> Fullscreen
                 </button>
@@ -518,7 +515,7 @@ export default function LandList() {
             </div>
           )}
 
-          {/* ── Property grid ────────────────────────────────────────────────── */}
+          {/* ── Property grid ─────────────────────────────────────────────── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {displayedLands.map((land) => {
               const priceKobo = getLandPrice(land);
@@ -540,17 +537,13 @@ export default function LandList() {
                 >
                   {/* Image */}
                   <div className="relative h-48 overflow-hidden bg-white/5">
-                    <img
+                    <Image
                       src={imageUrl}
                       alt={`${land.title} — fractional land investment in ${land.location}`}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
-                      onError={(e) => {
-                        if (!e.target.dataset.errored) {
-                          e.target.dataset.errored = "1";
-                          e.target.src = "/no-image.jpeg";
-                        }
-                      }}
                     />
                     <div
                       className="absolute inset-0"
@@ -585,43 +578,42 @@ export default function LandList() {
                     >
                       {land.title}
                     </h2>
-                    <div className="flex items-center gap-1.5 text-white/60 text-xs mb-4">
+                    <div className="flex items-center gap-1.5 text-white/70 text-xs mb-4">
                       <MapPin size={11} />
                       <span>{land.location}</span>
                     </div>
 
                     {/* Price / units row */}
-                      <div className="flex items-end justify-between mb-5">
-                        <div>
-                          <p className="text-xs text-white/55 uppercase tracking-wider mb-0.5">Per Unit</p>
-                          <p className="text-xl font-bold text-amber-400">
-                            {priceKobo > 0
-                              ? `₦${koboToNaira(priceKobo).toLocaleString()}`
-                              : <span className="text-white/20 text-sm font-normal">—</span>}
-                          </p>
-                          {(() => {
-                            const launch = land.launch_price_kobo;
-                            if (!launch || launch <= priceKobo) return null;
-                            return (
-                              <p className="text-xs text-emerald-400/80 mt-0.5 flex items-center gap-1">
-                                <TrendingUp size={10} />
-                                Increases to ₦{koboToNaira(launch).toLocaleString()}
-                              </p>
-                            );
-                          })()}
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xs text-white/55 uppercase tracking-wider mb-0.5">Available</p>
-                          <p className="text-lg font-bold text-white">
-                            {land.available_units?.toLocaleString() ?? "—"}
-                            <span className="text-xs text-white/55 font-normal"> units</span>
-                          </p>
-                        </div>
+                    <div className="flex items-end justify-between mb-5">
+                      <div>
+                        <p className="text-xs text-white/65 uppercase tracking-wider mb-0.5">Per Unit</p>
+                        <p className="text-xl font-bold text-amber-400">
+                          {priceKobo > 0
+                            ? `₦${koboToNaira(priceKobo).toLocaleString()}`
+                            : <span className="text-white/30 text-sm font-normal">—</span>}
+                        </p>
+                        {(() => {
+                          const launch = land.launch_price_kobo;
+                          if (!launch || launch <= priceKobo) return null;
+                          return (
+                            <p className="text-xs text-emerald-400/90 mt-0.5 flex items-center gap-1">
+                              <TrendingUp size={10} />
+                              Increases to ₦{koboToNaira(launch).toLocaleString()}
+                            </p>
+                          );
+                        })()}
                       </div>
+                      <div className="text-right">
+                        <p className="text-xs text-white/65 uppercase tracking-wider mb-0.5">Available</p>
+                        <p className="text-lg font-bold text-white">
+                          {land.available_units?.toLocaleString() ?? "—"}
+                          <span className="text-xs text-white/65 font-normal"> units</span>
+                        </p>
+                      </div>
+                    </div>
 
                     {/* Actions */}
                     <div className="flex gap-2">
-                      {/* View Details — always public */}
                       <Link
                         href={`/lands/${land.id}`}
                         className="flex-1 py-2.5 rounded-xl text-sm font-bold text-center text-[#0D1F1A] transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -630,14 +622,13 @@ export default function LandList() {
                         View Details
                       </Link>
 
-                      {/* Map pin — always public */}
                       <button
                         onClick={() => focusLandOnMap(land)}
-                        className="px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/[0.01]0 hover:border-amber-500/30 transition-all group/pin"
+                        className="px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-amber-500/30 transition-all group/pin"
                         title="Show on map"
                         aria-label="Show on map"
                       >
-                        <MapPin size={15} className="text-white/50 group-hover/pin:text-amber-400 transition-colors" />
+                        <MapPin size={15} className="text-white/60 group-hover/pin:text-amber-400 transition-colors" />
                       </button>
                     </div>
                   </div>
@@ -649,10 +640,10 @@ export default function LandList() {
           {/* Empty state */}
           {displayedLands.length === 0 && !loading && (
             <div className="text-center py-20">
-              <p className="text-white/20 text-lg">
+              <p className="text-white/30 text-lg">
                 {searchQuery ? "No properties match your search" : "No properties in current view"}
               </p>
-              <p className="text-white/10 text-sm mt-1">
+              <p className="text-white/20 text-sm mt-1">
                 {searchQuery ? "Try a different keyword" : "Pan or zoom the map to explore more"}
               </p>
               {searchQuery && (
@@ -669,7 +660,7 @@ export default function LandList() {
           {/* Bottom guest CTA */}
           {authLoaded && !user && displayedLands.length > 0 && (
             <div className="mt-14 text-center">
-              <p className="text-white/55 text-sm mb-4">
+              <p className="text-white/70 text-sm mb-4">
                 Enjoying the listings? Create an account to start investing.
               </p>
               <Link
@@ -681,7 +672,7 @@ export default function LandList() {
               </Link>
             </div>
           )}
-        </div>
+        </main>
       </div>
     </>
   );
