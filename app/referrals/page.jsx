@@ -175,7 +175,7 @@ export default function ReferralDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0D1F1A] flex items-center justify-center">
+      <div className="min-h-screen gpu-layer bg-[#0D1F1A] flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -184,7 +184,7 @@ export default function ReferralDashboard() {
   const summary = buildRewardsSummary(dashboard?.rewards || []);
 
   return (
-    <div className="min-h-screen bg-[#0D1F1A]">
+    <div className="min-h-screen gpu-layer bg-[#0D1F1A]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
 
         {/* ── Header ── */}

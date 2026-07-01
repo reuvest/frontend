@@ -22,6 +22,7 @@ import "yet-another-react-lightbox/plugins/thumbnails.css";
 /* ─── Constants ─────────────────────────────────────────────────────────── */
 
 const MONTH_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MIN_PURCHASE_KOBO = 5000 * 100;
 
 /* ─── Helpers ───────────────────────────────────────────────────────────── */
 
@@ -51,10 +52,6 @@ function capitalize(str) {
   return String(str).charAt(0).toUpperCase() + String(str).slice(1).toLowerCase();
 }
 
-/**
- * Convert land.valuations [{id, year, month, value}] to
- * [[year, value, month], ...] sorted by year asc, month asc.
- */
 function valuationsToPoints(valuations = []) {
   return [...valuations]
     .sort((a, b) => a.year !== b.year ? a.year - b.year : (a.month ?? 0) - (b.month ?? 0))
@@ -74,11 +71,11 @@ function Section({ title, icon, children, defaultOpen = true, accent = "amber" }
   const a = accentMap[accent] || accentMap.amber;
 
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02].5 overflow-hidden">
+    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.03] transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/10 transition-colors"
       >
         <div className="flex items-center gap-3">
           <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${a.icon}`}>
@@ -104,8 +101,8 @@ function Section({ title, icon, children, defaultOpen = true, accent = "amber" }
 /* ─── Data Row ──────────────────────────────────────────────────────────── */
 function DataRow({ label, value, highlight, mono, children }) {
   return (
-    <div className="flex items-start justify-between gap-4 py-2 border-b border-white/4 last:border-0">
-      <span className="text-xs hover:border-white/[0.35] shrink-0 w-44">{label}</span>
+    <div className="flex items-start justify-between gap-4 py-2 border-b border-white/5 last:border-0">
+      <span className="text-xs text-white/50 hover:text-white/60 transition-colors shrink-0 w-44">{label}</span>
       {children ?? (
         <span className={`text-xs text-right ${
           highlight ? "font-bold text-amber-400" :
@@ -141,7 +138,7 @@ function SignalBar({ strength }) {
   const color = pct >= 70 ? "bg-emerald-400" : pct >= 40 ? "bg-amber-400" : "bg-red-400";
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 h-1.5 rounded-full bg-white/[0.01]0 overflow-hidden">
+      <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
         <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
       </div>
       <span className="text-xs text-white/60 w-8 text-right">{pct}%</span>
@@ -149,11 +146,12 @@ function SignalBar({ strength }) {
   );
 }
 
+/* ─── Promo Price Table ─────────────────────────────────────────────────── */
 function PromoPriceTable({ land }) {
   const TIERS = [
-    { key: "pre_launch_price_kobo", label: "Pre-Launch Price"  },
-    { key: "launch_price_kobo",     label: "Launch Price"      },
-    { key: "_current",              label: "Current Price"     }, // always shown
+    { key: "pre_launch_price_kobo", label: "Pre-Launch Price" },
+    { key: "launch_price_kobo",     label: "Launch Price"     },
+    { key: "_current",              label: "Current Price"    },
   ];
 
   const currentKobo = getLandPrice(land);
@@ -164,7 +162,7 @@ function PromoPriceTable({ land }) {
     isCurrent: key === "_current",
   })).filter((r) => r.kobo);
 
-  if (rows.length <= 1) return null; // only show if there are promo tiers set
+  if (rows.length <= 1) return null;
 
   return (
     <div className="mb-10 rounded-2xl border border-white/[0.07] overflow-hidden">
@@ -182,8 +180,10 @@ function PromoPriceTable({ land }) {
             <span className={`text-sm ${isCurrent ? "font-bold text-white" : "text-white/60"}`}>
               {label}
             </span>
-            <span className={`text-sm font-bold tabular-nums ${isCurrent ? "text-amber-400" : "text-white/55"}`}
-              style={isCurrent ? { fontFamily: "'Playfair Display', Georgia, serif" } : {}}>
+            <span
+              className={`text-sm font-bold tabular-nums ${isCurrent ? "text-amber-400" : "text-white/50"}`}
+              style={isCurrent ? { fontFamily: "var(--font-playfair), Georgia, serif" } : {}}
+            >
               ₦{(kobo / 100).toLocaleString()}
             </span>
           </div>
@@ -197,6 +197,7 @@ function PromoPriceTable({ land }) {
     </div>
   );
 }
+
 /* ─── Price Trend Panel ─────────────────────────────────────────────────── */
 function PriceTrendPanel({ valuations = [] }) {
   const [tooltip, setTooltip]   = useState(null);
@@ -209,7 +210,6 @@ function PriceTrendPanel({ valuations = [] }) {
   }, []);
 
   const points = valuationsToPoints(valuations);
-
   if (!points.length) return null;
 
   const W = 560, H = 200;
@@ -277,9 +277,10 @@ function PriceTrendPanel({ valuations = [] }) {
   };
 
   return (
-    <div className="mb-10 rounded-2xl border border-white/9 overflow-hidden"
-      style={{ background: "linear-gradient(160deg, rgba(200,135,58,0.06) 0%, rgba(13,31,26,0) 60%)" }}>
-
+    <div
+      className="mb-10 rounded-2xl border border-white/10 overflow-hidden"
+      style={{ background: "linear-gradient(160deg, rgba(200,135,58,0.06) 0%, rgba(13,31,26,0) 60%)" }}
+    >
       {/* Header */}
       <div className="flex items-start justify-between px-6 pt-5 pb-0 flex-wrap gap-4">
         <div>
@@ -341,7 +342,7 @@ function PriceTrendPanel({ valuations = [] }) {
             return (
               <g key={i}>
                 <line x1={PAD.l} x2={W - PAD.r} y1={y} y2={y}
-                  stroke="rgba(255,255,255,0.5)" strokeWidth="1"
+                  stroke="rgba(255,255,255,0.05)" strokeWidth="1"
                   strokeDasharray={i === 0 ? "none" : "3 4"} />
                 <text x={PAD.l - 8} y={y + 3.5} textAnchor="end" fontSize="12"
                   fill="rgba(255,255,255,0.52)" fontFamily="'DM Sans', sans-serif">
@@ -377,7 +378,6 @@ function PriceTrendPanel({ valuations = [] }) {
             );
           })}
 
-          {/* X-axis labels */}
           {coords.map(([x], i) => (
             <text key={i} x={x} y={H - 6} textAnchor="middle" fontSize="8"
               fill={tooltip?.idx === i ? "rgba(232,168,80,0.9)" : "rgba(255,255,255,0.72)"}
@@ -409,8 +409,8 @@ function PriceTrendPanel({ valuations = [] }) {
         </svg>
       </div>
 
-      {/* Month-by-month breakdown */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-px border-t border-white/6 mt-1">
+      {/* Month breakdown */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-px border-t border-white/5 mt-1">
         {points.map(([year, value, month], i) => {
           const prev   = i > 0 ? points[i - 1][1] : null;
           const deltaP = prev ? (((value - prev) / prev) * 100).toFixed(0) : null;
@@ -420,8 +420,10 @@ function PriceTrendPanel({ valuations = [] }) {
             <div key={`${year}-${month ?? i}`}
               className={`px-4 py-3 flex flex-col gap-0.5 ${isLast ? "bg-amber-500/5" : "bg-transparent"}`}>
               <span className="text-[9px] font-black uppercase tracking-[0.18em] text-white/25">{label}</span>
-              <span className={`text-sm font-bold tabular-nums ${isLast ? "text-amber-400" : "text-white/70"}`}
-                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+              <span
+                className={`text-sm font-bold tabular-nums ${isLast ? "text-amber-400" : "text-white/70"}`}
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+              >
                 {fmtVal(value)}
               </span>
               {deltaP !== null && (
@@ -441,7 +443,7 @@ function PriceTrendPanel({ valuations = [] }) {
 function StatCard({ label, value, accent }) {
   return (
     <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-      <p className="text-xs font-bold uppercase tracking-widest text-white/55 mb-1">{label}</p>
+      <p className="text-xs font-bold uppercase tracking-widest text-white/50 mb-1">{label}</p>
       <p className={`text-xl font-bold ${accent ? "text-amber-400" : "text-white"}`}>{value}</p>
     </div>
   );
@@ -475,7 +477,7 @@ function KycBanner({ kycStatus }) {
       </div>
       {["none", "rejected", "resubmit"].includes(kycStatus) && (
         <Link href="/settings?tab=kyc"
-          className="shrink-0 text-xs font-bold text-white px-3 py-2 rounded-lg border border-white/20 hover:bg-white/[0.01]0 transition-all">
+          className="shrink-0 text-xs font-bold text-white px-3 py-2 rounded-lg border border-white/20 hover:bg-white/10 transition-all">
           {kycStatus === "none" ? "Submit KYC" : "Resubmit"}
         </Link>
       )}
@@ -486,10 +488,10 @@ function KycBanner({ kycStatus }) {
 /* ─── Breakdown Row ─────────────────────────────────────────────────────── */
 function BreakdownRow({ label, value, highlight, strikethrough, green, muted }) {
   return (
-    <div className="flex justify-between items-center py-1">
-      <span className={`text-xs ${muted ? "text-white/55" : "text-white/50"}`}>{label}</span>
-      <span className={`text-xs font-semibold ${
-        strikethrough ? "line-through text-white/55" :
+    <div className="flex justify-between items-center py-1 gap-3">
+      <span className={`text-xs shrink-0 ${muted ? "text-white/50" : "text-white/50"}`}>{label}</span>
+      <span className={`text-xs font-semibold text-right truncate ${
+        strikethrough ? "line-through text-white/50" :
         green         ? "text-emerald-400" :
         highlight     ? "text-amber-400"   :
         "text-white"
@@ -498,31 +500,21 @@ function BreakdownRow({ label, value, highlight, strikethrough, green, muted }) 
   );
 }
 
-// function CapNotice({ preview }) {
-//   const isCapped = preview?.discount_label?.toLowerCase().includes("capped");
-//   if (!isCapped) return null;
-//   const cappedKobo = preview.total_discount_kobo ?? 0;
-//   return (
-//     <div className="flex items-start gap-2 rounded-lg border border-amber-500/15 bg-amber-500/5 px-3 py-2 mt-1">
-//       <InfoIcon size={11} className="text-amber-400/60 shrink-0 mt-0.5" />
-//       <p className="text-xs text-amber-400/70 leading-relaxed">
-//         A maximum discount cap applies. Your saving is limited to{" "}
-//         <span className="font-semibold text-amber-400">
-//           ₦{(cappedKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
-//         </span>{" "}
-//         on this order.
-//       </p>
-//     </div>
-//   );
-// }
-
 /* ─── Photo Grid ────────────────────────────────────────────────────────── */
 function SlideTile({ slide, index, label, style, className = "", onClick, overlayCount }) {
   return (
     <div className={`relative overflow-hidden group cursor-pointer ${className}`} style={style} onClick={onClick}>
-      <img src={slide.src} alt={label}
+      <img
+        src={slide.src}
+        alt={label}
         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        onError={(e) => { if (!e.target.dataset.errored) { e.target.dataset.errored = "1"; e.target.src = "/no-image.jpeg"; } }} />
+        onError={(e) => {
+          if (!e.target.dataset.errored) {
+            e.target.dataset.errored = "1";
+            e.target.src = "/no-image.jpeg";
+          }
+        }}
+      />
       {overlayCount > 0 ? (
         <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(13,31,26,0.70)" }}>
           <span className="text-white text-2xl font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
@@ -530,8 +522,10 @@ function SlideTile({ slide, index, label, style, className = "", onClick, overla
           </span>
         </div>
       ) : (
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3"
-          style={{ background: "linear-gradient(to top, rgba(13,31,26,0.6), transparent)" }}>
+        <div
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3"
+          style={{ background: "linear-gradient(to top, rgba(13,31,26,0.6), transparent)" }}
+        >
           <span className="text-white/80 text-xs font-bold uppercase tracking-widest">View</span>
         </div>
       )}
@@ -673,6 +667,20 @@ export default function LandDetails() {
     return () => clearTimeout(previewTimer.current);
   }, [unitsInput, useRewards, modalType, id]);
 
+  useEffect(() => {
+    const anyOpen = !!modalType || showPinModal || showKycModal || lightboxOpen;
+    if (typeof document === "undefined") return;
+    const original = document.body.style.overflow;
+    if (anyOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = original || "";
+    }
+    return () => {
+      document.body.style.overflow = original || "";
+    };
+  }, [modalType, showPinModal, showKycModal, lightboxOpen]);
+
   const openModal = (type) => {
     if (kycStatus !== "approved") { setShowKycModal(true); return; }
     if (!pinIsSet)                { setShowPinModal(true); return; }
@@ -710,7 +718,6 @@ export default function LandDetails() {
           `Purchase successful${savings > 0 ? ` · Saved ₦${(savings / 100).toLocaleString()}` : ""}`
         );
 
-        // ── Certificate issued toast ───────────────────────────────────────
         if (res.certificate?.cert_number) {
           const certNum = res.certificate.cert_number;
           setTimeout(() => {
@@ -754,7 +761,7 @@ export default function LandDetails() {
   // ── Loading / error states ─────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0D1F1A]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <div className="min-h-screen flex items-center justify-center bg-[#0D1F1A]" style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
         <div className="text-center">
           <div className="w-12 h-12 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mx-auto mb-4" />
           <p className="text-white/60 text-sm tracking-widest uppercase">Loading property</p>
@@ -778,13 +785,21 @@ export default function LandDetails() {
   const slides    = getLandSlides(land);
   const maxUnits  = modalType === "sell" ? userUnits : (land.available_units ?? 0);
   const sellTotal = unitsInput && modalType === "sell" ? Number(unitsInput) * priceKobo : 0;
+  const purchaseTotalKobo = unitsInput && modalType === "purchase" ? Number(unitsInput) * priceKobo : 0;
+
+  const existingHoldingsKobo = userUnits * priceKobo;
+  const belowMinPurchase =
+    modalType === "purchase" &&
+    purchaseTotalKobo > 0 &&
+    existingHoldingsKobo < MIN_PURCHASE_KOBO &&
+    (existingHoldingsKobo + purchaseTotalKobo) < MIN_PURCHASE_KOBO;
 
   const allocationRecords = land.allocation_records      ?? [];
   const landTitles        = land.land_titles             ?? [];
   const historicalTx      = land.historical_transactions ?? [];
   const commLines         = land.comm_lines              ?? [];
   const valuations        = land.valuations              ?? [];
-  const neighbouringTx = land.neighbouring_transactions ?? [];
+  const neighbouringTx    = land.neighbouring_transactions ?? [];
 
   return (
     <div className="min-h-screen bg-[#0D1F1A] relative" style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
@@ -792,7 +807,7 @@ export default function LandDetails() {
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-10">
-        <Link href="/lands" className="inline-flex items-center gap-1.5 text-xs text-white/55 hover:text-white/60 transition-colors mb-8">
+        <Link href="/lands" className="inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-white/70 transition-colors mb-8">
           <ArrowLeft size={13} /> Back to Lands
         </Link>
 
@@ -867,7 +882,7 @@ export default function LandDetails() {
               </p>
             </div>
             <div className="ml-auto text-right">
-              <p className="text-xs text-white/55 mb-0.5">Est. Value</p>
+              <p className="text-xs text-white/50 mb-0.5">Est. Value</p>
               <p className="text-amber-400 font-bold">{priceKobo > 0 ? formatNaira(userUnits * priceKobo) : "—"}</p>
             </div>
           </div>
@@ -882,17 +897,16 @@ export default function LandDetails() {
           </button>
           {userUnits > 0 && (
             <button onClick={() => openModal("sell")}
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-white border border-white/20 bg-white/5 hover:bg-white/[0.01]0 transition-all hover:scale-[1.02] active:scale-[0.98]">
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-white border border-white/20 bg-white/5 hover:bg-white/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
               <TrendingUp size={16} /> Sell Units
             </button>
           )}
         </div>
-        
+
         <PromoPriceTable land={land} />
+
         {/* Price Trend Chart */}
-        {valuations.length > 0 && (
-          <PriceTrendPanel valuations={valuations} />
-        )}
+        {valuations.length > 0 && <PriceTrendPanel valuations={valuations} />}
 
         {/* Detail sections */}
         <div className="space-y-4">
@@ -1097,279 +1111,358 @@ export default function LandDetails() {
 
       {/* Lightbox */}
       {lightboxOpen && (
-        <Lightbox open={lightboxOpen} close={() => setLightboxOpen(false)}
-          index={photoIndex} slides={slides}
-          plugins={slides.length > 1 ? [Thumbnails] : []} />
+        <Lightbox
+          open={lightboxOpen}
+          close={() => setLightboxOpen(false)}
+          index={photoIndex}
+          slides={slides}
+          plugins={slides.length > 1 ? [Thumbnails] : []}
+        />
       )}
 
       {/* ── Transaction modal ──────────────────────────────────────────────── */}
       {modalType && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="relative w-full max-w-md rounded-2xl border border-white/10 overflow-hidden"
-            style={{ background: "#0D1F1A", boxShadow: "0 25px 80px rgba(0,0,0,0.6)" }}>
-
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-amber-600 mb-0.5">
-                  {modalType === "purchase" ? "Purchase" : "Sell"}
-                </p>
-                <h2 className="text-xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-                  {land.title}
-                </h2>
-              </div>
-              <button onClick={closeModal}
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/60 hover:text-white transition-all">
-                <X size={14} />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-4">
-
-              {/* Units input */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">
-                  Number of Units
-                  {maxUnits > 0 && (
-                    <span className="ml-2 normal-case text-white/20 font-normal">
-                      (max {maxUnits} · double-click to fill)
-                    </span>
-                  )}
-                </label>
-                <div className="flex items-center gap-2">
-                  <button type="button"
-                    onClick={() => setUnitsInput((v) => String(Math.max(1, Number(v || 1) - 1)))}
-                    disabled={!unitsInput || Number(unitsInput) <= 1}
-                    className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-lg font-bold">
-                    −
-                  </button>
-                  <input
-                    type="number" min={1} max={maxUnits || undefined}
-                    value={unitsInput}
-                    onChange={(e) => {
-                      const raw = e.target.value;
-                      if (raw === "") return setUnitsInput("");
-                      const n = Math.floor(Number(raw));
-                      if (isNaN(n) || n < 0) return;
-                      setUnitsInput(String(Math.min(n, maxUnits || n)));
-                    }}
-                    onBlur={(e) => {
-                      const n = Math.floor(Number(e.target.value));
-                      if (!isNaN(n) && n > 0) setUnitsInput(String(Math.min(Math.max(1, n), maxUnits)));
-                    }}
-                    onDoubleClick={() => { if (maxUnits > 0) setUnitsInput(String(maxUnits)); }}
-                    className="flex-1 bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 text-white placeholder-white/20 px-4 py-2.5 rounded-xl text-sm outline-none transition-all text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    placeholder="0"
-                  />
-                  <button type="button"
-                    onClick={() => setUnitsInput((v) => String(Math.min(maxUnits, Number(v || 0) + 1)))}
-                    disabled={maxUnits > 0 && Number(unitsInput) >= maxUnits}
-                    className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-lg font-bold">
-                    +
-                  </button>
-                </div>
-                {maxUnits > 0 && (
-                  <p className="text-xs text-white/25 mt-1.5 pl-1">
-                    {modalType === "sell"
-                      ? `${userUnits} unit${userUnits !== 1 ? "s" : ""} owned`
-                      : `${land.available_units} unit${land.available_units !== 1 ? "s" : ""} available`}
+        <div
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
+        >
+            <div
+              className="relative w-full max-w-md flex flex-col rounded-2xl border border-white/10 overflow-hidden"
+              style={{
+                background: "#0D1F1A",
+                boxShadow: "0 25px 80px rgba(0,0,0,0.6)",
+                maxHeight: "90vh",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header — fixed, never scrolls */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0">
+                <div className="min-w-0 pr-3">
+                  <p className="text-xs font-bold uppercase tracking-widest text-amber-600 mb-0.5">
+                    {modalType === "purchase" ? "Purchase" : "Sell"}
                   </p>
+                  <h2
+                    className="text-xl font-bold text-white truncate"
+                    style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+                  >
+                    {land.title}
+                  </h2>
+                </div>
+                <button
+                  onClick={closeModal}
+                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-all shrink-0"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+
+              {/* Body — scrolls internally, header/footer stay put */}
+              <div className="p-6 space-y-4 overflow-y-auto">
+
+                {/* Units input */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-white/50 mb-2">
+                    Number of Units
+                    {maxUnits > 0 && (
+                      <span className="ml-2 normal-case text-white/20 font-normal">
+                        (max {maxUnits} · double-click to fill)
+                      </span>
+                    )}
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setUnitsInput((v) => String(Math.max(1, Number(v || 1) - 1)))}
+                      disabled={!unitsInput || Number(unitsInput) <= 1}
+                      className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-lg font-bold"
+                    >
+                      −
+                    </button>
+                    <input
+                      type="number"
+                      min={1}
+                      max={maxUnits || undefined}
+                      value={unitsInput}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        if (raw === "") return setUnitsInput("");
+                        const n = Math.floor(Number(raw));
+                        if (isNaN(n) || n < 0) return;
+                        setUnitsInput(String(Math.min(n, maxUnits || n)));
+                      }}
+                      onBlur={(e) => {
+                        const n = Math.floor(Number(e.target.value));
+                        if (!isNaN(n) && n > 0) setUnitsInput(String(Math.min(Math.max(1, n), maxUnits)));
+                      }}
+                      onDoubleClick={() => { if (maxUnits > 0) setUnitsInput(String(maxUnits)); }}
+                      className="flex-1 min-w-0 bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 text-white placeholder-white/20 px-4 py-2.5 rounded-xl text-sm outline-none transition-all text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      placeholder="0"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setUnitsInput((v) => String(Math.min(maxUnits, Number(v || 0) + 1)))}
+                      disabled={maxUnits > 0 && Number(unitsInput) >= maxUnits}
+                      className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-lg font-bold"
+                    >
+                      +
+                    </button>
+                  </div>
+                  {maxUnits > 0 && (
+                    <p className="text-xs text-white/25 mt-1.5 pl-1">
+                      {modalType === "sell"
+                        ? `${userUnits} unit${userUnits !== 1 ? "s" : ""} owned`
+                        : `${land.available_units} unit${land.available_units !== 1 ? "s" : ""} available`}
+                    </p>
+                  )}
+                  {modalType === "purchase" && userUnits === 0 && (
+                    <p className="text-xs text-white/25 mt-1 pl-1">
+                      Minimum purchase: ₦{(MIN_PURCHASE_KOBO / 100).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+
+                {/* Rewards toggle */}
+                {modalType === "purchase" && (
+                  <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <Wallet size={14} className="text-amber-400/70 shrink-0" />
+                      <span className="text-sm text-white/70 font-medium truncate">Use rewards &amp; discounts</span>
+                    </div>
+                    <button type="button" onClick={() => setUseRewards((v) => !v)} aria-label="Toggle rewards" className="shrink-0">
+                      {useRewards
+                        ? <ToggleRight size={26} className="text-amber-400" />
+                        : <ToggleLeft  size={26} className="text-white/20"  />}
+                    </button>
+                  </div>
+                )}
+
+                {/* Cost breakdown — purchase */}
+                {modalType === "purchase" && Number(unitsInput) > 0 && (
+                  <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+                    {previewLoading ? (
+                      <div className="flex items-center justify-center gap-2 py-2">
+                        <div className="w-3.5 h-3.5 border border-amber-500/40 border-t-amber-500 rounded-full animate-spin" />
+                        <span className="text-xs text-amber-500/50">Calculating…</span>
+                      </div>
+                    ) : preview ? (
+                      <>
+                        {preview.discount_label && (
+                          <div className="flex items-center gap-1.5 mb-3">
+                            <Tag size={11} className="text-emerald-400 shrink-0" />
+                            <span className="text-xs font-bold text-emerald-400 truncate">{preview.discount_label}</span>
+                          </div>
+                        )}
+                        <BreakdownRow
+                          label="Original cost"
+                          value={`₦${preview.original_cost_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`}
+                          strikethrough={preview.total_discount_kobo > 0}
+                        />
+                        {preview.first_purchase_discount_kobo > 0 && (
+                          <BreakdownRow
+                            label="First-purchase discount"
+                            value={`-₦${preview.first_purchase_discount_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`}
+                            green
+                          />
+                        )}
+                        {preview.referral_discount_kobo > 0 && (
+                          <BreakdownRow
+                            label="Referral discount"
+                            value={`-₦${preview.referral_discount_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`}
+                            green
+                          />
+                        )}
+                        {preview.paid_from_rewards_kobo > 0 && (
+                          <BreakdownRow
+                            label="From rewards balance"
+                            value={`-₦${preview.paid_from_rewards_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`}
+                            green
+                          />
+                        )}
+                        <div className="border-t border-white/10 mt-2 pt-2">
+                          <div className="flex justify-between items-center gap-3">
+                            <span className="text-xs font-bold uppercase tracking-wider text-white/50 shrink-0">You pay</span>
+                            <span
+                              className="text-xl font-bold text-amber-400 text-right truncate"
+                              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+                            >
+                              ₦{preview.total_due_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}
+                            </span>
+                          </div>
+                          {!preview.sufficient_balance && (
+                            <p className="text-xs text-red-400 mt-1.5 flex items-center gap-1">
+                              <AlertCircle size={11} className="shrink-0" /> Insufficient wallet balance
+                            </p>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-xs text-amber-500/70 uppercase tracking-widest mb-1">Total to Pay</p>
+                        <p
+                          className="text-2xl font-bold text-amber-400"
+                          style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+                        >
+                          {formatNaira(Number(unitsInput) * priceKobo)}
+                        </p>
+                      </>
+                    )}
+                    {belowMinPurchase && (
+                      <p className="text-xs text-red-400 mt-2 flex items-center gap-1">
+                        <AlertCircle size={11} className="shrink-0" /> Minimum purchase is ₦{(MIN_PURCHASE_KOBO / 100).toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Cost — sell */}
+                {modalType === "sell" && sellTotal > 0 && (
+                  <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+                    <p className="text-xs text-amber-500/70 uppercase tracking-widest mb-1">You&apos;ll Receive</p>
+                    <p
+                      className="text-2xl font-bold text-amber-400"
+                      style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+                    >
+                      {formatNaira(sellTotal)}
+                    </p>
+                  </div>
+                )}
+
+                {/* PIN */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-white/50 mb-2">
+                    Transaction PIN
+                  </label>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    maxLength={4}
+                    value={transactionPin}
+                    onChange={(e) => setTransactionPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                    className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 text-white placeholder-white/20 px-4 py-3 rounded-xl text-center text-2xl tracking-[0.5em] outline-none transition-all"
+                    placeholder="••••"
+                  />
+                </div>
+
+                {modalError && (
+                  <div className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-red-400 text-sm">
+                    <AlertCircle size={15} className="shrink-0 mt-0.5" /> <span className="min-w-0">{modalError}</span>
+                  </div>
                 )}
               </div>
 
-              {/* Rewards toggle */}
-              {modalType === "purchase" && (
-                <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-                  <div className="flex items-center gap-2.5">
-                    <Wallet size={14} className="text-amber-400/70" />
-                    <span className="text-sm text-white/70 font-medium">Use rewards &amp; discounts</span>
-                  </div>
-                  <button type="button" onClick={() => setUseRewards((v) => !v)} aria-label="Toggle rewards">
-                    {useRewards
-                      ? <ToggleRight size={26} className="text-amber-400" />
-                      : <ToggleLeft  size={26} className="text-white/20"  />}
-                  </button>
-                </div>
-              )}
-
-              {/* Cost breakdown — purchase */}
-              {modalType === "purchase" && Number(unitsInput) > 0 && (
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
-                  {previewLoading ? (
-                    <div className="flex items-center justify-center gap-2 py-2">
-                      <div className="w-3.5 h-3.5 border border-amber-500/40 border-t-amber-500 rounded-full animate-spin" />
-                      <span className="text-xs text-amber-500/50">Calculating…</span>
-                    </div>
-                  ) : preview ? (
-                    <>
-                      {preview.discount_label && (
-                        <div className="flex items-center gap-1.5 mb-3">
-                          <Tag size={11} className="text-emerald-400" />
-                          <span className="text-xs font-bold text-emerald-400">{preview.discount_label}</span>
-                        </div>
-                      )}
-                      <BreakdownRow label="Original cost"
-                        value={`₦${preview.original_cost_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`}
-                        strikethrough={preview.total_discount_kobo > 0} />
-                      {preview.first_purchase_discount_kobo > 0 && (
-                        <BreakdownRow label="First-purchase discount"
-                          value={`-₦${preview.first_purchase_discount_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`} green />
-                      )}
-                      {preview.referral_discount_kobo > 0 && (
-                        <BreakdownRow label="Referral discount"
-                          value={`-₦${preview.referral_discount_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`} green />
-                      )}
-                      {/* <CapNotice preview={preview} /> */}
-                      {preview.paid_from_rewards_kobo > 0 && (
-                        <BreakdownRow label="From rewards balance"
-                          value={`-₦${preview.paid_from_rewards_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`} green />
-                      )}
-                      <div className="border-t border-white/10 mt-2 pt-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs font-bold uppercase tracking-wider text-white/50">You pay</span>
-                          <span className="text-xl font-bold text-amber-400" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-                            ₦{preview.total_due_naira.toLocaleString("en-NG", { minimumFractionDigits: 2 })}
-                          </span>
-                        </div>
-                        {!preview.sufficient_balance && (
-                          <p className="text-xs text-red-400 mt-1.5 flex items-center gap-1">
-                            <AlertCircle size={11} /> Insufficient wallet balance
-                          </p>
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-xs text-amber-500/70 uppercase tracking-widest mb-1">Total to Pay</p>
-                      <p className="text-2xl font-bold text-amber-400" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-                        {formatNaira(Number(unitsInput) * priceKobo)}
-                      </p>
-                    </>
-                  )}
-                </div>
-              )}
-
-              {/* Cost — sell */}
-              {modalType === "sell" && sellTotal > 0 && (
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
-                  <p className="text-xs text-amber-500/70 uppercase tracking-widest mb-1">You&apos;ll Receive</p>
-                  <p className="text-2xl font-bold text-amber-400" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-                    {formatNaira(sellTotal)}
-                  </p>
-                </div>
-              )}
-
-              {/* PIN */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">
-                  Transaction PIN
-                </label>
-                <input type="password" inputMode="numeric" maxLength={4}
-                  value={transactionPin}
-                  onChange={(e) => setTransactionPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                  className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 text-white placeholder-white/20 px-4 py-3 rounded-xl text-center text-2xl tracking-[0.5em] outline-none transition-all"
-                  placeholder="••••" />
-              </div>
-
-              {modalError && (
-                <div className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-red-400 text-sm">
-                  <AlertCircle size={15} className="shrink-0 mt-0.5" /> {modalError}
-                </div>
-              )}
-
-              <div className="flex gap-3 pt-1">
-                <button onClick={closeModal}
-                  className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-white/[0.01]0 text-sm font-semibold transition-all">
+              {/* Footer — fixed, always reachable, never gets pushed off-screen */}
+              <div className="flex gap-3 px-6 py-4 border-t border-white/10 shrink-0">
+                <button
+                  onClick={closeModal}
+                  className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 text-sm font-semibold transition-all"
+                >
                   Cancel
                 </button>
-                <button onClick={handleAction}
+                <button
+                  onClick={handleAction}
                   disabled={
                     modalLoading || !unitsInput || Number(unitsInput) <= 0 || !transactionPin ||
+                    belowMinPurchase ||
                     (modalType === "purchase" && preview && !preview.sufficient_balance) ||
                     (modalType === "sell"     && Number(unitsInput) > userUnits)          ||
                     (modalType === "purchase" && Number(unitsInput) > (land.available_units ?? 0))
                   }
                   className="flex-1 py-3 rounded-xl font-bold text-[#0D1F1A] transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
-                  style={{ background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" }}>
+                  style={{ background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" }}
+                >
                   {modalLoading
-                    ? <span className="flex items-center justify-center gap-2">
+                    ? (
+                      <span className="flex items-center justify-center gap-2">
                         <div className="w-4 h-4 border-2 border-[#0D1F1A]/40 border-t-[#0D1F1A] rounded-full animate-spin" />
                         Processing...
                       </span>
+                    )
                     : "Confirm"}
                 </button>
               </div>
             </div>
-          </div>
         </div>
       )}
 
       {/* ── PIN not set modal ──────────────────────────────────────────────── */}
       {showPinModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="relative w-full max-w-sm rounded-2xl border border-white/10 overflow-hidden"
-            style={{ background: "#0D1F1A", boxShadow: "0 25px 80px rgba(0,0,0,0.6)" }}>
-            <div className="p-6 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-5">
-                <Lock size={22} className="text-amber-500" />
-              </div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-600 mb-2">Action Required</p>
-              <h2 className="text-2xl font-bold text-white mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-                Set Transaction PIN
-              </h2>
-              <p className="text-white/60 text-sm mb-6 leading-relaxed">
-                You need a 4-digit transaction PIN before buying or selling land units.
-              </p>
-              <div className="space-y-3">
-                <Link href="/settings?tab=pin"
-                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-[#0D1F1A] transition-all hover:scale-[1.02] active:scale-[0.98]"
-                  style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)" }}>
-                  <ShieldCheck size={15} /> Go to Settings
-                </Link>
-                <button onClick={() => setShowPinModal(false)}
-                  className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/50 hover:bg-white/[0.01]0 text-sm font-semibold transition-all">
-                  Dismiss
-                </button>
+        <div
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowPinModal(false); }}
+        >
+            <div
+              className="relative w-full max-w-sm rounded-2xl border border-white/10 overflow-hidden"
+              style={{ background: "#0D1F1A", boxShadow: "0 25px 80px rgba(0,0,0,0.6)", maxHeight: "90vh" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 text-center overflow-y-auto" style={{ maxHeight: "90vh" }}>
+                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-5">
+                  <Lock size={22} className="text-amber-500" />
+                </div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-600 mb-2">Action Required</p>
+                <h2 className="text-2xl font-bold text-white mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+                  Set Transaction PIN
+                </h2>
+                <p className="text-white/60 text-sm mb-6 leading-relaxed">
+                  You need a 4-digit transaction PIN before buying or selling land units.
+                </p>
+                <div className="space-y-3">
+                  <Link href="/settings?tab=pin"
+                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-[#0D1F1A] transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)" }}>
+                    <ShieldCheck size={15} /> Go to Settings
+                  </Link>
+                  <button onClick={() => setShowPinModal(false)}
+                    className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/50 hover:bg-white/10 text-sm font-semibold transition-all">
+                    Dismiss
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
         </div>
       )}
 
       {/* ── KYC blocker modal ──────────────────────────────────────────────── */}
       {showKycModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="relative w-full max-w-sm rounded-2xl border border-white/10 overflow-hidden"
-            style={{ background: "#0D1F1A", boxShadow: "0 25px 80px rgba(0,0,0,0.6)" }}>
-            <div className="p-6 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto mb-5">
-                <ShieldCheck size={22} className="text-purple-400" />
-              </div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-purple-500 mb-2">Verification Required</p>
-              <h2 className="text-2xl font-bold text-white mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-                Complete KYC First
-              </h2>
-              <p className="text-white/60 text-sm mb-6 leading-relaxed">
-                {{
-                  none:     "Identity verification is required before you can invest.",
-                  pending:  "Your KYC is under review. Please wait for approval.",
-                  rejected: "Your KYC was rejected. Please resubmit your documents.",
-                  resubmit: "KYC resubmission is required before investing.",
-                }[kycStatus] ?? "Identity verification is required."}
-              </p>
-              <div className="space-y-3">
-                {["none", "rejected", "resubmit"].includes(kycStatus) && (
-                  <Link href="/settings?tab=kyc"
-                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-white border border-purple-500/40 hover:bg-purple-500/20 transition-all">
-                    <ShieldCheck size={15} /> {kycStatus === "none" ? "Submit KYC" : "Resubmit KYC"}
-                  </Link>
-                )}
-                <button onClick={() => setShowKycModal(false)}
-                  className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/50 hover:bg-white/[0.01]0 text-sm font-semibold transition-all">
-                  Dismiss
-                </button>
+        <div
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowKycModal(false); }}
+        >
+            <div
+              className="relative w-full max-w-sm rounded-2xl border border-white/10 overflow-hidden"
+              style={{ background: "#0D1F1A", boxShadow: "0 25px 80px rgba(0,0,0,0.6)", maxHeight: "90vh" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 text-center overflow-y-auto" style={{ maxHeight: "90vh" }}>
+                <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto mb-5">
+                  <ShieldCheck size={22} className="text-purple-400" />
+                </div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-purple-500 mb-2">Verification Required</p>
+                <h2 className="text-2xl font-bold text-white mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+                  Complete KYC First
+                </h2>
+                <p className="text-white/60 text-sm mb-6 leading-relaxed">
+                  {{
+                    none:     "Identity verification is required before you can invest.",
+                    pending:  "Your KYC is under review. Please wait for approval.",
+                    rejected: "Your KYC was rejected. Please resubmit your documents.",
+                    resubmit: "KYC resubmission is required before investing.",
+                  }[kycStatus] ?? "Identity verification is required."}
+                </p>
+                <div className="space-y-3">
+                  {["none", "rejected", "resubmit"].includes(kycStatus) && (
+                    <Link href="/settings?tab=kyc"
+                      className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-white border border-purple-500/40 hover:bg-purple-500/20 transition-all">
+                      <ShieldCheck size={15} /> {kycStatus === "none" ? "Submit KYC" : "Resubmit KYC"}
+                    </Link>
+                  )}
+                  <button onClick={() => setShowKycModal(false)}
+                    className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/50 hover:bg-white/10 text-sm font-semibold transition-all">
+                    Dismiss
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
         </div>
       )}
     </div>

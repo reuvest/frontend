@@ -21,7 +21,7 @@ html, body {
 }
 
 /* Prevent mobile GPU layer ghosting */
-.min-h-screen {
+.gpu-layer {
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
 }

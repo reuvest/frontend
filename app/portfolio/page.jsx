@@ -303,7 +303,7 @@ export default function Portfolio() {
   // ── Loading screen ─────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0D1F1A]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <div className="min-h-screen gpu-layer flex items-center justify-center bg-[#0D1F1A]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
         <div className="text-center">
           <div className="w-12 h-12 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mx-auto mb-4" />
           <p className="text-white/60 text-sm tracking-widest uppercase">Loading portfolio</p>
@@ -313,7 +313,7 @@ export default function Portfolio() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0D1F1A] relative" style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
+    <div className="min-h-screen gpu-layer bg-[#0D1F1A] relative" style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}>
       <div className="fixed inset-0 opacity-[0.03] pointer-events-none z-0"
         style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
 

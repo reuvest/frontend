@@ -195,7 +195,7 @@ export default function Dashboard() {
 
   if (loadingUser || !user) {
     return (
-      <div className="min-h-screen bg-[#0D1F1A] flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen gpu-layer bg-[#0D1F1A] flex flex-col items-center justify-center gap-4">
         <div className="relative w-12 h-12">
           <div className="absolute inset-0 w-12 h-12 border-2 border-[#2a3d37] rounded-full" />
           <div className="absolute inset-0 w-12 h-12 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
@@ -211,7 +211,7 @@ export default function Dashboard() {
 
   return (
     <div
-      className="min-h-screen bg-[#0D1F1A] relative overflow-x-clip"
+      className="min-h-screen gpu-layer bg-[#0D1F1A] relative overflow-x-clip"
       style={{ fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif" }}
     >
       <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-5">
