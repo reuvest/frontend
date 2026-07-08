@@ -5,9 +5,12 @@ Allow: /
 
 # Auth & account flows — no indexing value
 Disallow: /login
-Disallow: /register
 Disallow: /forgot-password
-Disallow: /reset-password
+Disallow: /reset-verify
+Disallow: /set-new-password
+Disallow: /verify
+Disallow: /verify-email
+Disallow: /email-verified
 
 # Authenticated app pages
 Disallow: /dashboard
@@ -15,6 +18,11 @@ Disallow: /wallet
 Disallow: /portfolio
 Disallow: /settings
 Disallow: /profile
+Disallow: /notifications
+Disallow: /referrals
+
+# Admin
+Disallow: /admin
 
 # Next.js internals
 Disallow: /_next/
