@@ -9,6 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@tiptap/extension-link": "^3.27.3",
+    "@tiptap/extension-placeholder": "^3.27.3",
+    "@tiptap/pm": "^3.27.3",
+    "@tiptap/react": "^3.27.3",
+    "@tiptap/starter-kit": "^3.27.3",
     "axios": "^1.13.5",
     "critters": "^0.0.23",
     "framer-motion": "^12.34.3",

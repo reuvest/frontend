@@ -5,11 +5,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import api from "../../../utils/api";
 import toast from "react-hot-toast";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import TiptapLink from "@tiptap/extension-link";
+import Placeholder from "@tiptap/extension-placeholder";
 import {
   ArrowLeft, Plus, Eye, Pencil, Trash2, Search, X,
   FileText, Tag, Globe, BookOpen, Clock, TrendingUp,
   ChevronLeft, ChevronRight, Filter, RefreshCw,
   CheckCircle, AlertCircle, Image,
+  Bold as BoldIcon, Italic as ItalicIcon, List, ListOrdered,
+  Heading2, Heading3, Quote, Link2, Unlink, Undo2, Redo2,
 } from "lucide-react";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -39,6 +45,118 @@ function StatCard({ icon, label, value, accent }) {
       </div>
       <p className="text-[10px] font-bold uppercase tracking-widest text-white/55 mb-0.5">{label}</p>
       <p className="text-2xl font-bold text-white" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>{value}</p>
+    </div>
+  );
+}
+
+// ── Rich text toolbar ─────────────────────────────────────────────────────────
+
+function ToolbarButton({ onClick, active, disabled, title, children }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
+        active
+          ? "bg-amber-500/15 text-amber-400 border border-amber-500/30"
+          : "text-white/55 hover:text-white hover:bg-white/10 border border-transparent"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function RichTextToolbar({ editor }) {
+  if (!editor) return null;
+
+  const setLink = () => {
+    const previousUrl = editor.getAttributes("link").href;
+    const url = window.prompt("URL", previousUrl || "https://");
+    if (url === null) return;
+    if (url === "") {
+      editor.chain().focus().extendMarkRange("link").unsetLink().run();
+      return;
+    }
+    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+  };
+
+  return (
+    <div className="flex flex-wrap items-center gap-1 px-2 py-2 border-b border-white/10 bg-white/[0.03] rounded-t-xl">
+      <ToolbarButton title="Bold" active={editor.isActive("bold")}
+        onClick={() => editor.chain().focus().toggleBold().run()}>
+        <BoldIcon size={14} />
+      </ToolbarButton>
+      <ToolbarButton title="Italic" active={editor.isActive("italic")}
+        onClick={() => editor.chain().focus().toggleItalic().run()}>
+        <ItalicIcon size={14} />
+      </ToolbarButton>
+      <div className="w-px h-5 bg-white/10 mx-1" />
+      <ToolbarButton title="Heading 2" active={editor.isActive("heading", { level: 2 })}
+        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
+        <Heading2 size={14} />
+      </ToolbarButton>
+      <ToolbarButton title="Heading 3" active={editor.isActive("heading", { level: 3 })}
+        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>
+        <Heading3 size={14} />
+      </ToolbarButton>
+      <div className="w-px h-5 bg-white/10 mx-1" />
+      <ToolbarButton title="Bullet list" active={editor.isActive("bulletList")}
+        onClick={() => editor.chain().focus().toggleBulletList().run()}>
+        <List size={14} />
+      </ToolbarButton>
+      <ToolbarButton title="Numbered list" active={editor.isActive("orderedList")}
+        onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+        <ListOrdered size={14} />
+      </ToolbarButton>
+      <ToolbarButton title="Quote" active={editor.isActive("blockquote")}
+        onClick={() => editor.chain().focus().toggleBlockquote().run()}>
+        <Quote size={14} />
+      </ToolbarButton>
+      <div className="w-px h-5 bg-white/10 mx-1" />
+      <ToolbarButton title="Add link" active={editor.isActive("link")} onClick={setLink}>
+        <Link2 size={14} />
+      </ToolbarButton>
+      <ToolbarButton title="Remove link" disabled={!editor.isActive("link")}
+        onClick={() => editor.chain().focus().unsetLink().run()}>
+        <Unlink size={14} />
+      </ToolbarButton>
+      <div className="w-px h-5 bg-white/10 mx-1" />
+      <ToolbarButton title="Undo" disabled={!editor.can().undo()}
+        onClick={() => editor.chain().focus().undo().run()}>
+        <Undo2 size={14} />
+      </ToolbarButton>
+      <ToolbarButton title="Redo" disabled={!editor.can().redo()}
+        onClick={() => editor.chain().focus().redo().run()}>
+        <Redo2 size={14} />
+      </ToolbarButton>
+    </div>
+  );
+}
+
+function RichTextEditor({ value, onChange }) {
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      TiptapLink.configure({ openOnClick: false, HTMLAttributes: { class: "text-amber-400 underline" } }),
+      Placeholder.configure({ placeholder: "Write your post content here…" }),
+    ],
+    content: value || "",
+    immediatelyRender: false,
+    onUpdate: ({ editor }) => onChange(editor.getHTML()),
+    editorProps: {
+      attributes: {
+        class: "prose prose-invert prose-sm max-w-none focus:outline-none min-h-[220px] px-4 py-3 text-white [&_p]:my-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_blockquote]:border-l-2 [&_blockquote]:border-white/20 [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-white/70",
+      },
+    },
+  });
+
+  return (
+    <div className="rounded-xl border border-white/10 bg-white/5 overflow-hidden focus-within:border-amber-500/50 focus-within:ring-2 focus-within:ring-amber-500/20 transition-all">
+      <RichTextToolbar editor={editor} />
+      <EditorContent editor={editor} />
     </div>
   );
 }
@@ -75,7 +193,8 @@ function PostModal({ post, categories, tags, onClose, onSaved }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.title.trim()) { toast.error("Title is required"); return; }
-    if (!form.content.trim()) { toast.error("Content is required"); return; }
+    const plainContent = form.content.replace(/<[^>]*>/g, "").trim();
+    if (!plainContent) { toast.error("Content is required"); return; }
 
     setSaving(true);
     try {
@@ -116,7 +235,7 @@ function PostModal({ post, categories, tags, onClose, onSaved }) {
             {isEdit ? "Edit Post" : "New Post"}
           </h2>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/[0.01]0 flex items-center justify-center text-white/50 hover:text-white transition-all">
+            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all">
             <X size={15} />
           </button>
         </div>
@@ -147,9 +266,10 @@ function PostModal({ post, categories, tags, onClose, onSaved }) {
           {/* Content */}
           <div>
             <label className={labelCls}>Content *</label>
-            <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })}
-              rows={10} placeholder="Write your post content here…"
-              className={`${inputCls} resize-y`} required />
+            <RichTextEditor
+              value={form.content}
+              onChange={(html) => setForm(f => ({ ...f, content: html }))}
+            />
           </div>
 
           {/* Category + Status */}
@@ -468,7 +588,7 @@ export default function AdminBlogPage() {
             {[["", "All"], ["published", "Published"], ["draft", "Drafts"]].map(([v, l]) => (
               <button key={v} onClick={() => setFilterStatus(v)}
                 className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${
-                  filterStatus === v ? "bg-white/[0.01]0 text-white" : "text-white/60 hover:text-white/70"
+                  filterStatus === v ? "bg-white/10 text-white" : "text-white/60 hover:text-white/70"
                 }`}>
                 {l}
               </button>
@@ -502,7 +622,7 @@ export default function AdminBlogPage() {
               </div>
               {filtered.map((post, i) => (
                 <div key={post.id}
-                  className={`grid grid-cols-[2.5fr_1fr_1fr_80px_80px_100px] gap-4 px-6 py-4 items-center hover:bg-white/[0.02].5 transition-colors ${
+                  className={`grid grid-cols-[2.5fr_1fr_1fr_80px_80px_100px] gap-4 px-6 py-4 items-center hover:bg-white/[0.02] transition-colors ${
                     i < filtered.length - 1 ? "border-b border-white/4" : ""
                   }`}>
                   <div className="min-w-0">
@@ -519,7 +639,7 @@ export default function AdminBlogPage() {
                   <span className="text-xs text-white/60">{post.read_time_minutes || 1} min</span>
                   <div className="flex items-center gap-1">
                     <Link href={`/blog/${post.slug}`} target="_blank" title="View"
-                      className="w-7 h-7 rounded-lg flex items-center justify-center text-white/55 hover:text-white hover:bg-white/[0.01]0 transition-all">
+                      className="w-7 h-7 rounded-lg flex items-center justify-center text-white/55 hover:text-white hover:bg-white/10 transition-all">
                       <Eye size={13} />
                     </Link>
                     <button onClick={() => openEdit(post.id)} title="Edit"
@@ -555,7 +675,7 @@ export default function AdminBlogPage() {
                     </div>
                     <div className="flex gap-1">
                       <Link href={`/blog/${post.slug}`} target="_blank"
-                        className="w-7 h-7 rounded-lg flex items-center justify-center text-white/55 hover:text-white hover:bg-white/[0.01]0">
+                        className="w-7 h-7 rounded-lg flex items-center justify-center text-white/55 hover:text-white hover:bg-white/10">
                         <Eye size={13} />
                       </Link>
                       <button onClick={() => openEdit(post.id)}
@@ -578,11 +698,11 @@ export default function AdminBlogPage() {
                 <p className="text-xs text-white/55">Page {pagination.current_page} of {pagination.last_page}</p>
                 <div className="flex gap-2">
                   <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={pagination.current_page === 1}
-                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30">
+                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-30">
                     <ChevronLeft size={15} />
                   </button>
                   <button onClick={() => setPage(p => Math.min(pagination.last_page, p + 1))} disabled={pagination.current_page === pagination.last_page}
-                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.01]0 disabled:opacity-30">
+                    className="w-9 h-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-30">
                     <ChevronRight size={15} />
                   </button>
                 </div>

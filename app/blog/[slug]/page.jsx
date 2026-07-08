@@ -6,30 +6,27 @@ import Link from "next/link";
 import api  from "@/utils/api";
 import { ArrowLeft, Clock, Eye, Folder, Tag, Calendar } from "lucide-react";
 
-const API = process.env.NEXT_PUBLIC_API_URL;
-
 const fmtDate = (d) =>
   d ? new Date(d).toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" }) : "";
 
+function getCookie(name) {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 export default function BlogPostPage() {
-  const { slug }            = useParams();
-  const [post, setPost]     = useState(null);
+  const { slug }              = useParams();
+  const [post, setPost]       = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError]   = useState("");
-  const [user, setUser] = useState(null);
+  const [error, setError]     = useState("");
+
+  // No API call needed just to gate a CTA — read the cookie directly.
+  const isLoggedIn = !!getCookie("auth_token");
 
   useEffect(() => {
-  api.get("/me")
-    .then(res => setUser(res.data))
-    .catch(() => setUser(null));
-}, []);
-
-const isLoggedIn = !!user;
-
-  useEffect(() => {
-    fetch(`${API}/blog/${slug}`)
-      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then((r) => setPost(r.data))
+    api.get(`/blog/${slug}`)
+      .then((r) => setPost(r.data.data ?? r.data))
       .catch(() => setError("Article not found."))
       .finally(() => setLoading(false));
   }, [slug]);
@@ -156,7 +153,7 @@ const isLoggedIn = !!user;
             style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
             Ready to start investing in Nigerian land?
           </p>
-          <p className="text-xs hover:border-white/[0.35] mb-4">
+          <p className="text-xs text-white/[0.55] mb-4">
             Join thousands of investors already on the platform.
           </p>
           <Link href="/register"
