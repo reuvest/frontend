@@ -202,7 +202,7 @@ function PostModal({ post, categories, tags, onClose, onSaved }) {
       Object.entries(form).forEach(([k, v]) => { if (v !== "") fd.append(k, v); });
       selectedTags.forEach(id => fd.append("tag_ids[]", id));
       if (coverFile) fd.append("cover_image", coverFile);
-      if (isEdit) fd.append("_method", "POST");
+      if (isEdit) fd.append("_method", "PUT");
 
       if (isEdit) {
         await api.post(`/admin/blog/${post.id}`, fd);
