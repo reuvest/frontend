@@ -2,7 +2,7 @@
 import Link from "next/link";
 
 const WHATSAPP_NUMBER = "2348081325657";
-const WHATSAPP_MESSAGE = "Hi REU.ng team! \u{1F44B} I'd like some help, please.";
+const WHATSAPP_MESSAGE = "Hi REU.ng team! I'd like some help, please.";
 
 export const whatsappSupportUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
   WHATSAPP_MESSAGE
