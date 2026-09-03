@@ -150,6 +150,7 @@ export default function AdminUsersPage() {
   const [actionLoading, setActionLoading] = useState<ActionType | null>(null);
   const [menuOpen, setMenuOpen]     = useState<string | number | null>(null);
   const menuRef                     = useRef<HTMLDivElement>(null);
+  const mobileMenuRef                = useRef<HTMLDivElement>(null);
   const confirm                     = useConfirm();
 
   const [allRoles, setAllRoles]         = useState<AdminRole[]>([]);
@@ -168,7 +169,10 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     const handler = (e: globalThis.MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(null);
+      const target = e.target as Node;
+      const insideDesktop = menuRef.current?.contains(target);
+      const insideMobile = mobileMenuRef.current?.contains(target);
+      if (!insideDesktop && !insideMobile) setMenuOpen(null);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -414,7 +418,7 @@ export default function AdminUsersPage() {
                         </div>
                         <p className="text-xs text-white/55 truncate">{user.email}</p>
                       </div>
-                      <div className="relative shrink-0" ref={menuOpen === user.id ? menuRef : null}>
+                      <div className="relative shrink-0" ref={menuOpen === user.id ? mobileMenuRef : null}>
                         <button onClick={() => setMenuOpen(menuOpen === user.id ? null : user.id)}
                           className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/60">
                           <MoreVertical size={14} />
