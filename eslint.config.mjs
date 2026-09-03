@@ -10,6 +10,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Dead reference file, not rendered anywhere.
+    "app/components/home/_disabled-sections-reference.jsx",
   ]),
 ]);
 
