@@ -141,7 +141,7 @@ export default function Header() {
       {user && (
         <>
           <div
-            className={`fixed inset-0 bg-black/70  lg:hidden z-40 transition-opacity duration-300 ${
+            className={`fixed inset-0 bg-black/70  lg:hidden z-9999 transition-opacity duration-300 ${
               menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
             }`}
             onClick={() => setMenuOpen(false)}
@@ -152,7 +152,7 @@ export default function Header() {
             role="dialog"
             aria-modal="true"
             aria-label="Mobile navigation"
-            className={`fixed top-0 right-0 h-full w-72 sm:w-80 lg:hidden z-50 flex flex-col transition-transform duration-300 ease-out ${
+            className={`fixed top-0 right-0 h-full w-72 sm:w-80 lg:hidden z-10000 flex flex-col transition-transform duration-300 ease-out ${
               menuOpen ? "translate-x-0" : "translate-x-full"
             }`}
             style={{
