@@ -22,6 +22,7 @@ const ROUTE_PERMISSIONS: [prefix: string, permission: string][] = [
   ["/admin/blog", "blog.manage"],
   ["/admin/referrals", "referrals.view"],
   ["/admin/waitlist", "waitlist.view"],
+  ["/admin/marketing", "marketing.view"],
 ];
 
 function permissionFor(pathname: string): string | undefined {

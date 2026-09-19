@@ -163,6 +163,7 @@ export interface AdminDashboardStats {
   withdrawals: { pending: number; processing: number };
   liveChat: { queued: number; active: number };
   compliance: { pendingReview: number; blocked: number; flagged: number };
+  marketing: { total: number; sending: number; scheduled: number };
 }
 
 /* Fetches the ~18 lightweight count endpoints the admin dashboard needs
@@ -188,6 +189,9 @@ export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
     api.get("/admin/withdrawals?status=processing&per_page=1"),
     api.get("/admin/live-chat/queue"),
     api.get("/admin/compliance/stats"),
+    api.get("/admin/mail-campaigns?per_page=1"),
+    api.get("/admin/mail-campaigns?per_page=1&status=sending"),
+    api.get("/admin/mail-campaigns?per_page=1&status=scheduled"),
   ]);
 
   const get = (index: number) =>
@@ -209,6 +213,7 @@ export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
     blogAllRes, blogPublishedRes, blogDraftRes,
     withdrawalsPendingRes, withdrawalsProcessingRes,
     liveChatQueueRes, complianceRes,
+    marketingAllRes, marketingSendingRes, marketingScheduledRes,
   ] = results.map((_, i) => get(i));
 
   const landsData = landsRes?.data?.data?.data ?? landsRes?.data?.data ?? [];
@@ -240,6 +245,10 @@ export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
   const lcQueued = queueData.filter((t: any) => !t.agent_id).length;
   const lcActive = queueData.filter((t: any) => !!t.agent_id).length;
 
+  const marketingTotal = marketingAllRes?.data?.data?.total ?? 0;
+  const marketingSending = marketingSendingRes?.data?.data?.total ?? 0;
+  const marketingScheduled = marketingScheduledRes?.data?.data?.total ?? 0;
+
   return {
     lands: {
       total: landsTotal,
@@ -268,5 +277,70 @@ export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
       blocked: compliance.blocked_users ?? 0,
       flagged: compliance.flagged_users ?? 0,
     },
+    marketing: {
+      total: marketingTotal,
+      sending: marketingSending,
+      scheduled: marketingScheduled,
+    },
   };
+}
+
+/* ── Marketing / bulk mail campaigns ────────────────────────────────────── */
+
+export interface MailCampaign {
+  id: number;
+  name: string;
+  subject: string;
+  body_html: string;
+  audience_filter: { segment: "all" | "verified_no_purchase" | "custom"; user_ids?: number[] };
+  status: "draft" | "scheduled" | "sending" | "completed" | "cancelled";
+  scheduled_at: string | null;
+  started_at: string | null;
+  completed_at: string | null;
+  total_recipients: number;
+  sent_count: number;
+  failed_count: number;
+  skipped_count: number;
+  created_by: number;
+  creator?: { id: number; name: string; email: string };
+  pending_count?: number;
+  created_at: string;
+}
+
+export async function getMailCampaigns(params: string): Promise<unknown> {
+  const res = await api.get(`/admin/mail-campaigns?${params}`);
+  return res.data;
+}
+
+export async function getMailCampaign(id: string | number): Promise<{ data: MailCampaign }> {
+  const res = await api.get(`/admin/mail-campaigns/${id}`);
+  return res.data;
+}
+
+export interface CreateMailCampaignPayload {
+  name: string;
+  subject: string;
+  body_html: string;
+  audience_filter: { segment: "all" | "verified_no_purchase" | "custom"; user_ids?: number[] };
+  scheduled_at?: string | null;
+}
+
+export async function createMailCampaign(payload: CreateMailCampaignPayload): Promise<{ data: MailCampaign }> {
+  const res = await api.post("/admin/mail-campaigns", payload);
+  return res.data;
+}
+
+export async function scheduleMailCampaign(
+  id: string | number,
+  scheduledAt?: string | null
+): Promise<{ data: MailCampaign }> {
+  const res = await api.patch(`/admin/mail-campaigns/${id}/schedule`, {
+    scheduled_at: scheduledAt ?? undefined,
+  });
+  return res.data;
+}
+
+export async function cancelMailCampaign(id: string | number): Promise<{ data: MailCampaign }> {
+  const res = await api.patch(`/admin/mail-campaigns/${id}/cancel`);
+  return res.data;
 }

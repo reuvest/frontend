@@ -10,7 +10,7 @@ import {
   MapPin, ShieldCheck, Gift, Wallet, FileText,
   ArrowRight, TrendingUp, Clock, CheckCircle,
   XCircle, Plus, Eye, MessageSquare, AlertCircle, Users,
-  LucideWalletCards, HeadphonesIcon, Shield, Ban 
+  LucideWalletCards, HeadphonesIcon, Shield, Ban, Mail
 } from "lucide-react";
 
 const EMPTY_STATS: AdminDashboardStats = {
@@ -23,6 +23,7 @@ const EMPTY_STATS: AdminDashboardStats = {
   blog:        { total: 0, published: 0, draft: 0 },
   liveChat:    { queued: 0, active: 0 },
   compliance:  { pendingReview: 0, blocked: 0, flagged: 0 },
+  marketing:   { total: 0, sending: 0, scheduled: 0 },
 };
 
 export default function AdminDashboard() {
@@ -162,6 +163,17 @@ export default function AdminDashboard() {
       { label: "Blocked", value: stats.compliance.blocked, color: "text-red-400"   },
     ],
   },
+    {
+      label: "Marketing",
+      value: stats.marketing.total,
+      icon: <Mail size={22} />,
+      accent: "#C8873A",
+      href: "/admin/marketing",
+      sub: [
+        { label: "Sending",   value: stats.marketing.sending,   color: "text-emerald-400" },
+        { label: "Scheduled", value: stats.marketing.scheduled, color: "text-amber-400" },
+      ],
+    },
   ];
 
   return (
@@ -482,6 +494,40 @@ export default function AdminDashboard() {
           </div>
           )}
 
+          {/* Marketing */}
+          {can("marketing.view") && (
+          <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+            <div className="flex items-center justify-between px-5 sm:px-6 py-5 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/15 flex items-center justify-center">
+                  <Mail size={18} className="text-amber-500" />
+                </div>
+                <h2 className="font-bold text-white text-base sm:text-lg"
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+                  Marketing
+                </h2>
+              </div>
+              {stats.marketing.sending > 0 ? (
+                <span className="flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  {stats.marketing.sending} sending
+                </span>
+              ) : (
+                <span className="text-xs text-white/55 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                  {stats.marketing.total} total
+                </span>
+              )}
+            </div>
+            <div className="p-4 space-y-2">
+              <ManagementRow href="/admin/marketing" icon={<Eye size={15} />} title="All Campaigns" subtitle={`Manage ${stats.marketing.total} campaigns`} accent="white" />
+              {can("marketing.manage") && (
+                <ManagementRow href="/admin/marketing/create" icon={<Plus size={15} />} title="New Campaign" subtitle="Compose and schedule a send" accent="#C8873A" />
+              )}
+              <ManagementRow href="/admin/marketing?status=scheduled" icon={<Clock size={15} />} title="Scheduled" subtitle={`${stats.marketing.scheduled} awaiting their send time`} accent="#F59E0B" highlight={stats.marketing.scheduled > 0} />
+            </div>
+          </div>
+          )}
+
         </div>
 
         {/* Quick Actions */}
@@ -504,6 +550,7 @@ export default function AdminDashboard() {
                 { href: "/admin/withdrawals?status=pending", icon: <Wallet          size={20} />, label: "Withdrawals",  accent: "#2D7A55" },
                 { href: "/admin/live-chat",                  icon: <HeadphonesIcon  size={20} />, label: "Live Chat",    accent: "#10B981" },
                 { href: "/admin/compliance",                 icon: <Shield          size={20} />, label: "Compliance",   accent: "#EF4444" },
+                { href: "/admin/marketing",                  icon: <Mail            size={20} />, label: "Marketing",    accent: "#C8873A" },
               ].map((action) => (
                 <Link key={action.label} href={action.href}
                   className="flex flex-col items-center gap-2.5 p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:-translate-y-1 transition-all text-center group">
