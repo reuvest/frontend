@@ -292,7 +292,7 @@ export interface MailCampaign {
   name: string;
   subject: string;
   body_html: string;
-  audience_filter: { segment: "all" | "verified_no_purchase" | "custom"; user_ids?: number[] };
+  audience_filter: { segment: "all" | "verified_no_purchase" | "custom"; user_ids?: number[]; emails?: string[] };
   status: "draft" | "scheduled" | "sending" | "completed" | "cancelled";
   scheduled_at: string | null;
   started_at: string | null;
@@ -321,7 +321,7 @@ export interface CreateMailCampaignPayload {
   name: string;
   subject: string;
   body_html: string;
-  audience_filter: { segment: "all" | "verified_no_purchase" | "custom"; user_ids?: number[] };
+  audience_filter: { segment: "all" | "verified_no_purchase" | "custom"; user_ids?: number[]; emails?: string[] };
   scheduled_at?: string | null;
 }
 

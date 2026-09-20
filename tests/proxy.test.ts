@@ -4,11 +4,12 @@ import { proxy } from "../proxy";
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL;
 
-function makeRequest(pathname: string, opts: { token?: string; role?: string; search?: string } = {}) {
+function makeRequest(pathname: string, opts: { token?: string; role?: string; search?: string; authed?: boolean } = {}) {
   const url = new URL(pathname + (opts.search ?? ""), BASE);
   const cookieParts: string[] = [];
   if (opts.token) cookieParts.push(`auth_token=${opts.token}`);
   if (opts.role) cookieParts.push(`user_role=${opts.role}`);
+  if (opts.authed) cookieParts.push("is_authed=1");
 
   return new NextRequest(url, {
     headers: cookieParts.length ? { cookie: cookieParts.join("; ") } : undefined,
@@ -50,7 +51,7 @@ describe("proxy middleware", () => {
 
   describe("authenticated users", () => {
     it("does NOT bounce /login?expired=1 back to /dashboard (stale-cookie loop)", () => {
-      const res = proxy(makeRequest("/login", { token: "stale", role: "user", search: "?expired=1" }));
+      const res = proxy(makeRequest("/login", { token: "stale", role: "user", authed: true, search: "?expired=1" }));
       expect(res.status).not.toBe(307);
     });
 
@@ -60,31 +61,36 @@ describe("proxy middleware", () => {
     });
 
     it("redirects away from / to /dashboard when already logged in", () => {
-      const res = proxy(makeRequest("/", { token: "jwt", role: "user" }));
+      const res = proxy(makeRequest("/", { token: "jwt", role: "user", authed: true }));
       expect(res.status).toBe(307);
       expect(res.headers.get("location")).toContain("/dashboard");
     });
 
+    it("lets a stale-cookie visitor (token but no is_authed flag) reach the landing page", () => {
+      const res = proxy(makeRequest("/", { token: "stale", role: "user" }));
+      expect(res.status).not.toBe(307);
+    });
+
     it("redirects away from /login when already logged in", () => {
-      const res = proxy(makeRequest("/login", { token: "jwt", role: "user" }));
+      const res = proxy(makeRequest("/login", { token: "jwt", role: "user", authed: true }));
       expect(res.status).toBe(307);
       expect(res.headers.get("location")).toContain("/dashboard");
     });
 
     it("redirects away from /register when already logged in", () => {
-      const res = proxy(makeRequest("/register", { token: "jwt", role: "user" }));
+      const res = proxy(makeRequest("/register", { token: "jwt", role: "user", authed: true }));
       expect(res.status).toBe(307);
       expect(res.headers.get("location")).toContain("/dashboard");
     });
 
     it("honors an explicit ?redirect= target when bouncing off / or /login", () => {
-      const res = proxy(makeRequest("/login", { token: "jwt", role: "user", search: "?redirect=/wallet" }));
+      const res = proxy(makeRequest("/login", { token: "jwt", role: "user", search: "?redirect=/wallet", authed: true }));
       expect(res.headers.get("location")).toContain("/wallet");
     });
 
     it("ignores an off-site ?redirect= value (open-redirect guard)", () => {
       const res = proxy(
-        makeRequest("/login", { token: "jwt", role: "user", search: "?redirect=https://evil.example.com" })
+        makeRequest("/login", { token: "jwt", role: "user", search: "?redirect=https://evil.example.com", authed: true })
       );
       const location = res.headers.get("location")!;
       expect(location).toContain("/dashboard");

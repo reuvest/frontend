@@ -65,6 +65,7 @@ export default function Header() {
 
           <Link
             href={user ? "/dashboard" : "/"}
+            prefetch={false}
             className="flex items-center shrink-0 group"
             aria-label={`${appname} Home`}
           >
@@ -140,6 +141,7 @@ export default function Header() {
           {!loading && !user && (
             <Link
               href="/login"
+              prefetch={false}
               className="shrink-0 text-sm font-medium text-white/70 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-white/5"
             >
               Log in
@@ -173,6 +175,7 @@ export default function Header() {
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/8 shrink-0">
               <Link
                 href={user ? "/dashboard" : "/"}
+                prefetch={false}
                 onClick={() => setMenuOpen(false)}
                 aria-label={`${appname} Home`}
               >

@@ -1,24 +1,30 @@
 "use client";
 
-import { useState, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createMailCampaign } from "../../../../services/adminService";
+import { createMailCampaign, getAdminUsers } from "../../../../services/adminService";
 import RichTextEditor from "../../../components/RichTextEditor";
 import EmailPreviewModal from "../../../components/EmailPreviewModal";
 import toast from "react-hot-toast";
 import type { AxiosError } from "axios";
-import { ArrowLeft, Send, Code2, Inbox } from "lucide-react";
+import { ArrowLeft, Send, Code2, Inbox, Search, X } from "lucide-react";
 
 interface ApiErrorBody {
   message?: string;
   errors?: Record<string, string[]>;
 }
 
+interface PickedUser {
+  id: number;
+  name: string;
+  email: string;
+}
+
 const SEGMENTS = [
   { value: "all",                  label: "All users",            hint: "Every verified, active user who hasn't opted out." },
   { value: "verified_no_purchase", label: "Verified, no purchase", hint: "Verified users who haven't bought a land unit yet." },
-  { value: "custom",               label: "Custom user IDs",       hint: "Pick specific users by ID." },
+  { value: "custom",               label: "Custom user IDs",       hint: "Search and pick specific users by name or email." },
 ] as const;
 
 export default function CreateMailCampaignPage() {
@@ -27,26 +33,81 @@ export default function CreateMailCampaignPage() {
   const [subject, setSubject]       = useState("");
   const [bodyHtml, setBodyHtml]     = useState("");
   const [segment, setSegment]       = useState<"all" | "verified_no_purchase" | "custom">("all");
-  const [userIdsRaw, setUserIdsRaw] = useState("");
+  const [pickedUsers, setPickedUsers] = useState<PickedUser[]>([]);
+  const [userQuery, setUserQuery]     = useState("");
+  const [userResults, setUserResults] = useState<PickedUser[]>([]);
+  const [searchingUsers, setSearchingUsers] = useState(false);
+  const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [extraEmails, setExtraEmails] = useState<string[]>([]);
+  const [emailInput, setEmailInput]   = useState("");
+  const [emailError, setEmailError]   = useState<string | null>(null);
   const [scheduledAt, setScheduledAt] = useState("");
   const [showSource, setShowSource] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving]         = useState(false);
+
+  useEffect(() => {
+    if (segment !== "custom" || userQuery.trim().length < 2) {
+      setUserResults([]);
+      return;
+    }
+    if (searchDebounce.current) clearTimeout(searchDebounce.current);
+    searchDebounce.current = setTimeout(async () => {
+      try {
+        setSearchingUsers(true);
+        const res = await getAdminUsers(`search=${encodeURIComponent(userQuery.trim())}&per_page=8`) as any;
+        const users = res?.data?.data ?? [];
+        setUserResults(
+          users
+            .map((u: any) => ({ id: u.id, name: u.name, email: u.email }))
+            .filter((u: PickedUser) => !pickedUsers.some(p => p.id === u.id))
+        );
+      } catch {
+        setUserResults([]);
+      } finally {
+        setSearchingUsers(false);
+      }
+    }, 350);
+    return () => { if (searchDebounce.current) clearTimeout(searchDebounce.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userQuery, segment, pickedUsers]);
+
+  const addUser = (u: PickedUser) => {
+    setPickedUsers(prev => [...prev, u]);
+    setUserResults(prev => prev.filter(r => r.id !== u.id));
+    setUserQuery("");
+  };
+
+  const removeUser = (id: number) => {
+    setPickedUsers(prev => prev.filter(u => u.id !== id));
+  };
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const addEmail = () => {
+    const value = emailInput.trim().toLowerCase();
+    if (!value) return;
+    if (!EMAIL_RE.test(value)) { setEmailError("That doesn't look like a valid email"); return; }
+    if (extraEmails.includes(value)) { setEmailError("Already added"); return; }
+    if (pickedUsers.some(u => u.email.toLowerCase() === value)) { setEmailError("Already selected via search"); return; }
+    setExtraEmails(prev => [...prev, value]);
+    setEmailInput("");
+    setEmailError(null);
+  };
+
+  const removeEmail = (email: string) => {
+    setExtraEmails(prev => prev.filter(e => e !== email));
+  };
 
   const handleSubmit = async () => {
     if (!name.trim())    { toast.error("Campaign name is required"); return; }
     if (!subject.trim()) { toast.error("Subject is required"); return; }
     if (!bodyHtml.trim()) { toast.error("Email body is required"); return; }
 
-    const userIds = userIdsRaw
-      .split(",")
-      .map(s => s.trim())
-      .filter(Boolean)
-      .map(Number)
-      .filter(n => !Number.isNaN(n));
+    const userIds = pickedUsers.map(u => u.id);
 
-    if (segment === "custom" && userIds.length === 0) {
-      toast.error("Enter at least one user ID");
+    if (segment === "custom" && userIds.length === 0 && extraEmails.length === 0) {
+      toast.error("Pick at least one user or add an email");
       return;
     }
 
@@ -56,7 +117,9 @@ export default function CreateMailCampaignPage() {
         name,
         subject,
         body_html: bodyHtml,
-        audience_filter: segment === "custom" ? { segment, user_ids: userIds } : { segment },
+        audience_filter: segment === "custom"
+          ? { segment, ...(userIds.length ? { user_ids: userIds } : {}), ...(extraEmails.length ? { emails: extraEmails } : {}) }
+          : { segment },
         scheduled_at: scheduledAt ? new Date(scheduledAt).toISOString() : undefined,
       });
       toast.success(
@@ -156,9 +219,84 @@ export default function CreateMailCampaignPage() {
               ))}
             </div>
             {segment === "custom" && (
-              <input value={userIdsRaw} onChange={(e: ChangeEvent<HTMLInputElement>) => setUserIdsRaw(e.target.value)}
-                placeholder="e.g. 14, 22, 108"
-                className="mt-3 w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/40 text-white placeholder-white/20 px-4 py-2.5 rounded-xl text-sm outline-none transition-all" />
+              <div className="mt-3 space-y-2">
+                {pickedUsers.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {pickedUsers.map(u => (
+                      <span key={u.id}
+                        className="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs pl-3 pr-1.5 py-1.5 rounded-full">
+                        {u.name || u.email} <span className="text-amber-400/50">#{u.id}</span>
+                        <button onClick={() => removeUser(u.id)} className="hover:text-white/90 p-0.5">
+                          <X size={12} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div className="relative">
+                  <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
+                  <input value={userQuery} onChange={(e: ChangeEvent<HTMLInputElement>) => setUserQuery(e.target.value)}
+                    placeholder="Search users by name, email, or ID…"
+                    className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/40 text-white placeholder-white/20 pl-9 pr-4 py-2.5 rounded-xl text-sm outline-none transition-all" />
+                  {(searchingUsers || userResults.length > 0) && (
+                    <div className="absolute z-10 mt-1.5 w-full bg-[#132A22] border border-white/10 rounded-xl overflow-hidden shadow-xl max-h-56 overflow-y-auto">
+                      {searchingUsers && (
+                        <p className="px-4 py-3 text-xs text-white/40">Searching…</p>
+                      )}
+                      {!searchingUsers && userResults.map(u => (
+                        <button key={u.id} onClick={() => addUser(u)}
+                          className="w-full text-left px-4 py-2.5 hover:bg-white/5 transition-colors flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-white/85">{u.name || "—"}</p>
+                            <p className="text-xs text-white/40">{u.email}</p>
+                          </div>
+                          <span className="text-[10px] text-white/25">#{u.id}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <p className="text-[10px] text-white/25">
+                  {pickedUsers.length > 0
+                    ? `${pickedUsers.length} user${pickedUsers.length === 1 ? "" : "s"} selected`
+                    : "Search by name or email — no need to know raw user IDs."}
+                </p>
+
+                {/* Manual email entry — for recipients without an account yet */}
+                <div className="pt-2 border-t border-white/10">
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">
+                    Or add an email directly
+                  </label>
+                  {extraEmails.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {extraEmails.map(email => (
+                        <span key={email}
+                          className="flex items-center gap-1.5 bg-white/5 border border-white/15 text-white/70 text-xs pl-3 pr-1.5 py-1.5 rounded-full">
+                          {email}
+                          <button onClick={() => removeEmail(email)} className="hover:text-white/90 p-0.5">
+                            <X size={12} />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <input value={emailInput}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => { setEmailInput(e.target.value); setEmailError(null); }}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addEmail(); } }}
+                      placeholder="someone@example.com"
+                      className="flex-1 bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/40 text-white placeholder-white/20 px-4 py-2.5 rounded-xl text-sm outline-none transition-all" />
+                    <button onClick={addEmail}
+                      className="px-4 py-2.5 rounded-xl text-xs font-bold text-white/70 bg-white/5 border border-white/10 hover:border-white/20 hover:text-white transition-all">
+                      Add
+                    </button>
+                  </div>
+                  {emailError && <p className="text-[10px] text-red-400 mt-1.5">{emailError}</p>}
+                  <p className="text-[10px] text-white/25 mt-1.5">
+                    For recipients who don't have an account yet — no unsubscribe history or opt-out check applies since there's no user record.
+                  </p>
+                </div>
+              </div>
             )}
           </div>
 

@@ -148,10 +148,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (!isGuest) {
           sessionStorage.setItem("redirectAfterLogin", pathname);
-          // Best-effort: clear the stale httpOnly cookies so proxy.ts stops
-          // treating this browser as logged in.
-          api.post("/logout").catch(() => {});
           router.replace("/login?expired=1");
+          // Drop the client router cache so prefetched redirects from the
+          // old session state can't be replayed on later soft navigations.
+          router.refresh();
         }
       } else if (!err?.response) {
         // Network timeout / offline — keep the session flag, surface
@@ -227,6 +227,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     queryClient.clear();
     sessionStorage.removeItem("redirectAfterLogin");
     router.push("/login");
+    router.refresh(); // invalidate cached RSC payloads from the old session
   };
 
   // ── context ──────────────────────────────────────────────────────────────

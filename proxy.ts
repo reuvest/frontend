@@ -8,6 +8,11 @@ export function proxy(request: NextRequest) {
 
   const token    = request.cookies.get("auth_token")?.value;
   const userRole = request.cookies.get("user_role")?.value;
+  // Non-httpOnly flag the client uses to decide "am I logged in?". The
+  // httpOnly auth_token can be stale (expired/revoked) and the client
+  // clears is_authed when it finds out — so the landing/auth-page redirect
+  // below must agree with the client, or "/" -> /dashboard -> /login loops.
+  const isAuthedFlag = request.cookies.get("is_authed")?.value === "1";
 
   const normalizedPath = pathname.replace(/\/+$/, "") || "/";
 
@@ -34,6 +39,7 @@ export function proxy(request: NextRequest) {
   // Logged-in user hitting "/" or auth pages → dashboard
   if (
     token &&
+    isAuthedFlag &&
     !sessionExpired &&
     (pathname === "/" || pathname === "/login" || pathname === "/register")
   ) {
