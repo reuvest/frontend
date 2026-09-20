@@ -151,15 +151,13 @@ export default function Dashboard() {
 
   const [mounted, setMounted]           = useState(false);
   const [slowHint, setSlowHint]         = useState(false);
-  const [authTimedOut, setAuthTimedOut] = useState(false);
 
   const greetingText = useMemo(() => getGreeting(), []);
 
   useEffect(() => {
     requestAnimationFrame(() => setMounted(true));
-    const hintTimer    = setTimeout(() => setSlowHint(true),     3_000);
-    const timeoutTimer = setTimeout(() => setAuthTimedOut(true), 8_000);
-    return () => { clearTimeout(hintTimer); clearTimeout(timeoutTimer); };
+    const hintTimer = setTimeout(() => setSlowHint(true), 3_000);
+    return () => clearTimeout(hintTimer);
   }, []);
 
   const { stats, statsError, transactions, txError, loadingStats, loadingTx, refetch } =
@@ -174,9 +172,12 @@ export default function Dashboard() {
   }, [user]);
 
   useEffect(() => {
-    if (!loadingUser && !user) router.replace("/login");
-    if (authTimedOut && !loadingUser && !user) router.replace("/login");
-  }, [loadingUser, user, router, authTimedOut]);
+    // Only redirect once auth has actually resolved to "no user". Redirecting
+    // while /me is still pending (e.g. a slow/cold backend) bounces to /login,
+    // where proxy.ts sees the auth_token cookie and sends us straight back to
+    // /dashboard — an endless loop. `expired=1` tells proxy.ts not to bounce.
+    if (!loadingUser && !user) router.replace("/login?expired=1");
+  }, [loadingUser, user, router]);
 
   if (loadingUser || !user) {
     return (

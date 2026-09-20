@@ -148,7 +148,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (!isGuest) {
           sessionStorage.setItem("redirectAfterLogin", pathname);
-          router.replace("/login");
+          // Best-effort: clear the stale httpOnly cookies so proxy.ts stops
+          // treating this browser as logged in.
+          api.post("/logout").catch(() => {});
+          router.replace("/login?expired=1");
         }
       } else if (!err?.response) {
         // Network timeout / offline — keep the session flag, surface

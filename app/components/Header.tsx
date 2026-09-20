@@ -29,7 +29,7 @@ const links: NavLink[] = [
 
 export default function Header() {
   const pathname = usePathname();
-  const { user, logout } = useAuth() ?? {};
+  const { user, loading, logout } = useAuth() ?? {};
   const [menuOpen, setMenuOpen] = useState(false);
 
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -134,6 +134,16 @@ export default function Header() {
                 </button>
               </div>
             </>
+          )}
+
+          {/* Only show once auth has resolved, so it doesn't flash for logged-in users */}
+          {!loading && !user && (
+            <Link
+              href="/login"
+              className="shrink-0 text-sm font-medium text-white/70 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-white/5"
+            >
+              Log in
+            </Link>
           )}
         </div>
       </header>

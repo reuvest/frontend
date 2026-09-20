@@ -49,6 +49,11 @@ describe("proxy middleware", () => {
   });
 
   describe("authenticated users", () => {
+    it("does NOT bounce /login?expired=1 back to /dashboard (stale-cookie loop)", () => {
+      const res = proxy(makeRequest("/login", { token: "stale", role: "user", search: "?expired=1" }));
+      expect(res.status).not.toBe(307);
+    });
+
     it("allows access to protected routes with a token", () => {
       const res = proxy(makeRequest("/dashboard", { token: "jwt", role: "user" }));
       expect(res.status).not.toBe(307);

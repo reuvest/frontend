@@ -26,8 +26,17 @@ export function proxy(request: NextRequest) {
   //   return NextResponse.redirect(new URL("/waitlist", request.url));
   // }
 
+  // The client sets ?expired=1 when it found the session invalid (401 from
+  // /me, or no is_authed flag) while a stale auth_token cookie is still
+  // present. Without this escape hatch, /login -> /dashboard -> /login loops.
+  const sessionExpired = request.nextUrl.searchParams.get("expired") === "1";
+
   // Logged-in user hitting "/" or auth pages → dashboard
-  if (token && (pathname === "/" || pathname === "/login" || pathname === "/register")) {
+  if (
+    token &&
+    !sessionExpired &&
+    (pathname === "/" || pathname === "/login" || pathname === "/register")
+  ) {
     const redirectTo = request.nextUrl.searchParams.get("redirect");
     const destination = redirectTo && redirectTo.startsWith("/") ? redirectTo : "/dashboard";
     return NextResponse.redirect(new URL(destination, request.url));
