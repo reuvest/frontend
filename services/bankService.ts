@@ -17,6 +17,7 @@ export interface BankDetailsPayload {
   bank_name: string;
   account_number: string;
   account_name: string;
+  transaction_pin: string;
 }
 
 export interface BankDetailsResponse {

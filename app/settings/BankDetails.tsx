@@ -22,6 +22,10 @@ const bankDetailsSchema = z.object({
   // account_name is populated by the auto-verify effect below, not typed
   // directly — this just guards against submitting before verification.
   account_name: z.string().min(1, "Verify your account before saving"),
+  transaction_pin: z
+    .string()
+    .length(4, "Transaction PIN must be 4 digits")
+    .regex(/^\d+$/, "Transaction PIN must be digits only"),
 });
 
 type BankDetailsFormValues = z.infer<typeof bankDetailsSchema>;
@@ -59,6 +63,7 @@ export default function BankDetails() {
       bank_name: "",
       account_number: "",
       account_name: "",
+      transaction_pin: "",
     },
   });
 
@@ -135,6 +140,7 @@ export default function BankDetails() {
         bank_name: values.bank_name,
         account_number: values.account_number,
         account_name: values.account_name,
+        transaction_pin: values.transaction_pin,
       });
       isLockedRef.current = true;
       setIsLocked(true);
@@ -237,6 +243,25 @@ export default function BankDetails() {
           </div>
         </Field>
       )}
+
+      {/* Transaction PIN */}
+      <Field label="Transaction PIN" error={errors.transaction_pin?.message}>
+        <Controller
+          name="transaction_pin"
+          control={control}
+          render={({ field }) => (
+            <input
+              {...field}
+              type="password"
+              inputMode="numeric"
+              maxLength={4}
+              onChange={(e) => field.onChange(e.target.value.replace(/\D/g, "").slice(0, 4))}
+              placeholder="••••"
+              className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 text-white placeholder-white/20 px-4 py-3 rounded-xl text-center text-2xl tracking-[0.5em] outline-none transition-all"
+            />
+          )}
+        />
+      </Field>
 
       <button
         type="submit"
