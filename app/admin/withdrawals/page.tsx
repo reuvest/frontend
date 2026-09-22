@@ -9,12 +9,12 @@ import {
   ArrowLeft, CheckCircle2, XCircle, Clock, AlertTriangle,
   BadgeCheck, RefreshCw, Search, X, ChevronLeft, ChevronRight,
   Wallet, Users, TrendingDown, Filter, MoreHorizontal,
-  AlertCircle, Building2, User, Banknote,
+  AlertCircle, Building2, User, Banknote, Ban,
 } from "lucide-react";
 
 /* ─── Helpers ───────────────────────────────────────────────────────────── */
 
-type WithdrawalStatus = "pending" | "processing" | "approved" | "completed" | "rejected" | "failed";
+type WithdrawalStatus = "pending" | "processing" | "approved" | "completed" | "rejected" | "failed" | "cancelled";
 
 interface StatusConfigEntry {
   label: string;
@@ -28,6 +28,7 @@ const STATUS: Record<WithdrawalStatus, StatusConfigEntry> = {
   approved:   { label: "Approved",   cls: "text-emerald-400 bg-emerald-500/10 border-emerald-500/25", icon: <CheckCircle2  size={10} /> },
   completed:  { label: "Completed",  cls: "text-emerald-400 bg-emerald-500/10 border-emerald-500/25", icon: <BadgeCheck    size={10} /> },
   rejected:   { label: "Rejected",   cls: "text-red-400   bg-red-500/10   border-red-500/25",     icon: <XCircle       size={10} /> },
+  cancelled:  { label: "Cancelled",  cls: "text-white/40  bg-white/5      border-white/15",        icon: <Ban           size={10} /> },
   failed:     { label: "Failed",     cls: "text-red-400   bg-red-500/10   border-red-500/25",     icon: <AlertTriangle size={10} /> },
 };
 
@@ -521,6 +522,7 @@ export default function AdminWithdrawalsPage() {
     ["completed",  "Completed"],
     ["rejected",   "Rejected"],
     ["failed",     "Failed"],
+    ["cancelled",  "Cancelled"],
   ];
 
   return (

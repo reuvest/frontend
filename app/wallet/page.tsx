@@ -5,17 +5,18 @@ import { useRouter } from "next/navigation";
 import type { AxiosError } from "axios";
 import handleApiError from "../../utils/handleApiError";
 import { getMe, getUserTransactions, type Transaction } from "../../services/userService";
-import { depositFunds, withdrawFunds } from "../../services/walletService";
+import { depositFunds, withdrawFunds, cancelWithdrawal } from "../../services/walletService";
 import toast from "react-hot-toast";
 import {
   Wallet, TrendingUp, TrendingDown, Clock, CheckCircle,
   XCircle, AlertCircle, CreditCard, ArrowDownCircle, ArrowUpCircle,
-  WifiOff, RefreshCw, ServerCrash,
+  WifiOff, RefreshCw, ServerCrash, Ban,
 } from "lucide-react";
 
 const FEE_PERCENT   = 2;
 const FEE_CAP       = 3000;
 const QUICK_AMOUNTS = [1000, 5000, 10000, 50000];
+const MIN_WITHDRAWAL = 5000; // must match WithdrawalController::requestWithdrawal() min:500000 kobo
 
 interface Gateway {
   id: string;
@@ -91,6 +92,7 @@ export default function WalletPage() {
   const [isLoadingData, setIsLoadingData]   = useState(true);
   const [loadError, setLoadError]           = useState<LoadErrorKind>(null);
   const [serverError, setServerError]       = useState("");
+  const [cancelling, setCancelling]         = useState<string | number | null>(null);
 
   // Persists across retries of the SAME withdrawal attempt (e.g. the user
   // hits Submit again after a timeout) so the server's idempotency
@@ -152,6 +154,23 @@ export default function WalletPage() {
 
   useEffect(() => { fetchWalletData(); }, []);
 
+  /* ─── CANCEL A PENDING WITHDRAWAL ───────────────────────────────────── */
+  const handleCancelWithdrawal = async (t: WalletTransaction) => {
+    if (!t.reference) return;
+    if (!window.confirm("Cancel this withdrawal request? The funds will be returned to your balance immediately.")) return;
+    setCancelling(t.reference);
+    try {
+      const res = await cancelWithdrawal(t.reference);
+      toast.success(res.message || "Withdrawal cancelled");
+      fetchWalletData();
+    } catch (err) {
+      const axiosErr = err as AxiosError<{ message?: string; error?: string }>;
+      toast.error(axiosErr.response?.data?.message || axiosErr.response?.data?.error || "Failed to cancel withdrawal");
+    } finally {
+      setCancelling(null);
+    }
+  };
+
   /* ─── FEE CALC ──────────────────────────────────────────────────────── */
   useEffect(() => {
     const amt = Number(depositAmount);
@@ -192,8 +211,8 @@ export default function WalletPage() {
 
   const handleWithdraw = async () => {
     const amountNaira = Number(withdrawAmount);
-    if (!Number.isInteger(amountNaira) || amountNaira < 1000)
-      return toast.error("Minimum withdrawal is ₦1,000");
+    if (!Number.isInteger(amountNaira) || amountNaira < MIN_WITHDRAWAL)
+      return toast.error(`Minimum withdrawal is ₦${MIN_WITHDRAWAL.toLocaleString()}`);
     if (amountNaira > balance / 100) return toast.error("Insufficient balance");
     if (!/^\d{4}$/.test(pin))        return toast.error("PIN must be 4 digits");
 
@@ -231,7 +250,7 @@ export default function WalletPage() {
     const s = status.toLowerCase();
     if (s.includes("complete")) return <CheckCircle size={12} />;
     if (s.includes("pend"))     return <Clock size={12} />;
-    if (s.includes("fail") || s.includes("reject")) return <XCircle size={12} />;
+    if (s.includes("fail") || s.includes("reject") || s.includes("cancel")) return <XCircle size={12} />;
     return <AlertCircle size={12} />;
   };
 
@@ -240,7 +259,7 @@ export default function WalletPage() {
     const s = status.toLowerCase();
     if (s.includes("complete")) return "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
     if (s.includes("pend"))     return "bg-amber-500/10 border-amber-500/20 text-amber-400";
-    if (s.includes("fail") || s.includes("reject")) return "bg-red-500/10 border-red-500/20 text-red-400";
+    if (s.includes("fail") || s.includes("reject") || s.includes("cancel")) return "bg-red-500/10 border-red-500/20 text-red-400";
     return "bg-white/5 border-white/10 text-white/55";
   };
 
@@ -530,21 +549,22 @@ export default function WalletPage() {
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/55 font-semibold">₦</span>
                     <input
-                      type="number" min={1000} max={balance / 100} value={withdrawAmount}
+                      type="number" min={MIN_WITHDRAWAL} max={balance / 100} value={withdrawAmount}
                       onChange={(e) => updateWithdrawAmount(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleWithdraw()}
-                      placeholder="1,000 minimum"
+                      placeholder={`${MIN_WITHDRAWAL.toLocaleString()} minimum`}
                       className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 text-white placeholder-white/20 pl-10 pr-4 py-3 rounded-xl text-sm outline-none transition-all"
                     />
                   </div>
+                  <p className="text-[11px] text-white/25 mt-1.5">Minimum withdrawal: ₦{MIN_WITHDRAWAL.toLocaleString()}</p>
                   <div className="flex flex-wrap gap-2 mt-3">
-                    {QUICK_AMOUNTS.filter((a) => a <= balance / 100).map((a) => (
+                    {QUICK_AMOUNTS.filter((a) => a >= MIN_WITHDRAWAL && a <= balance / 100).map((a) => (
                       <button key={a} type="button" onClick={() => updateWithdrawAmount(a.toString())}
                         className="px-3 py-1.5 text-xs font-bold bg-white/5 border border-white/10 hover:border-amber-500/30 hover:text-amber-400 text-white/60 rounded-lg transition-all">
                         ₦{a.toLocaleString()}
                       </button>
                     ))}
-                    {balance / 100 >= 1000 && (
+                    {balance / 100 >= MIN_WITHDRAWAL && (
                       <button type="button" onClick={() => updateWithdrawAmount(Math.floor(balance / 100).toString())}
                         className="px-3 py-1.5 text-xs font-bold text-[#0D1F1A] rounded-lg transition-all"
                         style={{ background: "linear-gradient(135deg, #C8873A 0%, #E8A850 100%)" }}>
@@ -637,6 +657,20 @@ export default function WalletPage() {
                           {isDeposit ? "+" : "−"}₦{formatAmount(t)}
                         </p>
                       </div>
+
+                      {!isDeposit && t.status?.toLowerCase() === "pending" && (
+                        <div className="mt-2 pt-2 border-t border-white/5 flex justify-end">
+                          <button
+                            onClick={() => handleCancelWithdrawal(t)}
+                            disabled={cancelling === t.reference}
+                            className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-red-400/70 hover:text-red-400 disabled:opacity-40 transition-colors">
+                            {cancelling === t.reference
+                              ? <div className="w-3 h-3 border border-red-400/30 border-t-red-400 rounded-full animate-spin" />
+                              : <Ban size={12} />}
+                            Cancel request
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -684,4 +718,3 @@ function ActionButton({ onClick, loading, disabled, label }: ActionButtonProps) 
     </button>
   );
 }
-  

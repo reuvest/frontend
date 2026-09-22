@@ -44,3 +44,13 @@ export async function withdrawFunds(
   );
   return res.data;
 }
+
+/* POST /withdrawals/{reference}/cancel
+   Only works while the withdrawal is still 'pending' — refunds the held
+   balance back to the user immediately. */
+export async function cancelWithdrawal(
+  reference: string | number
+): Promise<WithdrawResponse> {
+  const res = await api.post(`/withdrawals/${reference}/cancel`);
+  return res.data;
+}
