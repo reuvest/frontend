@@ -2,14 +2,14 @@
 
 import { useState, useEffect, useCallback, type ChangeEvent, type ReactNode } from "react";
 import Link from "next/link";
-import { getAdminWithdrawals, approveWithdrawal, rejectWithdrawal, approveAllWithdrawals } from "../../../services/adminService";
+import { getAdminWithdrawals, approveWithdrawal, rejectWithdrawal, markWithdrawalManualTransfer, approveAllWithdrawals } from "../../../services/adminService";
 import toast from "react-hot-toast";
 import type { AxiosError } from "axios";
 import {
   ArrowLeft, CheckCircle2, XCircle, Clock, AlertTriangle,
   BadgeCheck, RefreshCw, Search, X, ChevronLeft, ChevronRight,
   Wallet, Users, TrendingDown, Filter, MoreHorizontal,
-  AlertCircle, Building2, User,
+  AlertCircle, Building2, User, Banknote,
 } from "lucide-react";
 
 /* ─── Helpers ───────────────────────────────────────────────────────────── */
@@ -159,20 +159,111 @@ function RejectModal({ withdrawal, onClose, onDone }: RejectModalProps) {
   );
 }
 
+/* ─── Manual transfer modal ─────────────────────────────────────────────── */
+interface ManualTransferModalProps {
+  withdrawal: Withdrawal;
+  onClose: () => void;
+  onDone: () => void;
+}
+
+function ManualTransferModal({ withdrawal, onClose, onDone }: ManualTransferModalProps) {
+  const [reference, setReference] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleConfirm = async () => {
+    if (!reference.trim()) { toast.error("Please provide the manual transfer reference"); return; }
+    setLoading(true);
+    try {
+      await markWithdrawalManualTransfer(withdrawal.id, reference);
+      toast.success("Withdrawal marked as manually transferred");
+      onDone();
+    } catch (err) {
+      const axiosErr = err as AxiosError<ApiErrorBody>;
+      toast.error(axiosErr.response?.data?.message || "Failed to mark as manually transferred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="w-full max-w-md rounded-2xl border border-white/10 overflow-hidden"
+        style={{ background: "#0D1F1A", boxShadow: "0 32px 80px rgba(0,0,0,0.6)" }}>
+
+        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-400/70 mb-0.5">Mark as Manually Transferred</p>
+            <p className="text-white font-bold" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+              {fmtNaira(withdrawal.amount_kobo)}
+            </p>
+          </div>
+          <button onClick={onClose}
+            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-all">
+            <X size={14} />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-4">
+          <div className="rounded-xl border border-amber-500/15 bg-amber-500/5 p-4 flex gap-3">
+            <AlertCircle size={15} className="text-amber-400 shrink-0 mt-0.5" />
+            <p className="text-xs text-amber-400/80 leading-relaxed">
+              This confirms {fmtNaira(withdrawal.amount_kobo)} was already sent
+              to <strong className="text-amber-400">{withdrawal.user?.name}</strong> outside
+              the automated flow (direct bank transfer, or a manually verified Paystack
+              transfer). This does NOT initiate a new transfer.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-widest text-white/55 mb-2">
+              Transfer Reference *
+            </label>
+            <input
+              value={reference}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setReference(e.target.value)}
+              placeholder="Bank transfer ref / Paystack transaction ID…"
+              className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/40 focus:ring-2 focus:ring-amber-500/10 text-white placeholder-white/20 px-4 py-3 rounded-xl text-sm outline-none transition-all"
+            />
+          </div>
+
+          <div className="flex gap-3">
+            <button onClick={onClose}
+              className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-white/50 hover:bg-white/10 text-sm font-semibold transition-all">
+              Cancel
+            </button>
+            <button onClick={handleConfirm} disabled={loading || !reference.trim()}
+              className="flex-1 py-3 rounded-xl font-bold text-[#0D1F1A] text-sm transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ background: "linear-gradient(135deg, #C8873A, #E8A850)" }}>
+              {loading
+                ? <span className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-[#0D1F1A]/30 border-t-[#0D1F1A] rounded-full animate-spin" />
+                    Confirming…
+                  </span>
+                : "Confirm Manual Transfer"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Withdrawal detail drawer ──────────────────────────────────────────── */
 interface WithdrawalDrawerProps {
   withdrawal: Withdrawal | null;
   onClose: () => void;
   onApprove: (w: Withdrawal) => void;
   onReject: (w: Withdrawal) => void;
+  onManualTransfer: (w: Withdrawal) => void;
   approving: string | number | null;
 }
 
-function WithdrawalDrawer({ withdrawal, onClose, onApprove, onReject, approving }: WithdrawalDrawerProps) {
+function WithdrawalDrawer({ withdrawal, onClose, onApprove, onReject, onManualTransfer, approving }: WithdrawalDrawerProps) {
   if (!withdrawal) return null;
 
-  const canApprove = withdrawal.status === "pending";
-  const canReject  = ["pending", "failed"].includes(withdrawal.status);
+  const canApprove        = withdrawal.status === "pending";
+  const canReject          = ["pending", "failed"].includes(withdrawal.status);
+  const canManualTransfer  = ["pending", "processing", "failed"].includes(withdrawal.status);
 
   return (
     <div className="fixed inset-0 z-40 flex justify-end">
@@ -209,7 +300,7 @@ function WithdrawalDrawer({ withdrawal, onClose, onApprove, onReject, approving 
             </p>
             <div>
               <p className="text-sm font-bold text-white">{withdrawal.user?.name}</p>
-              <p className="text-xs hover:border-white/35 mt-0.5">{withdrawal.user?.email}</p>
+              <p className="text-xs text-white/55 mt-0.5">{withdrawal.user?.email}</p>
             </div>
           </div>
 
@@ -265,7 +356,7 @@ function WithdrawalDrawer({ withdrawal, onClose, onApprove, onReject, approving 
         </div>
 
         {/* Action buttons */}
-        {(canApprove || canReject) && (
+        {(canApprove || canReject || canManualTransfer) && (
           <div className="p-6 border-t border-white/7 space-y-2 sticky bottom-0 bg-[#0D1F1A]">
             {canApprove && (
               <button
@@ -281,6 +372,15 @@ function WithdrawalDrawer({ withdrawal, onClose, onApprove, onReject, approving 
                   : <span className="flex items-center justify-center gap-2">
                       <CheckCircle2 size={15} /> Approve & Transfer
                     </span>}
+              </button>
+            )}
+            {canManualTransfer && (
+              <button
+                onClick={() => onManualTransfer(withdrawal)}
+                className="w-full py-3 rounded-xl font-bold text-amber-400 text-sm border border-amber-500/20 hover:bg-amber-500/8 transition-all">
+                <span className="flex items-center justify-center gap-2">
+                  <Banknote size={15} /> Mark as Manually Transferred
+                </span>
               </button>
             )}
             {canReject && (
@@ -335,6 +435,7 @@ export default function AdminWithdrawalsPage() {
   const [approving, setApproving]         = useState<string | number | null>(null);
   const [approvingAll, setApprovingAll]   = useState(false);
   const [rejectTarget, setRejectTarget]   = useState<Withdrawal | null>(null);
+  const [manualTarget, setManualTarget]   = useState<Withdrawal | null>(null);
   const [drawerItem, setDrawerItem]       = useState<Withdrawal | null>(null);
 
   const fetchWithdrawals = useCallback(async () => {
@@ -448,7 +549,7 @@ export default function AdminWithdrawalsPage() {
               style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               Withdrawals
             </h1>
-            <p className="hover:border-white/35 text-sm mt-1">{pagination.total} total requests</p>
+            <p className="text-white/55 text-sm mt-1">{pagination.total} total requests</p>
           </div>
 
           {/* Approve all button */}
@@ -500,7 +601,7 @@ export default function AdminWithdrawalsPage() {
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                   filterStatus === v
                     ? "bg-white/10 text-white"
-                    : "hover:border-white/35 hover:text-white/60"
+                    : "text-white/50 hover:text-white/70 hover:bg-white/5"
                 }`}>
                 {l}
               </button>
@@ -508,7 +609,7 @@ export default function AdminWithdrawalsPage() {
           </div>
 
           <button onClick={fetchWithdrawals}
-            className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center hover:border-white/35 hover:text-white hover:border-white/20 transition-all">
+            className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/55 hover:text-white hover:border-white/20 transition-all">
             <RefreshCw size={14} />
           </button>
         </div>
@@ -574,6 +675,14 @@ export default function AdminWithdrawalsPage() {
                           : <CheckCircle2 size={14} />}
                       </button>
                     )}
+                    {["pending", "processing", "failed"].includes(w.status) && (
+                      <button
+                        onClick={() => setManualTarget(w)}
+                        title="Mark as Manually Transferred"
+                        className="w-7 h-7 rounded-lg flex items-center justify-center text-amber-400/50 hover:text-amber-400 hover:bg-amber-500/10 transition-all">
+                        <Banknote size={14} />
+                      </button>
+                    )}
                     {["pending", "failed"].includes(w.status) && (
                       <button
                         onClick={() => setRejectTarget(w)}
@@ -620,6 +729,12 @@ export default function AdminWithdrawalsPage() {
                             : <CheckCircle2 size={15} />}
                         </button>
                       )}
+                      {["pending", "processing", "failed"].includes(w.status) && (
+                        <button onClick={() => setManualTarget(w)}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-amber-400/50 hover:text-amber-400 hover:bg-amber-500/10 transition-all">
+                          <Banknote size={15} />
+                        </button>
+                      )}
                       {["pending", "failed"].includes(w.status) && (
                         <button onClick={() => setRejectTarget(w)}
                           className="w-8 h-8 rounded-lg flex items-center justify-center text-red-400/40 hover:text-red-400 hover:bg-red-500/10 transition-all">
@@ -663,6 +778,7 @@ export default function AdminWithdrawalsPage() {
         onClose={() => setDrawerItem(null)}
         onApprove={(w) => { setDrawerItem(null); handleApprove(w); }}
         onReject={(w)  => { setDrawerItem(null); setRejectTarget(w); }}
+        onManualTransfer={(w) => { setDrawerItem(null); setManualTarget(w); }}
         approving={approving}
       />
 
@@ -672,6 +788,15 @@ export default function AdminWithdrawalsPage() {
           withdrawal={rejectTarget}
           onClose={() => setRejectTarget(null)}
           onDone={() => { setRejectTarget(null); fetchWithdrawals(); }}
+        />
+      )}
+
+      {/* Manual transfer modal */}
+      {manualTarget && (
+        <ManualTransferModal
+          withdrawal={manualTarget}
+          onClose={() => setManualTarget(null)}
+          onDone={() => { setManualTarget(null); fetchWithdrawals(); }}
         />
       )}
     </div>

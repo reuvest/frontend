@@ -146,6 +146,13 @@ export async function rejectWithdrawal(
   await api.post(`/admin/withdrawals/${id}/reject`, { reason });
 }
 
+export async function markWithdrawalManualTransfer(
+  id: string | number,
+  reference: string
+): Promise<void> {
+  await api.post(`/admin/withdrawals/${id}/manual-complete`, { reference });
+}
+
 export async function approveAllWithdrawals(): Promise<unknown> {
   const res = await api.post("/admin/withdrawals/approve-all");
   return res.data;
