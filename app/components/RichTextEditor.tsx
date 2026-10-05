@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -58,6 +59,22 @@ export default function RichTextEditor({
     },
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
   });
+
+  // useEditor only consumes `content` on mount — it never re-syncs when the
+  // `value` prop changes afterward (e.g. pasting new HTML into the raw
+  // "View HTML" textarea, which only updates bodyHtml state). Push external
+  // changes into the editor explicitly. Guarded by a getHTML() comparison so
+  // this doesn't fire on every keystroke from the editor's own onUpdate —
+  // after onUpdate, `value` already equals editor.getHTML(), so only a
+  // genuinely external change (different from the editor's current content)
+  // triggers setContent, which would otherwise reset the cursor position
+  // and undo history on every render.
+  useEffect(() => {
+    if (!editor) return;
+    if (value !== editor.getHTML()) {
+      editor.commands.setContent(value, { emitUpdate: false });
+    }
+  }, [value, editor]);
 
   if (!editor) return null;
 
