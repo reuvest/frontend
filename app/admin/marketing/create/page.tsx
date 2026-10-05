@@ -200,6 +200,9 @@ export default function CreateMailCampaignPage() {
             <p className="text-[10px] text-white/25 mt-1">
               This is wrapped in the standard branded template, including logo, footer, and a one-click unsubscribe link — write only the message itself.
             </p>
+            <p className="text-[10px] text-white/25 mt-1">
+              Use <code className="text-white/40 font-mono">{"{{name}}"}</code> for the recipient's full name or <code className="text-white/40 font-mono">{"{{first_name}}"}</code> for just their first name — filled in per recipient when sent. Falls back to &quot;Investor&quot; / &quot;there&quot; for manually-added emails with no account.
+            </p>
           </div>
 
           {/* Audience */}

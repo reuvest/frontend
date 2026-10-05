@@ -21,6 +21,14 @@ export default function EmailPreviewModal({
   fromEmail?: string;
   onClose: () => void;
 }) {
+  // Mirrors MarketingMail::personalize() on the backend — real sends fill
+  // these in per recipient (falling back to "Investor"/"there" for manually
+  // -added emails with no account), so preview with a sample name instead
+  // of leaving the raw {{...}} placeholders visible.
+  const previewHtml = (bodyHtml || "")
+    .replaceAll("{{name}}", "Jane Doe")
+    .replaceAll("{{first_name}}", "Jane");
+
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-8" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-black/70" onClick={onClose} aria-hidden />
@@ -74,7 +82,7 @@ export default function EmailPreviewModal({
                             lineHeight: 1.7,
                           }}
                           dangerouslySetInnerHTML={{
-                            __html: bodyHtml || "<p style='opacity:.4'>Nothing to preview yet — start writing in the editor.</p>",
+                            __html: previewHtml || "<p style='opacity:.4'>Nothing to preview yet — start writing in the editor.</p>",
                           }}
                         />
                       </tr>
