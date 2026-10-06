@@ -4,7 +4,8 @@ import Link from "next/link";
 import { MapPin, Mail, Phone } from "lucide-react";
 import { useAuth, AuthUser } from "../../context/AuthContext";
 import Image from "next/image";
-import type { ReactNode } from "react";
+import type { ReactNode, MouseEvent } from "react";
+import { whatsappChannelUrl } from "./WhatsAppButton";
 
 const appname = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
 
@@ -12,6 +13,7 @@ interface FooterLink {
   label: string;
   href: string;
   authOnly?: boolean;
+  external?: boolean;
 }
 
 interface FooterLinkColumn {
@@ -33,6 +35,7 @@ const footerLinks: FooterLinkColumn[] = [
       links: [
         { label: "Blog",     href: "/blog"     },
         { label: "Verify Certificate",    href: "/verify"  },
+        { label: "WhatsApp Channel", href: whatsappChannelUrl, external: true },
       ],
   },
   
@@ -157,19 +160,27 @@ function LinkColumns({ user }: { user: AuthUser | null | undefined }) {
               {col.heading}
             </p>
             <ul className="space-y-2.5">
-              {visibleLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm transition-colors"
-                    style={{ color: "rgba(255,255,255,0.60)" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.60)")}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+              {visibleLinks.map((link) => {
+                const sharedProps = {
+                  className: "text-sm transition-colors",
+                  style: { color: "rgba(255,255,255,0.60)" },
+                  onMouseEnter: (e: MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.color = "#ffffff"),
+                  onMouseLeave: (e: MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.color = "rgba(255,255,255,0.60)"),
+                };
+                return (
+                  <li key={link.href}>
+                    {link.external ? (
+                      <a href={link.href} target="_blank" rel="noopener noreferrer" {...sharedProps}>
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link href={link.href} {...sharedProps}>
+                        {link.label}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         );

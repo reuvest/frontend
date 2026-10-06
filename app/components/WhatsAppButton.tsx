@@ -8,6 +8,10 @@ export const whatsappSupportUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encod
   WHATSAPP_MESSAGE
 )}`;
 
+// Broadcast-only channel (updates/announcements) — distinct from
+// whatsappSupportUrl above, which opens a 1-on-1 chat with support.
+export const whatsappChannelUrl = "https://whatsapp.com/channel/0029Vb8TPM21iUxSFPo6JP2i";
+
 export default function WhatsAppButton() {
   return (
     <Link

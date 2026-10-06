@@ -18,8 +18,9 @@ import {
   TrendingUp, Wallet, MapPin, Activity,
   ArrowUpRight, LayoutGrid, ChevronRight,
   ArrowDownLeft, Sparkles, RefreshCw, Star,
-  WifiOff,
+  WifiOff, MessageCircle, X,
 } from "lucide-react";
+import { whatsappChannelUrl } from "../components/WhatsAppButton";
 
 const FOUNDING_MEMBER_MAX_ID = 50;
 const TX_DISPLAY_LIMIT = 8;
@@ -151,6 +152,7 @@ export default function Dashboard() {
 
   const [mounted, setMounted]           = useState(false);
   const [slowHint, setSlowHint]         = useState(false);
+  const [showWhatsAppBanner, setShowWhatsAppBanner] = useState(false);
 
   const greetingText = useMemo(() => getGreeting(), []);
 
@@ -158,6 +160,19 @@ export default function Dashboard() {
     requestAnimationFrame(() => setMounted(true));
     const hintTimer = setTimeout(() => setSlowHint(true), 3_000);
     return () => clearTimeout(hintTimer);
+  }, []);
+
+  useEffect(() => {
+    try {
+      setShowWhatsAppBanner(localStorage.getItem("wa-channel-banner-dismissed") !== "1");
+    } catch {
+      setShowWhatsAppBanner(true); // localStorage unavailable (private mode, etc.) — default to showing it
+    }
+  }, []);
+
+  const dismissWhatsAppBanner = useCallback(() => {
+    setShowWhatsAppBanner(false);
+    try { localStorage.setItem("wa-channel-banner-dismissed", "1"); } catch {}
   }, []);
 
   const { stats, statsError, transactions, txError, loadingStats, loadingTx, refetch } =
@@ -263,6 +278,44 @@ export default function Dashboard() {
             </button>
           </div>
         </header>
+
+        {/* ── WhatsApp Channel banner ── */}
+        {showWhatsAppBanner && (
+          <section
+            className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3.5 rounded-xl border"
+            style={{ backgroundColor: "#142D25", borderColor: "#1e3530" }}
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <span
+                className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: "#1c3a30" }}
+              >
+                <MessageCircle size={16} style={{ color: "#25D366" }} />
+              </span>
+              <p className="text-xs sm:text-sm text-[#cfe3da] truncate">
+                Join our <span className="font-semibold text-white">WhatsApp Channel</span> for updates, new opportunities &amp; announcements.
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <a
+                href={whatsappChannelUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#0D1F1A] whitespace-nowrap transition-opacity hover:opacity-90"
+                style={{ backgroundColor: "#C8873A" }}
+              >
+                Join
+              </a>
+              <button
+                onClick={dismissWhatsAppBanner}
+                aria-label="Dismiss"
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-[#6b8c7e] hover:text-white hover:bg-white/5 transition-colors"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          </section>
+        )}
 
         {/* ── Stat cards ── */}
         <section className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
