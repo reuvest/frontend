@@ -741,6 +741,7 @@ export default function LandDetails() {
 
   const [modalType, setModalType]           = useState<ModalType>(null);
   const [unitsInput, setUnitsInput]         = useState("");
+  const [amountInput, setAmountInput]       = useState("");
   const [transactionPin, setTransactionPin] = useState("");
   const [useRewards, setUseRewards]         = useState(true);
   const [preview, setPreview]               = useState<PurchasePreviewData | null>(null);
@@ -843,6 +844,7 @@ export default function LandDetails() {
   const closeModal = () => {
     setModalType(null);
     setUnitsInput("");
+    setAmountInput("");
     setTransactionPin("");
     setUseRewards(true);
     setPreview(null);
@@ -939,6 +941,28 @@ export default function LandDetails() {
     purchaseTotalKobo > 0 &&
     existingHoldingsKobo < MIN_PURCHASE_KOBO &&
     (existingHoldingsKobo + purchaseTotalKobo) < MIN_PURCHASE_KOBO;
+
+  // Keeps the "Number of Units" and "Amount (₦)" inputs in sync with each
+  // other. Units are always whole numbers — typing an amount rounds DOWN
+  // to the nearest full unit you can actually afford, then the amount
+  // field snaps to reflect that unit count's real cost (not what was
+  // literally typed), so the two fields never silently disagree.
+  const applyUnits = (n: number) => {
+    const clamped = Math.min(Math.max(0, n), maxUnits || n);
+    setUnitsInput(clamped > 0 ? String(clamped) : "");
+    setAmountInput(clamped > 0 ? String(Math.round((clamped * priceKobo) / 100)) : "");
+  };
+
+  const applyAmountNaira = (raw: string) => {
+    if (raw === "") { setAmountInput(""); setUnitsInput(""); return; }
+    const naira = Number(raw);
+    if (isNaN(naira) || naira < 0) return;
+    setAmountInput(raw);
+    const kobo = Math.round(naira * 100);
+    let units = Math.floor(kobo / (priceKobo || 1));
+    if (maxUnits) units = Math.min(units, maxUnits);
+    setUnitsInput(units > 0 ? String(units) : "");
+  };
 
   const allocationRecords = land.allocation_records      ?? [];
   const landTitles        = land.land_titles             ?? [];
@@ -1318,7 +1342,7 @@ export default function LandDetails() {
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => setUnitsInput((v) => String(Math.max(1, Number(v || 1) - 1)))}
+                      onClick={() => applyUnits(Math.max(1, Number(unitsInput || 1) - 1))}
                       disabled={!unitsInput || Number(unitsInput) <= 1}
                       className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-lg font-bold"
                     >
@@ -1331,22 +1355,22 @@ export default function LandDetails() {
                       value={unitsInput}
                       onChange={(e) => {
                         const raw = e.target.value;
-                        if (raw === "") return setUnitsInput("");
+                        if (raw === "") { setUnitsInput(""); setAmountInput(""); return; }
                         const n = Math.floor(Number(raw));
                         if (isNaN(n) || n < 0) return;
-                        setUnitsInput(String(Math.min(n, maxUnits || n)));
+                        applyUnits(n);
                       }}
                       onBlur={(e) => {
                         const n = Math.floor(Number(e.target.value));
-                        if (!isNaN(n) && n > 0) setUnitsInput(String(Math.min(Math.max(1, n), maxUnits)));
+                        if (!isNaN(n) && n > 0) applyUnits(Math.max(1, n));
                       }}
-                      onDoubleClick={() => { if (maxUnits > 0) setUnitsInput(String(maxUnits)); }}
+                      onDoubleClick={() => { if (maxUnits > 0) applyUnits(maxUnits); }}
                       className="flex-1 min-w-0 bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 text-white placeholder-white/20 px-4 py-2.5 rounded-xl text-sm outline-none transition-all text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       placeholder="0"
                     />
                     <button
                       type="button"
-                      onClick={() => setUnitsInput((v) => String(Math.min(maxUnits, Number(v || 0) + 1)))}
+                      onClick={() => applyUnits(Math.min(maxUnits, Number(unitsInput || 0) + 1))}
                       disabled={maxUnits > 0 && Number(unitsInput) >= maxUnits}
                       className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-lg font-bold"
                     >
@@ -1366,6 +1390,42 @@ export default function LandDetails() {
                     </p>
                   )}
                 </div>
+
+                {/* Amount input — linked to units above. Only for purchases:
+                    selling is naturally units-first since you're drawing
+                    down a whole-number holding you already own. */}
+                {modalType === "purchase" && (
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-white/50 mb-2">
+                      Or Enter Amount (₦)
+                      <span className="ml-2 normal-case text-white/20 font-normal">
+                        rounds down to whole units
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 text-sm pointer-events-none">₦</span>
+                      <input
+                        type="number"
+                        min={0}
+                        value={amountInput}
+                        onChange={(e) => applyAmountNaira(e.target.value)}
+                        onBlur={() => {
+                          // Snap the displayed amount to the real cost of the
+                          // resolved whole-unit count, not whatever partial
+                          // figure was typed.
+                          if (unitsInput) applyUnits(Number(unitsInput));
+                        }}
+                        className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 text-white placeholder-white/20 pl-8 pr-4 py-2.5 rounded-xl text-sm outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        placeholder="0"
+                      />
+                    </div>
+                    {priceKobo > 0 && (
+                      <p className="text-xs text-white/25 mt-1.5 pl-1">
+                        ₦{(priceKobo / 100).toLocaleString()} per unit
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 {/* Rewards toggle */}
                 {modalType === "purchase" && (
