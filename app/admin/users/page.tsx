@@ -9,12 +9,14 @@ import {
 } from "../../../services/adminService";
 import toast from "react-hot-toast";
 import { useConfirm } from "../../../stores/useUIStore";
+import { useAuth } from "../../../context/AuthContext";
+import GiftUnitsModal from "./GiftUnitsModal";
 import {
   Users, Search, ShieldX,
   ArrowLeft, Eye, MoreVertical,
   Crown, UserX, UserCheck, Trash2,
   ChevronLeft, ChevronRight, Filter, X, AlertCircle,
-  Shield, KeyRound, Plus,
+  Shield, KeyRound, Plus, Gift,
 } from "lucide-react";
 
 type KycStatus = "approved" | "pending" | "rejected" | "resubmit" | "not_submitted";
@@ -102,12 +104,14 @@ function ActionBtn({
 }
 
 function UserMenuItems({
-  user, onView, onAction, onClose,
+  user, onView, onAction, onClose, canGift, onGift,
 }: {
   user: AdminUser;
   onView: () => void;
   onAction: (action: ActionType, user: AdminUser, confirmMsg?: string) => void;
   onClose: () => void;
+  canGift: boolean;
+  onGift: (user: AdminUser) => void;
 }) {
   const item = (cb: () => void, icon: ReactNode, label: string, color = "text-white/70") => (
     <button key={label}
@@ -120,6 +124,8 @@ function UserMenuItems({
     <>
       {item(onView, <Eye size={14} />, "View Details")}
       {item(onView, <Shield size={14} />, "Manage Roles", "text-cyan-400")}
+      {!user.is_admin && canGift && !user.is_suspended &&
+        item(() => onGift(user), <Gift size={14}/>, "Gift Units", "text-amber-400")}
       {!user.is_admin && <>
         {user.is_suspended
           ? item(() => onAction("unsuspend", user), <UserCheck size={14}/>, "Unsuspend", "text-emerald-400")
@@ -152,6 +158,13 @@ export default function AdminUsersPage() {
   const menuRef                     = useRef<HTMLDivElement>(null);
   const mobileMenuRef                = useRef<HTMLDivElement>(null);
   const confirm                     = useConfirm();
+  const { user: me }                = useAuth() ?? {};
+
+  // is_admin comes through /me as holding every permission; otherwise this
+  // is a plain membership check (same pattern as app/admin/page.tsx).
+  const canGift =
+    Array.isArray(me?.permissions) && (me!.permissions as string[]).includes("units.gift");
+  const [giftTarget, setGiftTarget] = useState<AdminUser | null>(null);
 
   const [allRoles, setAllRoles]         = useState<AdminRole[]>([]);
   const [userRoles, setUserRoles]       = useState<AdminRole[]>([]);
@@ -283,6 +296,19 @@ export default function AdminUsersPage() {
     } finally { setActionLoading(null); }
   };
 
+  const handleGiftSuccess = (res: { message?: string }) => {
+    toast.success(res.message || "Units gifted");
+    const target = giftTarget;
+    setGiftTarget(null);
+    fetchUsers();
+    // Refresh the open detail modal so Units Owned reflects the gift.
+    if (showModal && target) {
+      getAdminUser(target.id)
+        .then((body: any) => setSelectedUser(body.data))
+        .catch(() => {});
+    }
+  };
+
   const clearFilters = () => { setFilters({ suspended: "", is_admin: "", kyc_status: "" }); setSearch(""); };
   const hasActiveFilters = filters.suspended || filters.is_admin || filters.kyc_status || debouncedSearch;
 
@@ -394,7 +420,8 @@ export default function AdminUsersPage() {
                         <div className="absolute right-0 top-9 w-48 rounded-xl border border-white/10 bg-[#0f2820] shadow-2xl py-1"
                           style={{ zIndex: 200 }}>
                           <UserMenuItems user={user} onView={() => viewUser(user.id)}
-                            onAction={doAction} onClose={() => setMenuOpen(null)} />
+                            onAction={doAction} onClose={() => setMenuOpen(null)}
+                            canGift={canGift} onGift={setGiftTarget} />
                         </div>
                       )}
                     </div>
@@ -426,7 +453,8 @@ export default function AdminUsersPage() {
                         {menuOpen === user.id && (
                           <div className="absolute right-0 top-9 w-48 rounded-xl border border-white/10 bg-[#0f2820] shadow-2xl py-1" style={{ zIndex: 200 }}>
                             <UserMenuItems user={user} onView={() => viewUser(user.id)}
-                              onAction={doAction} onClose={() => setMenuOpen(null)} />
+                              onAction={doAction} onClose={() => setMenuOpen(null)}
+                              canGift={canGift} onGift={setGiftTarget} />
                           </div>
                         )}
                       </div>
@@ -590,6 +618,9 @@ export default function AdminUsersPage() {
                       : <ActionBtn onClick={() => doAction("suspend", selectedUser, `Suspend ${selectedUser.name}?`)} loading={actionLoading === "suspend"} icon={<UserX size={15}/>} label="Suspend" cls="border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20" />}
                     <ActionBtn onClick={() => doAction("makeAdmin", selectedUser, `Make ${selectedUser.name} an admin?`)} loading={actionLoading === "makeAdmin"} icon={<Crown size={15}/>} label="Make Admin" cls="border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20" />
                   </div>
+                  {canGift && !selectedUser.is_suspended && (
+                    <ActionBtn onClick={() => setGiftTarget(selectedUser)} icon={<Gift size={15}/>} label="Gift Units" cls="border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 w-full" />
+                  )}
                   <ActionBtn onClick={() => doAction("delete", selectedUser, `Permanently delete ${selectedUser.name}? This cannot be undone.`)} loading={actionLoading === "delete"} icon={<Trash2 size={15}/>} label="Delete Account" cls="border-red-500/20 bg-red-500/5 hover:bg-red-500/10 text-red-400 w-full" />
                 </div>
               ) : (
@@ -599,6 +630,14 @@ export default function AdminUsersPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {giftTarget && (
+        <GiftUnitsModal
+          user={giftTarget}
+          onClose={() => setGiftTarget(null)}
+          onSuccess={handleGiftSuccess}
+        />
       )}
     </div>
   );

@@ -64,6 +64,73 @@ export async function performUserAction(
   return res.data;
 }
 
+/* ── Unit gifting ────────────────────────────────────────────────────── */
+
+export interface GiftUnitsInput {
+  land_id: string | number;
+  units: number;
+  reason: string;
+}
+
+export interface GiftUnitsResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    reference: string;
+    recipient: { id: number | string; name: string; email: string };
+    land: { id: number | string; title: string };
+    units: number;
+    remaining_units: number;
+    certificate: { cert_number: string; units: number } | null;
+  };
+}
+
+/* POST /admin/users/{user}/gift-units  (requires the `units.gift` permission)
+   Units come out of the land's unsold inventory and go to the user at no
+   cost — no wallet movement. `idempotencyKey` must be a UUID generated once
+   per gift attempt and reused only when retrying after a network error or
+   5xx. The backend caches 4xx responses under the key, so a corrected
+   resubmission after a rejection needs a NEW key (see GiftUnitsModal). */
+export async function giftUnits(
+  userId: string | number,
+  input: GiftUnitsInput,
+  idempotencyKey: string
+): Promise<GiftUnitsResponse> {
+  const res = await api.post(`/admin/users/${userId}/gift-units`, input, {
+    headers: { "Idempotency-Key": idempotencyKey },
+  });
+  return res.data;
+}
+
+export interface GiftableLand {
+  id: number | string;
+  title: string;
+  location?: string;
+  available_units: number;
+  total_units: number;
+}
+
+const GIFTABLE_LANDS_MAX_PAGES = 25;
+
+/* GET /admin/lands is paginated (20/page) — walk every page so the gift
+   picker doesn't silently omit lands. Only lands with stock are returned. */
+export async function getGiftableLands(): Promise<GiftableLand[]> {
+  const lands: GiftableLand[] = [];
+  let page = 1;
+  let lastPage = 1;
+
+  do {
+    const res = await api.get(`/admin/lands?page=${page}`);
+    const paginator = res.data?.data;
+    const rows: GiftableLand[] = paginator?.data ?? (Array.isArray(paginator) ? paginator : []);
+    lands.push(...rows);
+    lastPage = paginator?.last_page ?? 1;
+    page += 1;
+  } while (page <= lastPage && page <= GIFTABLE_LANDS_MAX_PAGES);
+
+  return lands.filter((l) => Number(l.available_units) > 0);
+}
+
 /* ── Roles (RBAC) ────────────────────────────────────────────────────── */
 
 export interface AdminPermission {
