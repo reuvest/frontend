@@ -6,6 +6,13 @@
 /** Convert kobo (integer) to naira (float) */
 export const koboToNaira = (kobo: number | string): number => Number(kobo) / 100;
 
+/** Total value in kobo of `units` at `pricePerUnitKobo`. Non-numeric input counts as 0. */
+export const unitsValueKobo = (units: number | string, pricePerUnitKobo: number | string | null | undefined): number => {
+  const u = Number(units);
+  const p = Number(pricePerUnitKobo);
+  return Number.isFinite(u) && Number.isFinite(p) ? Math.round(u * p) : 0;
+};
+
 /** Convert naira (float) to kobo (integer) */
 export const nairaToKobo = (naira: number | string): number => Math.round(Number(naira) * 100);
 

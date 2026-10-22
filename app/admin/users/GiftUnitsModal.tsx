@@ -11,6 +11,7 @@ import {
   type GiftUnitsResponse,
 } from "../../../services/adminService";
 import handleApiError from "../../../utils/handleApiError";
+import { formatNaira, unitsValueKobo } from "../../../utils/currency";
 import { useConfirm } from "../../../stores/useUIStore";
 
 interface Props {
@@ -69,6 +70,10 @@ export default function GiftUnitsModal({ user, onClose, onSuccess }: Props) {
     return null;
   })();
 
+  const pricePerUnit = Number(land?.current_price_per_unit_kobo ?? 0);
+  const hasValidUnits = !!land && units !== "" && !error && Number.isInteger(unitsNum) && unitsNum >= 1;
+  const giftValueKobo = hasValidUnits ? unitsValueKobo(unitsNum, pricePerUnit) : 0;
+
   const reasonTrimmed = reason.trim();
   const canSubmit =
     !!land &&
@@ -82,7 +87,7 @@ export default function GiftUnitsModal({ user, onClose, onSuccess }: Props) {
     if (!land || !canSubmit) return;
 
     const ok = await confirm({
-      message: `Gift ${unitsNum} unit(s) of ${land.title} to ${user.name}? This is free value from platform inventory and cannot be undone from here.`,
+      message: `Gift ${unitsNum} unit(s) of ${land.title}${pricePerUnit > 0 ? ` (worth ${formatNaira(giftValueKobo)})` : ""} to ${user.name}? This is free value from platform inventory.`,
       confirmLabel: "Gift units",
     });
     if (!ok) return;
@@ -173,6 +178,7 @@ export default function GiftUnitsModal({ user, onClose, onSuccess }: Props) {
                 {lands.map((l) => (
                   <option key={l.id} value={String(l.id)} className="bg-[#0f2820]">
                     {l.title} — {Number(l.available_units).toLocaleString()} available
+                    {Number(l.current_price_per_unit_kobo) > 0 ? ` · ${formatNaira(l.current_price_per_unit_kobo!)}/unit` : ""}
                   </option>
                 ))}
               </select>
@@ -197,6 +203,22 @@ export default function GiftUnitsModal({ user, onClose, onSuccess }: Props) {
             />
             {error && <p className="text-xs text-red-400 mt-1.5">{error}</p>}
           </div>
+
+          {land && (
+            <div className="rounded-xl border border-white/10 bg-white/5 p-3 flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-white/55">Value of gift</p>
+                <p className="text-[11px] text-white/45 mt-0.5">
+                  {pricePerUnit > 0
+                    ? `${hasValidUnits ? unitsNum.toLocaleString() : "—"} × ${formatNaira(pricePerUnit)} per unit (current price)`
+                    : "No price set for this property"}
+                </p>
+              </div>
+              <p className="text-base font-bold text-white tabular-nums shrink-0">
+                {pricePerUnit > 0 && hasValidUnits ? formatNaira(giftValueKobo) : "—"}
+              </p>
+            </div>
+          )}
 
           <div>
             <div className="flex items-center justify-between mb-2">
