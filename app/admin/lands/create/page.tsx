@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, ChangeEvent, FormEvent, ReactNode, InputHTMLAttributes, SelectHTMLAttributes } from "react";
+import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { createAdminLand } from "../../../../services/landService";
 import {
-  MapPin, Image, FileText, Layers, DollarSign, ArrowLeft, Plus, X,
+  MapPin, Image as ImageIcon, FileText, Layers, DollarSign, ArrowLeft, Plus, X,
   Building2, ShieldCheck, Activity, Zap, BarChart3, Trash2,
 } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -765,7 +766,7 @@ export default function CreateLand() {
           </FormSection>
 
           {/* ── Images ────────────────────────────────────────────────────── */}
-          <FormSection title="Land Images" icon={<Image size={15} className="text-amber-500" />}>
+          <FormSection title="Land Images" icon={<ImageIcon size={15} className="text-amber-500" />}>
             <label className={`flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed bg-white/5 cursor-pointer transition-all ${compressing ? "border-amber-500/60 animate-pulse" : "border-white/15 hover:border-amber-500/40 hover:bg-white/7"}`}>
               {compressing ? (
                 <>
@@ -784,7 +785,7 @@ export default function CreateLand() {
               <div className="grid grid-cols-3 gap-3 mt-3">
                 {imagePreviews.map((src, i) => (
                   <div key={i} className="relative rounded-xl overflow-hidden aspect-video border border-white/10 group">
-                    <img src={src} alt="" className="w-full h-full object-cover" />
+                    <NextImage src={src} alt="" fill unoptimized className="object-cover" />
                     <button type="button" onClick={() => removeImage(i)}
                       className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/60 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/80">
                       <X size={11} />

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Search, Tag, Folder, Clock, Eye, X } from "lucide-react";
 import type {
   BlogPost,
@@ -31,10 +32,12 @@ function PostCard({ post }: { post: BlogPost }) {
         {/* Cover image */}
         {post.cover_image_url ? (
           <div className="relative h-44 overflow-hidden">
-            <img
+            <Image
               src={post.cover_image_url}
               alt={post.title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              fill
+              unoptimized
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0"
               style={{ background: "linear-gradient(to top, rgba(13,31,26,0.5), transparent)" }} />

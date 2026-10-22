@@ -44,7 +44,7 @@ export default function PolygonMapEditor({ polygon, onChange }: PolygonMapEditor
       // _getIconUrl is a real internal Leaflet property but isn't part of
       // the public @types/leaflet surface — this is the standard documented
       // workaround, so the `any` here is deliberate and narrowly scoped.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       delete (L.Icon.Default.prototype as any)._getIconUrl;
       L.Icon.Default.mergeOptions({
         iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",

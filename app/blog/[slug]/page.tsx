@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { getMe } from "@/services/userService";
 import type { MeResponse } from "@/services/userService";
 import type { BlogPost } from "@/services/blogService";
@@ -68,10 +69,12 @@ export default function BlogPostPage() {
       {/* Cover image — full-width hero */}
       {post.cover_image_url && (
         <div className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
-          <img
+          <Image
             src={post.cover_image_url}
             alt={post.title}
-            className="w-full h-full object-cover"
+            fill
+            unoptimized
+            className="object-cover"
           />
           <div className="absolute inset-0"
             style={{ background: "linear-gradient(to bottom, transparent 30%, #0D1F1A)" }} />

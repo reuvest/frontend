@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -679,7 +680,7 @@ export default function ListingDetailPage() {
             <div className="rounded-2xl border border-white/7 bg-white/2.5 overflow-hidden">
               {image && (
                 <div className="relative h-48 overflow-hidden">
-                  <img src={image} alt={land?.title} className="w-full h-full object-cover" />
+                  <Image src={image} alt={land?.title ?? ""} fill unoptimized className="object-cover" />
                   <div className="absolute inset-0 bg-linear-to-t from-[#0D1F1A]/60 to-transparent" />
                   <div className="absolute bottom-3 left-4">
                     <StatusBadge status={listing.status} large />

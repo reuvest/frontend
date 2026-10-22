@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "REU.ng";
 
 export default function ReferralRedirect({ code }: { code?: string }) {

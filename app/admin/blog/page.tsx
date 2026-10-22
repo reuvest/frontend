@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
+import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import {
   getAdminBlogPosts,
@@ -20,7 +21,7 @@ import {
   ArrowLeft, Plus, Eye, Pencil, Trash2, Search, X,
   FileText, Tag, Globe, BookOpen, Clock, TrendingUp,
   ChevronLeft, ChevronRight, Filter, RefreshCw,
-  CheckCircle, AlertCircle, Image,
+  CheckCircle, AlertCircle, Image as ImageIcon,
 } from "lucide-react";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -282,10 +283,10 @@ function PostModal({ post, categories, tags, onClose, onSaved }: PostModalProps)
             <label className={labelCls}>Cover Image</label>
             <label className="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed border-white/15 hover:border-amber-500/40 bg-white/5 cursor-pointer transition-all relative overflow-hidden">
               {coverPreview ? (
-                <img src={coverPreview} alt="cover" className="w-full h-full object-cover" />
+                <NextImage src={coverPreview} alt="cover" fill unoptimized className="object-cover" />
               ) : (
                 <div className="flex flex-col items-center gap-1">
-                  <Image size={18} className="text-white/20" />
+                  <ImageIcon size={18} className="text-white/20" />
                   <span className="text-xs text-white/55">Click to upload cover image</span>
                 </div>
               )}

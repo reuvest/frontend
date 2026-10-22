@@ -336,9 +336,10 @@ export default function AgentChatPage() {
   useEffect(() => {
     if (!activeTicket) return;
 
+    const echoReady = readyPromise.current;
     let channel: Channel | null = null;
 
-    readyPromise.current?.then((echo) => {
+    echoReady?.then((echo) => {
       channel = echo.private(`support.ticket.${activeTicket.id}`);
 
       channel.listen(".message.sent", (e: ChatMessage) => {
@@ -365,7 +366,7 @@ export default function AgentChatPage() {
 
     return () => {
       // Cleanup: leave channel when ticket changes
-      readyPromise.current?.then((echo) => {
+      echoReady?.then((echo) => {
         echo.leave(`support.ticket.${activeTicket.id}`);
       });
     };
@@ -373,13 +374,14 @@ export default function AgentChatPage() {
 
   /* ── Subscribe to global agents channel for queue updates ── */
   useEffect(() => {
-    readyPromise.current?.then((echo) => {
+    const echoReady = readyPromise.current;
+    echoReady?.then((echo) => {
       const channel = echo.channel("agents");
       channel.listen(".status.changed", () => fetchQueue());
     });
 
     return () => {
-      readyPromise.current?.then((echo) => {
+      echoReady?.then((echo) => {
         echo.leave("agents");
       });
     };

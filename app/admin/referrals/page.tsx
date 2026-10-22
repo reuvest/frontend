@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { getAdminReferralStats, getAdminReferrals } from "../../../services/adminService";
 import toast from "react-hot-toast";
@@ -62,9 +62,7 @@ export default function AdminReferralManagement() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
 
-  useEffect(() => { fetchData(); }, [filter]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const [stats, referrals] = await Promise.all([
@@ -81,7 +79,9 @@ export default function AdminReferralManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const koboToNaira = (kobo: number) => (kobo / 100).toLocaleString();
 

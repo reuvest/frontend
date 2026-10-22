@@ -296,7 +296,7 @@ function FlyAndPopup({
     return () => {
       map.off("zoomend", openPopup);
     };
-  }, [flyTarget, activeLandId, map]);
+  }, [flyTarget, activeLandId, map, markerRefs, polygonRefs]);
 
   return null;
 }

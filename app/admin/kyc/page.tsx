@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ChangeEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ChangeEvent, type ReactNode } from "react";
 import Link from "next/link";
 import {
   getAdminKycList,
@@ -84,9 +84,7 @@ export default function AdminKycManagement() {
   const [actionLoading, setActionLoading]     = useState(false);
   const [blobUrls, setBlobUrls]               = useState<Record<string, string>>({});
 
-  useEffect(() => { fetchKycs(); }, [filter]);
-
-  const fetchKycs = async () => {
+  const fetchKycs = useCallback(async () => {
     try {
       setLoading(true);
       // kycService.getAdminKycList() returns unknown (shared, loose by
@@ -99,7 +97,9 @@ export default function AdminKycManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => { fetchKycs(); }, [fetchKycs]);
 
   const viewDetails = async (kycId: string | number) => {
     try {

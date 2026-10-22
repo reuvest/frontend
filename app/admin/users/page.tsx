@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, ReactNode } from "react";
+import { useEffect, useState, useRef, useCallback, ReactNode } from "react";
 import Link from "next/link";
 import {
   getAdminUsers, getAdminUser, performUserAction,
@@ -178,8 +178,6 @@ export default function AdminUsersPage() {
   }, [search]);
 
   useEffect(() => { setPage(1); }, [debouncedSearch, filters]);
-  useEffect(() => { fetchUsers(); }, [page, debouncedSearch, filters]);
-
   useEffect(() => {
     const handler = (e: globalThis.MouseEvent) => {
       const target = e.target as Node;
@@ -191,7 +189,7 @@ export default function AdminUsersPage() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({ page: String(page), per_page: "20" });
@@ -205,7 +203,9 @@ export default function AdminUsersPage() {
       setPagination({ current_page: d.current_page ?? 1, last_page: d.last_page ?? 1, total: d.total ?? 0 });
     } catch { toast.error("Failed to load users"); }
     finally  { setLoading(false); }
-  };
+  }, [page, debouncedSearch, filters]);
+
+  useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
   const viewUser = async (userId: string | number) => {
     setMenuOpen(null);

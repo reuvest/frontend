@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 type BadgeColor = "emerald" | "amber" | "red" | "cyan";
@@ -37,7 +38,7 @@ export function Card({ title, description, image, location, price, units, href, 
       style={{ fontFamily: "DM Sans, Helvetica Neue, sans-serif" }}>
       {image && (
         <div className="relative h-44 overflow-hidden">
-          <img src={image} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+          <Image src={image} alt={title} fill unoptimized className="object-cover group-hover:scale-105 transition-transform duration-500"/>
           <div className="absolute inset-0 bg-linear-to-t from-[#0D1F1A]/80 to-transparent"/>
           {badge && (
             <span className={"absolute top-3 right-3 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border " + (badgeColors[badge.color ?? "emerald"] || badgeColors.emerald)}>

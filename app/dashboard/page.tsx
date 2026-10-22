@@ -152,7 +152,14 @@ export default function Dashboard() {
 
   const [mounted, setMounted]           = useState(false);
   const [slowHint, setSlowHint]         = useState(false);
-  const [showWhatsAppBanner, setShowWhatsAppBanner] = useState(false);
+  const [showWhatsAppBanner, setShowWhatsAppBanner] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return localStorage.getItem("wa-channel-banner-dismissed") !== "1";
+    } catch {
+      return true;
+    }
+  });
 
   const greetingText = useMemo(() => getGreeting(), []);
 
@@ -160,14 +167,6 @@ export default function Dashboard() {
     requestAnimationFrame(() => setMounted(true));
     const hintTimer = setTimeout(() => setSlowHint(true), 3_000);
     return () => clearTimeout(hintTimer);
-  }, []);
-
-  useEffect(() => {
-    try {
-      setShowWhatsAppBanner(localStorage.getItem("wa-channel-banner-dismissed") !== "1");
-    } catch {
-      setShowWhatsAppBanner(true); // localStorage unavailable (private mode, etc.) — default to showing it
-    }
   }, []);
 
   const dismissWhatsAppBanner = useCallback(() => {

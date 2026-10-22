@@ -69,7 +69,7 @@ export default function CreateMailCampaignPage() {
       }
     }, 350);
     return () => { if (searchDebounce.current) clearTimeout(searchDebounce.current); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [userQuery, segment, pickedUsers]);
 
   const addUser = (u: PickedUser) => {
@@ -201,7 +201,7 @@ export default function CreateMailCampaignPage() {
               This is wrapped in the standard branded template, including logo, footer, and a one-click unsubscribe link — write only the message itself.
             </p>
             <p className="text-[10px] text-white/25 mt-1">
-              Use <code className="text-white/40 font-mono">{"{{name}}"}</code> for the recipient's full name or <code className="text-white/40 font-mono">{"{{first_name}}"}</code> for just their first name — filled in per recipient when sent. Falls back to &quot;Investor&quot; / &quot;there&quot; for manually-added emails with no account.
+              Use <code className="text-white/40 font-mono">{"{{name}}"}</code> for the recipient&apos;s full name or <code className="text-white/40 font-mono">{"{{first_name}}"}</code> for just their first name — filled in per recipient when sent. Falls back to &quot;Investor&quot; / &quot;there&quot; for manually-added emails with no account.
             </p>
           </div>
 
@@ -296,7 +296,7 @@ export default function CreateMailCampaignPage() {
                   </div>
                   {emailError && <p className="text-[10px] text-red-400 mt-1.5">{emailError}</p>}
                   <p className="text-[10px] text-white/25 mt-1.5">
-                    For recipients who don't have an account yet — no unsubscribe history or opt-out check applies since there's no user record.
+                    For recipients who don&apos;t have an account yet — no unsubscribe history or opt-out check applies since there&apos;s no user record.
                   </p>
                 </div>
               </div>

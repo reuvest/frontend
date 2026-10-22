@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { formatNaira } from "../../utils/currency";
@@ -42,8 +43,8 @@ function ListingCard({ listing }: { listing: MarketplaceListing }) {
       {/* Image */}
       <div className="relative h-40 overflow-hidden bg-white/5">
         {image ? (
-          <img src={image} alt={land?.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          <Image src={image} alt={land?.title ?? ""} fill unoptimized
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
             onError={(e) => { (e.target as HTMLImageElement).src = "/no-image.jpeg"; }} />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
