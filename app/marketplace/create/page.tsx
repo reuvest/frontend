@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -190,8 +191,8 @@ export default function CreateListingPage() {
                 {selectedLand && (
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-500/5 border border-amber-500/15">
                     {selectedLand.images?.[0]?.image_url && (
-                      <img src={selectedLand.images[0].image_url} alt=""
-                        className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                      <Image src={selectedLand.images[0].image_url} alt="" width={48} height={48}
+                        unoptimized className="w-12 h-12 rounded-lg object-cover shrink-0" />
                     )}
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-white truncate">{selectedLand.title}</p>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import {
   CheckCircle, AlertCircle, Camera,
   ArrowLeft, ArrowRight,
@@ -606,12 +607,17 @@ export default function LivenessCheck({ onCapture, captured, onRetake, fullHeigh
   if (captured && capturedUrl) {
     return (
       <div className="space-y-3">
-        <div className="relative rounded-2xl overflow-hidden border-2 border-emerald-500/40">
-          <img
+        <div
+          className="relative rounded-2xl overflow-hidden border-2 border-emerald-500/40"
+          style={{ height: fullHeight ? "clamp(280px, 60vw, 440px)" : "clamp(160px, 40vw, 220px)" }}
+        >
+          <Image
             src={capturedUrl}
             alt="liveness"
-            className="w-full object-cover"
-            style={{ transform: "scaleX(-1)", height: fullHeight ? "clamp(280px, 60vw, 440px)" : "clamp(160px, 40vw, 220px)" }}
+            fill
+            unoptimized
+            className="object-cover"
+            style={{ transform: "scaleX(-1)" }}
           />
           <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow">
             <CheckCircle size={11} /> Liveness verified

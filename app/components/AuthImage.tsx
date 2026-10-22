@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { toRelativePath, fetchAuthedBlob } from "../../services/mediaService";
 
 type AuthImageProps = {
@@ -20,6 +21,11 @@ export function AuthImage({ url, alt, className, onBlobReady }: AuthImageProps) 
   // than needing a synchronous "reset" setState call at the top of the
   // effect — every setState here happens inside the fetch's .then/.catch.
   const [result, setResult] = useState<LoadResult | null>(null);
+  const onBlobReadyRef = useRef(onBlobReady);
+
+  useEffect(() => {
+    onBlobReadyRef.current = onBlobReady;
+  }, [onBlobReady]);
 
   useEffect(() => {
     if (!url) return;
@@ -31,7 +37,7 @@ export function AuthImage({ url, alt, className, onBlobReady }: AuthImageProps) 
         if (cancelled) return;
         objectUrl = URL.createObjectURL(blob);
         setResult({ url, src: objectUrl, error: false });
-        onBlobReady?.(objectUrl);
+        onBlobReadyRef.current?.(objectUrl);
       })
       .catch((err) => {
         if (!cancelled) {
@@ -67,5 +73,5 @@ export function AuthImage({ url, alt, className, onBlobReady }: AuthImageProps) 
     );
   }
 
-  return <img src={src} alt={alt} className={className} />;
+  return <Image src={src} alt={alt ?? ""} fill unoptimized className={className} />;
 }

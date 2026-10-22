@@ -1,5 +1,6 @@
 "use client";
 
+import NextImage from "next/image";
 import dynamic from "next/dynamic";
 import { compressImage } from "../../../../../utils/compressImage";
 import { useEffect, useState, ChangeEvent, FormEvent, ReactNode, InputHTMLAttributes, SelectHTMLAttributes } from "react";
@@ -948,7 +949,7 @@ export default function EditLand() {
               <div className="grid grid-cols-3 gap-3">
                 {newImagePreviews.map((src, i) => (
                   <div key={i} className="relative rounded-xl overflow-hidden aspect-video border border-amber-500/20 group">
-                    <img src={src} alt="" className="w-full h-full object-cover" />
+                    <NextImage src={src} alt="" fill unoptimized className="object-cover" />
                     <div className="absolute top-1 left-1 text-[10px] bg-amber-500 text-[#0D1F1A] px-1.5 py-0.5 rounded font-bold">NEW</div>
                     <button type="button" onClick={() => removeNewImage(i)}
                       className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/80">

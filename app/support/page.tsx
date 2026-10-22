@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowLeft, Plus, Ticket, MessageSquare, HelpCircle,
   ChevronDown, Loader2, Paperclip, Send, CheckCircle,
@@ -228,7 +229,7 @@ function AttachmentLink({ ticketId, message }: AttachmentLinkProps) {
           className="mt-2 rounded-xl overflow-hidden cursor-zoom-in border border-white/10 max-w-50"
           onClick={() => setLightbox(true)}
         >
-          <img src={blobUrl} alt="attachment" className="w-full h-auto object-cover" />
+          <Image src={blobUrl} alt="attachment" width={640} height={480} unoptimized className="w-full h-auto object-cover" />
         </div>
       )}
 
@@ -270,9 +271,12 @@ function AttachmentLink({ ticketId, message }: AttachmentLinkProps) {
           >
             <X size={16} />
           </button>
-          <img
+          <Image
             src={blobUrl}
             alt="attachment"
+            width={1600}
+            height={1200}
+            unoptimized
             className="max-w-full max-h-[90vh] rounded-2xl object-contain shadow-2xl"
             onClick={e => e.stopPropagation()}
           />
@@ -430,15 +434,15 @@ function TicketList({ onOpen, onNew }: TicketListProps) {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter]   = useState("all");
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     try { setData(await fetchTickets() as unknown as TicketListPage); }
     catch { toast.error("Could not load tickets."); }
     finally { setLoading(false); }
-  };
+  }, [user]);
 
-  useEffect(() => { load(); }, [user]);
+  useEffect(() => { load(); }, [load]);
 
   const tickets: TicketDetailData[] = data?.data || [];
   const filtered = filter === "all" ? tickets : tickets.filter(t => t.status === filter);
@@ -706,14 +710,14 @@ function TicketDetail({ id, onBack }: { id: string | number | null; onBack: () =
   const fileRef               = useRef<HTMLInputElement | null>(null);
   const bottomRef             = useRef<HTMLDivElement | null>(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (id == null) return;
     try { setTicket(await fetchTicket(id) as TicketDetailData); }
     catch { toast.error("Could not load ticket."); }
     finally { setLoading(false); }
-  };
+  }, [id]);
 
-  useEffect(() => { if (id) load(); }, [id]);
+  useEffect(() => { if (id) load(); }, [id, load]);
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [ticket?.messages]);
 
   const handleReply = async (e: React.FormEvent<HTMLFormElement>) => {

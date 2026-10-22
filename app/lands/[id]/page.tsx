@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -652,9 +653,11 @@ function SlideTile({
 }) {
   return (
     <div className={`relative overflow-hidden group cursor-pointer ${className}`} style={style} onClick={onClick}>
-      <img
+      <Image
         src={slide.src}
         alt={label}
+        fill
+        unoptimized
         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         onError={(e) => {
           const img = e.target as HTMLImageElement;

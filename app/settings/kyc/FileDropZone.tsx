@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo, type ChangeEvent, type DragEvent } from "react";
+import NextImage from "next/image";
 import { X, Camera, ImageIcon, Loader2 } from "lucide-react";
 import CropModal from "./CropModal";
 
@@ -204,12 +205,13 @@ export default function FileDropZone({
 
       {/* ── Preview ── */}
       {preview ? (
-        <div className="relative rounded-xl overflow-hidden border border-white/10 group">
-          <img
+        <div className="relative rounded-xl overflow-hidden border border-white/10 group" style={{ height: "clamp(140px, 35vw, 180px)" }}>
+          <NextImage
             src={preview}
             alt="preview"
-            className="w-full object-cover"
-            style={{ height: "clamp(140px, 35vw, 180px)" }}
+            fill
+            unoptimized
+            className="object-cover"
           />
 
           {/* Compression badge */}

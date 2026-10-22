@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, useCallback, useRef, Suspense, type ChangeEvent, type MouseEvent, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -164,7 +165,7 @@ function Attachment({ messageId, path, isAdmin }: AttachmentProps) {
           className="mt-2 rounded-xl overflow-hidden cursor-zoom-in border border-white/10 max-w-55"
           onClick={() => setLightbox(true)}
         >
-          <img src={blobUrl} alt="attachment" className="w-full h-auto object-cover"/>
+          <Image src={blobUrl} alt="attachment" width={640} height={480} unoptimized className="w-full h-auto object-cover"/>
         </div>
       )}
 
@@ -212,9 +213,12 @@ function Attachment({ messageId, path, isAdmin }: AttachmentProps) {
           >
             <X size={16}/>
           </button>
-          <img
+          <Image
             src={blobUrl}
             alt="attachment"
+            width={1600}
+            height={1200}
+            unoptimized
             className="max-w-full max-h-[90vh] rounded-2xl object-contain shadow-2xl"
             onClick={(e: MouseEvent<HTMLImageElement>) => e.stopPropagation()}
           />
