@@ -5,7 +5,7 @@ vi.mock("../utils/api", () => ({
 }));
 
 import api from "../utils/api";
-import { giftUnits, getGiftableLands } from "../services/adminService";
+import { giftUnits, getGiftableLands, getUserGifts, reverseGift } from "../services/adminService";
 
 const mockedApi = api as unknown as {
   get: ReturnType<typeof vi.fn>;
@@ -84,5 +84,59 @@ describe("getGiftableLands", () => {
 
     expect(mockedApi.get).toHaveBeenCalledTimes(1);
     expect(lands).toHaveLength(1);
+  });
+});
+
+describe("getUserGifts", () => {
+  it("fetches the user's gifts", async () => {
+    const rows = [{ reference: "GFT-1", units: 2, reversed: false }];
+    mockedApi.get.mockResolvedValueOnce({ data: { success: true, data: rows } });
+
+    const res = await getUserGifts(42);
+
+    expect(mockedApi.get).toHaveBeenCalledWith("/admin/users/42/gifts");
+    expect(res).toEqual(rows);
+  });
+
+  it("returns an empty list when the payload has no data", async () => {
+    mockedApi.get.mockResolvedValueOnce({ data: {} });
+    expect(await getUserGifts(1)).toEqual([]);
+  });
+});
+
+describe("reverseGift", () => {
+  it("posts the reason with the idempotency key to the reverse endpoint", async () => {
+    mockedApi.post.mockResolvedValue({ data: { success: true } });
+
+    await reverseGift(42, "GFT-abc", "Issued in error", "key-9");
+
+    expect(mockedApi.post).toHaveBeenCalledWith(
+      "/admin/users/42/gifts/GFT-abc/reverse",
+      { reason: "Issued in error" },
+      { headers: { "Idempotency-Key": "key-9" } }
+    );
+  });
+
+  it("url-encodes the reference", async () => {
+    mockedApi.post.mockResolvedValue({ data: { success: true } });
+
+    await reverseGift(1, "GFT-a/b", "Some reason", "k");
+
+    expect(mockedApi.post.mock.calls[0][0]).toBe("/admin/users/1/gifts/GFT-a%2Fb/reverse");
+  });
+});
+
+describe("unitsValueKobo", () => {
+  it("multiplies units by the per-unit price", async () => {
+    const { unitsValueKobo } = await import("../utils/currency");
+    expect(unitsValueKobo(5, 100_000)).toBe(500_000);
+    expect(unitsValueKobo("3", "250000")).toBe(750_000);
+  });
+
+  it("returns 0 for missing or non-numeric input", async () => {
+    const { unitsValueKobo } = await import("../utils/currency");
+    expect(unitsValueKobo(5, undefined)).toBe(0);
+    expect(unitsValueKobo(5, null)).toBe(0);
+    expect(unitsValueKobo("abc", 100)).toBe(0);
   });
 });

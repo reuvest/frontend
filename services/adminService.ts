@@ -80,6 +80,9 @@ export interface GiftUnitsResponse {
     recipient: { id: number | string; name: string; email: string };
     land: { id: number | string; title: string };
     units: number;
+    /** Current price per unit and total value of the gift (units × price), in kobo. */
+    price_per_unit_kobo: number;
+    value_kobo: number;
     remaining_units: number;
     certificate: { cert_number: string; units: number } | null;
   };
@@ -102,12 +105,57 @@ export async function giftUnits(
   return res.data;
 }
 
+export interface UserGift {
+  reference: string;
+  land_id: number | string;
+  land_title: string | null;
+  units: number;
+  /** Current price per unit and value (units × price) in kobo — not the price at gift time. */
+  price_per_unit_kobo: number;
+  value_kobo: number;
+  reason: string | null;
+  gifted_at: string | null;
+  reversed: boolean;
+}
+
+/* GET /admin/users/{user}/gifts — newest first (max 50), each flagged `reversed`. */
+export async function getUserGifts(userId: string | number): Promise<UserGift[]> {
+  const res = await api.get(`/admin/users/${userId}/gifts`);
+  return res.data?.data ?? [];
+}
+
+export interface ReverseGiftResponse {
+  success: boolean;
+  message?: string;
+  data?: { reversal_reference: string; units: number; remaining_units: number };
+}
+
+/* POST /admin/users/{user}/gifts/{reference}/reverse — returns the gifted units to
+   platform inventory. All-or-nothing: 422 if the user no longer holds (unlisted)
+   the full quantity or the gift was already reversed. Same idempotency-key rules
+   as giftUnits. */
+export async function reverseGift(
+  userId: string | number,
+  reference: string,
+  reason: string,
+  idempotencyKey: string
+): Promise<ReverseGiftResponse> {
+  const res = await api.post(
+    `/admin/users/${userId}/gifts/${encodeURIComponent(reference)}/reverse`,
+    { reason },
+    { headers: { "Idempotency-Key": idempotencyKey } }
+  );
+  return res.data;
+}
+
 export interface GiftableLand {
   id: number | string;
   title: string;
   location?: string;
   available_units: number;
   total_units: number;
+  /** Appended by the backend's Land model; 0 when no price has been set. */
+  current_price_per_unit_kobo?: number;
 }
 
 const GIFTABLE_LANDS_MAX_PAGES = 25;

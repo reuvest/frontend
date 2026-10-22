@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback, ReactNode } from "react";
+import { useEffect, useState, useRef, ReactNode } from "react";
 import Link from "next/link";
 import {
   getAdminUsers, getAdminUser, performUserAction,
@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { useConfirm } from "../../../stores/useUIStore";
 import { useAuth } from "../../../context/AuthContext";
 import GiftUnitsModal from "./GiftUnitsModal";
+import UserGifts from "./UserGifts";
 import {
   Users, Search, ShieldX,
   ArrowLeft, Eye, MoreVertical,
@@ -165,6 +166,7 @@ export default function AdminUsersPage() {
   const canGift =
     Array.isArray(me?.permissions) && (me!.permissions as string[]).includes("units.gift");
   const [giftTarget, setGiftTarget] = useState<AdminUser | null>(null);
+  const [giftsRefresh, setGiftsRefresh] = useState(0);
 
   const [allRoles, setAllRoles]         = useState<AdminRole[]>([]);
   const [userRoles, setUserRoles]       = useState<AdminRole[]>([]);
@@ -178,6 +180,8 @@ export default function AdminUsersPage() {
   }, [search]);
 
   useEffect(() => { setPage(1); }, [debouncedSearch, filters]);
+  useEffect(() => { fetchUsers(); }, [page, debouncedSearch, filters]);
+
   useEffect(() => {
     const handler = (e: globalThis.MouseEvent) => {
       const target = e.target as Node;
@@ -189,7 +193,7 @@ export default function AdminUsersPage() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const fetchUsers = useCallback(async () => {
+  const fetchUsers = async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({ page: String(page), per_page: "20" });
@@ -203,9 +207,7 @@ export default function AdminUsersPage() {
       setPagination({ current_page: d.current_page ?? 1, last_page: d.last_page ?? 1, total: d.total ?? 0 });
     } catch { toast.error("Failed to load users"); }
     finally  { setLoading(false); }
-  }, [page, debouncedSearch, filters]);
-
-  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+  };
 
   const viewUser = async (userId: string | number) => {
     setMenuOpen(null);
@@ -300,8 +302,13 @@ export default function AdminUsersPage() {
     toast.success(res.message || "Units gifted");
     const target = giftTarget;
     setGiftTarget(null);
+    setGiftsRefresh((n) => n + 1);
+    refreshAfterGiftChange(target);
+  };
+
+  // Refresh the list and, if open, the detail modal so Units Owned stays true.
+  const refreshAfterGiftChange = (target: AdminUser | null) => {
     fetchUsers();
-    // Refresh the open detail modal so Units Owned reflects the gift.
     if (showModal && target) {
       getAdminUser(target.id)
         .then((body: any) => setSelectedUser(body.data))
@@ -543,6 +550,14 @@ export default function AdminUsersPage() {
                   </div>
                 ))}
               </div>
+
+              {canGift && (
+                <UserGifts
+                  userId={selectedUser.id}
+                  refreshKey={giftsRefresh}
+                  onReversed={() => refreshAfterGiftChange(selectedUser)}
+                />
+              )}
 
               {/* Roles */}
               <div className="space-y-3 pt-1">
